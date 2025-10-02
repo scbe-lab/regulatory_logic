@@ -1,0 +1,12 @@
+unit,project,sublibrary,path
+1,acme,1,/mnt/sda/alberto/projects/smed_cisreg/outputs/scrna/L1_L2_L3/L1/L1_SmedOnly.txt.gz
+2,acme,2,/mnt/sda/alberto/projects/smed_cisreg/outputs/scrna/L1_L2_L3/L2/L2_SmedOnly.txt.gz
+3,acme,3,/mnt/sda/alberto/projects/smed_cisreg/outputs/scrna/L1_L2_L3/L3/L3_SmedOnly.txt.gz
+4,lib8,3,/mnt/sda/alberto/projects/smed_cisreg/outputs/scrna/L8.3/L8.3.txt.gz
+5,lib8,4,/mnt/sda/alberto/projects/smed_cisreg/outputs/scrna/L8.4/L8.4.txt.gz
+6,lib11,3,/mnt/sda/alberto/projects/smed_cisreg/outputs/scrna/L11.3/L11.3_GFPiOnly.txt.gz
+7,lib11,4,/mnt/sda/alberto/projects/smed_cisreg/outputs/scrna/L11.4/L11.4_GFPiOnly.txt.gz
+8,lib14,3,/mnt/sda/alberto/projects/smed_cisreg/outputs/scrna/L14.3/L14.3.txt.gz
+9,lib14,4,/mnt/sda/alberto/projects/smed_cisreg/outputs/scrna/L14.4/L14.4.txt.gz
+10,lib23,1,/mnt/sda/alberto/projects/smed_cisreg/outputs/scrna/L23/sublib1/L23.1.txt.gz
+11,lib23,2,/mnt/sda/alberto/projects/smed_cisreg/outputs/scrna/L23/sublib2/L23.2.txt.gz
