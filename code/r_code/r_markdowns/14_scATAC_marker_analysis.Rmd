@@ -1,5 +1,5 @@
 ---
-title: 'Smed CisReg project 05b: scATAC-seq marker analysis'
+title: 'Smed CisReg project 14: scATAC-seq marker analysis'
 author: "Alberto Perez-Posada @apposada"
 date: "17/4/2024"
 output: html_document
@@ -195,110 +195,6 @@ for (i in unique(smed_cisreg_scatac_markers_geneAct_top$cluster)){
     )
   dev.off()
 }
-```
-
-## Saving coordinates of scATAC markers
-
-```{r}
-peak_coords <- rownames(smed_cisreg_scatac)
-peak_coords <- sub("-h1","_h1",peak_coords)
-peak_coords <- sub("scaffold-","scaffold_",peak_coords)
-
-smed_peaks <- 
-  data.frame(
-    chrom =  sapply(strsplit(peak_coords, "-"),function(x){x[[1]]}),
-    chrStart = sapply(strsplit(peak_coords, "-"),function(x){x[[2]]}),
-    chrEnd = sapply(strsplit(peak_coords, "-"),function(x){x[[3]]}),
-    id = rownames(smed_cisreg_scatac),
-    score = ".",
-    strand = "*"
-    )
-
-for (i in unique(smed_cisreg_scatac_markers_top$cluster)){
-  message(i)
-  ids <- smed_cisreg_scatac_markers_top$gene[smed_cisreg_scatac_markers_top$cluster == i]
-  pks <- smed_peaks[smed_peaks$id %in% ids,]
-  j <- i
-  j <- gsub(" ","_",gsub("/","_",i))
-  filename <- paste0("~/projects/smed_cisreg/outputs/scatac/seurat_outputs/homer/markers/smed_cisreg_scatac_markers_",j,".bed")
-  write.table(
-    pks, file = filename, sep = "\t", quote = F, row.names = F, col.names = F
-  )
-  rm(ids,pks,filename,j)
-}
-```
-
-## Motif Enrichment of scATAC marker peaks
-
-```{r}
-#consider using -h option in homer as well as -mis 3 instead of -mis 2
-# Load table
-motifs_markers_0 <- 
-  read_tsv("outputs/scatac/seurat_outputs/homer/results_markers/motifs_all.tsv")
-
-# tidyr wrapper to present a tidy table
-motifs_markers <- parse_homer_output_table(
-  tsv_motifs = motifs_markers_0,
-  categ_regex1 = "",
-  categ_regex2 = "",
-  qval_thresh = 0.1,
-  max_logqval = 10
-)
-colnames(motifs_markers)[1] <- "module"
-
-motifs_markers$module[motifs_markers$module == "early"] <- "early epidermal progenitors"
-motifs_markers$module[motifs_markers$module == "late"] <- "late epidermal progenitors"
-motifs_markers$module[motifs_markers$module == "basal"] <- "basal/goblet cells"
-
-# Transform module names column into ordered factor much like other plots from the WGCNA analysis
-motifs_markers$module <- 
-  factor(
-    motifs_markers$module,
-    levels = c(
-      "neoblasts","early epidermal progenitors","late epidermal progenitors",
-      "epidermis", "phagocytes", "basal/goblet cells", "muscle", "neurons",
-      "parenchyma", "protonephridia", "secretory"
-    )
-  )
-
-# Arrange by module name and decreasing values of % peaks with motif found, to facilitate readability
-motifs_markers <- 
-  motifs_markers[
-    with(motifs_markers,order(module,-as.numeric(pct_target_seqs_with_motif))),
-    ] #https://stackoverflow.com/questions/16205232/order-data-frame-by-columns-in-increasing-and-decreasing-order
-
-# Transform motifs names column into ordered factor so that ggplot respects the ordering we did in the step immediately above
-motifs_markers$motif <- 
-  factor(motifs_markers$motif, levels = rev(unique(motifs_markers$motif)))
-```
-
-And the plot:
-
-```{r, fig.width = 6, fig.height = 8}
-motifs_all_plot <- 
-  ggplot(
-    data = motifs_markers, 
-    aes(x = module, y = motif,
-        color = `logqval`, size = as.factor(size_pct))) +
-  geom_point() +
-  scale_color_gradient(
-    low = alpha("#401af0",0.6), high = alpha("#be0143",0.6)
-  ) +
-  theme_bw() +
-  xlab("") + ylab("") +
-  ggtitle("Motif enrichment analysis (qvalue <0.1)") +
-  theme(
-    text = element_text(size=10), legend.text = element_text(size=10), 
-    axis.text.x = element_text(angle = 90, vjust = 0.5)
-  ) +
-  scale_size_manual(values = c(1, 2, 3, 4,5), labels = c("1-10", "10-20", "20-50", "50+")) +
-  guides(size=guide_legend(title="% peaks with motif"))
-
-print(motifs_all_plot)
-
-pdf("graphics/scatac_markers_motifs.pdf", width = 6, height = 8)
-print(motifs_all_plot)
-dev.off()
 ```
 
 ## Saving everything

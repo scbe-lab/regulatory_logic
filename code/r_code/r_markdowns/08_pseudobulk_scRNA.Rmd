@@ -1,12 +1,12 @@
 ---
-title: 'Smed CisReg project 06: Pseudo-bulk counts'
+title: 'Smed CisReg project 08: Pseudo-bulk counts'
 author: "Alberto Perez-Posada @apposada"
 date: "8/4/2023"
 output: html_document
 ---
 
 ```{r setup, include=FALSE}
-dir <- '~/projects/smed_cisreg/'
+dir <- '~/storage/projects/smed_cisreg_2025_github_repository/'
 fcha <- function(){ gsub("-","",Sys.Date()) }
 
 knitr::opts_chunk$set(echo = TRUE)
@@ -57,10 +57,43 @@ smed_cisreg_scatac <- readRDS("outputs/rda/seurat_scatac/smed_cisreg_scATAC_cons
 
 ## Pseudobulk 
 
-(explain this function and the expected output)
+Here we will explain what this function does:
 
-```{r}
+  - First it checks if the `identities` object is of type "factor" (i.e. words with a specific order, similar to Python categories). If yes, it will use it as is, and will use the factor's levels as the order with which to parse through the matrix and as the column order of the output to be returned. If not, it will transform it into a factor and provide as levels the unique instances in alphabetic order.
+  - It creates a matrix full of zeroes, with as many rows as genes and as many columns as clusters.
+  - It gives this matrix the same row (gene) names as the original sparse matrix, and the same column (cluster) names as the levels of the factor mentioned above.
+  - For every cluster in the list of clusters, it will do the following:
+    - It will make a logical TRUE/FALSE filter of which cells in the list of identities belong to the cluster in question. Since the order of `identities` and the order of the cells in the sparse matrix is the same, this filter can be used to subset/manipulate the sparse matrix.
+    - Using this filter, it will create a sub-matrix called `x_i` containing only the cells that pass the filter (i.e. the cells that belong to the cluster in question).
+    - It will sum the values of this matrix on a row-wise level, in turn retrieving the expression of every gene in the totality of the cells of the cluster in question.
+    - It will deposit this list of gene expression values in the appropriate column of the matrix that will become the eventual output of the function.
+    - This loop is repeated for every cluster, effectively aggregating, for every gene, the gene expression counts of all the cells of a given cluster.
 
+
+```{r eval=FALSE}
+#' @params x: a counts object from seurat; ident.e. mydata@assays$RNA@counts
+#' @params identities: a (named) vector with cluster information on each cell. 
+#' IMPORTANT: cell order is assumed the same between x and identities.
+pseudobulk <- function(x, identities){
+  
+  if (!is.factor(identities)) identities <- factor(identities, levels = unique(identities))
+  
+  idents <- levels(identities)
+  
+  mtx <- matrix(0, nrow = nrow(x), ncol = length(idents))
+  rownames(mtx) <- rownames(x)
+  colnames(mtx) <- idents
+  
+  for (ident in idents){
+    filt <- which(identities == ident)
+    x_i <- x[,filt]
+    pseudocounts_cluster_i <- rowSums(x_i)
+    mtx[,ident] <- pseudocounts_cluster_i
+    message("Done cluster ",ident)
+  }
+  
+  return(mtx)
+}
 ```
 
 ## Getting cluster information for pseudobulk
@@ -109,7 +142,7 @@ scATAC-seq:
 ```{r, eval = FALSE}
 smed_cisreg_scatac_clusters <- 
   readRDS(
-    file = "~/projects/smed_cisreg/outputs/rda/seurat_scatac/smed_cisreg_scATAC_clusters.RDS"
+    file = "outputs/rda/seurat_scatac/smed_cisreg_scATAC_clusters.RDS"
   )
 
 smed_cisreg_scatac_pseudobulk <- 
@@ -160,28 +193,28 @@ smed_cisreg_scrna_broadtypes_pseudobulk <-
 ```{r}
 write.table(
   smed_cisreg_scrna_pseudobulk,
-  file = "~/projects/smed_cisreg/outputs/scrna/smed_cisreg_scrna_pseudobulk.tsv",
+  file = "outputs/scrna/smed_cisreg_scrna_pseudobulk.tsv",
   sep = "\t", dec = ".", 
   row.names = TRUE, quote = FALSE
   )
 
 write.table(
   smed_cisreg_scrna_psbulk_ncells,
-  file = "~/projects/smed_cisreg/outputs/scrna/smed_cisreg_scrna_pseudobulk_ncells.tsv",
+  file = "outputs/scrna/smed_cisreg_scrna_pseudobulk_ncells.tsv",
   sep = "\t", dec = ".", 
   row.names = TRUE, quote = FALSE
   )
 
 write.table(
   cluster_size,
-  file = "~/projects/smed_cisreg/outputs/scrna/smed_cisreg_scrna_clustersize.tsv",
+  file = "outputs/scrna/smed_cisreg_scrna_clustersize.tsv",
   sep = "\t", dec = ".", 
   row.names = TRUE, quote = FALSE
   )
 
 write.table(
   smed_cisreg_scrna_broadtypes_pseudobulk,
-  file = "~/projects/smed_cisreg/outputs/scrna/smed_cisreg_scrna_broadtypes_pseudobulk.tsv",
+  file = "outputs/scrna/smed_cisreg_scrna_broadtypes_pseudobulk.tsv",
   sep = "\t", dec = ".", 
   row.names = TRUE, quote = FALSE
   )
@@ -190,7 +223,7 @@ write.table(
 ```{r, eval = FALSE}
 write.table(
   smed_cisreg_scatac_pseudobulk,
-  file = "~/projects/smed_cisreg/outputs/scatac/smed_cisreg_scatac_pseudobulk.tsv",
+  file = "outputs/scatac/smed_cisreg_scatac_pseudobulk.tsv",
   sep = "\t", dec = ".", 
   row.names = TRUE, quote = FALSE
   )

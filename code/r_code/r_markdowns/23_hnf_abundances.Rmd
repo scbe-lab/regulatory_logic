@@ -1,5 +1,5 @@
 ---
-title: "Smed CisReg project: Planarian HNF4 knock-down and Differential Gene Expression; Seurat Analysis"
+title: "Smed CisReg project 23: Planarian HNF4 knock-down and Differential Gene Expression; Seurat Analysis"
 author: "Alberto Perez-Posada @apposada"
 date: "8/11/2023"
 output:
@@ -13,7 +13,7 @@ editor_options:
 
 ```{r setup, include=FALSE}
 
-dir <- '/mnt/sda/alberto/projects/smed_cisreg/'
+dir <- '/home/alberto/storage/projects/smed_cisreg/'
 fcha <- function(){ gsub("-","",Sys.Date()) }
 
 knitr::opts_chunk$set(echo = TRUE)
@@ -25,6 +25,7 @@ Sys.setenv(VROOM_CONNECTION_SIZE=5000072)
 
 ## About
 
+In this markdown we will assess the differences in cell abundances in the *hnf4* knockdown single cell transcriptomics dataset. For that we will quantify the number of cells per cluster, condition and replicate, and have it assessed by a statistical test such as Chi-Squared.
 
 ## Load libraries
 
@@ -59,6 +60,8 @@ smed_hnf_scrna <- readRDS("outputs/rda/seurat_scrna/hnf4_rnai/smed_hnf_scrna_Seu
 ```
 
 ## Umaps for replicates and experiments separately
+
+First we will visualise the position of the cells in the UMAP as a simple guidance.
 
 ```{r, fig.width = 8, fig.height = 8}
 gfpi_b1 <- smed_hnf_scrna$experiment == "control" & smed_hnf_scrna$replicate == "B1"
@@ -117,17 +120,74 @@ print(
   a1+a2+b1+b2
 )
 
-png("graphics/smed_hnf_umaps_byexp_byrep.png",height = 1200, width = 1200)
-print(
-  a1+a2+b1+b2
+# png("graphics/smed_hnf_umaps_byexp_byrep.png",height = 1200, width = 1200)
+# print(
+#   a1+a2+b1+b2
+# )
+# dev.off()
+```
+
+In addition, just for good measure, we will see where *hnf4* is being expressed in these cells.
+
+```{r}
+smed_hnf_scrna$experiment <- factor(smed_hnf_scrna$experiment,levels = c("control","HNF4i"))
+p <-
+  FeaturePlot(
+    smed_hnf_scrna,
+    features = "h1SMcG0019688",
+    # cols = c("lightgrey","#a100d2","#4c1f89"),
+    split.by = "experiment",
+    pt.size = 0.8,
+    order = T,
+    label = FALSE,
+    slot = "counts"
+  ) & scale_colour_gradientn(colours = colorRampPalette(c("lightgrey","#a100d2","#4c1f89"))(11)) & 
+  theme(legend.position = c(0.1,0.2))
+
+print(p)
+
+png(
+  file = "graphics/hnf4_by_experiment.png",
+  width= 512,
+  height = 256
 )
+plot_grid(plotlist = lapply(p,function(x){x+NoAxes()}),ncol = 2)
 dev.off()
 ```
 
+
 ## Barplot of percentage of cells per cluster
 
+Next comes a barplot that can help more visually to see where the differences are.
 
 ```{r, fig.height = 6, fig.width = 8}
+smed_hnf_ctypes <- 
+  unique(
+  data.frame(
+    cluster = smed_hnf_scrna$seurat_clusters,
+    ctype = smed_hnf_scrna$ctype,
+    broadtype = smed_hnf_scrna$broadtype
+    )
+  )
+
+smed_ctypes <- read.delim2("outputs/smed_cisreg_ctypes.tsv",header =TRUE)
+
+smed_hnf_ctypes$col <- 
+  translate_ids(
+    smed_hnf_ctypes$ctype,
+    dict = smed_ctypes[,c(1,3)]
+  )
+
+smed_hnf_ctypes$col[smed_hnf_ctypes$ctype == "aberrant phagocyte progenitors"] <- "#98b993"
+
+smed_hnf_ctypes$broacol <- 
+  translate_ids(
+    smed_hnf_ctypes$broadtype,
+    dict = unique(smed_ctypes[,c(4,5)])
+  )
+
+smed_hnf_scrna_ctypes <- smed_hnf_ctypes
+  
 smed_hnf_scrna_ctypes_2 <- smed_hnf_scrna_ctypes
 smed_hnf_scrna_ctypes_2 <- smed_hnf_scrna_ctypes_2[order(smed_hnf_scrna_ctypes_2$ctype,as.numeric(smed_hnf_scrna_ctypes_2$cluster)),]
 smed_hnf_scrna_ctypes_2$cluster <- factor(smed_hnf_scrna_ctypes_2$cluster, levels = unique(smed_hnf_scrna_ctypes_2$cluster))
@@ -135,7 +195,7 @@ smed_hnf_scrna_ctypes_2$clu_maxID <-
   paste(as.character(smed_hnf_scrna_ctypes_2$cluster), as.character(smed_hnf_scrna_ctypes_2$ctype), sep = "_")
 smed_hnf_scrna_ctypes_2$clu_maxID <- factor(smed_hnf_scrna_ctypes_2$clu_maxID, levels = unique(smed_hnf_scrna_ctypes_2$clu_maxID))
 
-smed_hnf_scrna$clu_maxID <- translate_ids(smed_hnf_scrna$seurat_clusters, dict = smed_hnf_scrna_ctypes_2[,c(2,6)])
+smed_hnf_scrna$clu_maxID <- translate_ids(smed_hnf_scrna$seurat_clusters, dict = smed_hnf_scrna_ctypes_2[,c(1,6)])
 
 smed_hnf_scrna$exp_rep <- paste(smed_hnf_scrna$experiment,smed_hnf_scrna$replicate, sep = "_")
 smed_hnf_scrna$exp_rep <- factor(smed_hnf_scrna$exp_rep, levels = sort(unique(smed_hnf_scrna$exp_rep)))
@@ -221,6 +281,7 @@ normncells_bar_B2 <- ggplot(df_B2, aes(x = Cluster, y = CountNorm, fill = Sample
   ylab("Proportion of cells")
 ```
 
+Below the plots:
 
 ```{r, fig.width = 6, fig.height = 12}
 # Create a grid of the aligned plots
@@ -235,6 +296,8 @@ grid <- plot_grid(
 # Plot ncells per cluster
 grid
 ```
+
+We will normalise internally by replicate (B1 and B2 separately), and after that a second, global normalisation. The numbers are similar but not the same.
 
 ```{r}
 df_renorm <-
@@ -258,21 +321,23 @@ normncells_bar_renorm <- ggplot(df_renorm, aes(x = Cluster, y = norm, fill = Sam
 
 ```{r}
 normncells_bar_renorm
-pdf("graphics/smed_hnf_barplot_ncell_percluster.pdf", height = 4, width = 6)
-print(normncells_bar_renorm)
-dev.off()
+# pdf("graphics/smed_hnf_barplot_ncell_percluster.pdf", height = 4, width = 6)
+# print(normncells_bar_renorm)
+# dev.off()
 ```
 
 ## Chi-square analysis
 
+Below a chi-square analysis using a wrapper of the same analysis found in Emili et al., 2025 Science Advances.
 
 ```{r, fig.height = 2, fig.width = 8}
 library(ComplexHeatmap); library(circlize)
 col_enr <- c("#90529f","white","#45aaa7")
+col_enr_ramp <- colorRampPalette(col_enr)
 
-source("~/colabos/helena_spp/chisq/code/r_code/r_functions/chisq_and_posthoc.R")
+source("/omics-storage/lab-solana/alberto/colabos/sizes/code/R_code/r_functions/chisq_and_posthoc.R")
 
-# R1
+# R1 REPLICATE 1
 r1_tbl <- data.frame(table(DF$experiment[DF$replicate=="B1"],DF$cluster[DF$replicate=="B1"])) %>% pivot_wider(names_from=Var1, values_from = Freq) %>%
   column_to_rownames("Var2") %>% as.matrix() %>% as.table
 # chi squared
@@ -292,7 +357,7 @@ col_enr_ramp_1 <-
     )
 enr_pal_broad_1 <- colorRamp2(
   breaks = c(seq(min(ph_res_1),-0.1,length = 19),0,seq(0.1,max(ph_res_1),length = 20)),
-  colors = col_enr_ramp
+  colors = col_enr_ramp(40)
 )
 pval_fun_broad_1 <- function(j,i,x,y,width,height,fill){
   if(ph_pva_1[i,j] < 0.01){
@@ -309,7 +374,7 @@ ha_chsq_top <-
     cluster = 
       anno_simple(
         levels(DF$cluster),
-        col = setNames(translate_ids(levels(DF$cluster), smed_hnf_scrna_ctypes_2[,c(2,4)]),levels(DF$cluster)),
+        col = setNames(translate_ids(levels(DF$cluster), smed_hnf_scrna_ctypes_2[,c(1,4)]),levels(DF$cluster)),
         pch = levels(DF$cluster), pt_size = unit(2,"mm")
         ), show_annotation_name = FALSE
     )
@@ -333,7 +398,7 @@ ph_hm_r1 <-
     cell_fun = pval_fun_broad_1
   )
 
-# R2
+# R2 REPLICATE 2
 r2_tbl <- data.frame(table(DF$experiment[DF$replicate=="B2"],DF$cluster[DF$replicate=="B2"])) %>% pivot_wider(names_from=Var1, values_from = Freq) %>%
   column_to_rownames("Var2") %>% as.matrix() %>% as.table
 # chi squared
@@ -353,7 +418,7 @@ col_enr_ramp_2 <-
   )
 enr_pal_broad_2 <- colorRamp2(
   breaks = c(seq(min(ph_res_2),-0.1,length = 19),0,seq(0.1,max(ph_res_2),length = 20)),
-  colors = col_enr_ramp
+  colors = col_enr_ramp(40)
 )
 pval_fun_broad_2 <- function(j,i,x,y,width,height,fill){
   if(ph_pva_2[i,j] < 0.01){
@@ -366,7 +431,7 @@ pval_fun_broad_2 <- function(j,i,x,y,width,height,fill){
 }
 ha_chsq_row_r2 <-
   HeatmapAnnotation(
-    exp = anno_simple(c("control","HNF4i"), col = setNames(exp_cols[c(2,4)],c("control","HNF4i"))),
+    exp = anno_simple(c("control","HNF4i"), col = setNames(exp_cols[c(1,4)],c("control","HNF4i"))),
     which = "row", show_annotation_name = FALSE
   )
 ph_hm_r2 <-
@@ -383,14 +448,15 @@ ph_hm_r2 <-
 
 ComplexHeatmap::draw(ph_hm_r1 %v% ph_hm_r2)
 
-pdf("graphics/smed_hnf_chi2_heatmap.pdf", width = 8, height = 2)
-ComplexHeatmap::draw(ph_hm_r1 %v% ph_hm_r2)
-dev.off()
+# pdf("graphics/smed_hnf_chi2_heatmap.pdf", width = 8, height = 2)
+# ComplexHeatmap::draw(ph_hm_r1 %v% ph_hm_r2)
+# dev.off()
 
 ```
 
 ## Correlation
 
+We will quickly check the correlation, pseudobulk-level, of neoblasts, phagocyte progenitors (aberrant or not), and phagocytes, between conditions, to see if and how they are similar to each other.
 
 ```{r, fig.height = 6, fig.width = 8}
 
@@ -423,7 +489,7 @@ hnf_abc_cor_exp <- cor(scale(m))
 ha <- HeatmapAnnotation(
   df = s[,c(3,4)],
   col = list(
-    ctype = setNames(translate_ids(s$ctype,smed_hnf_scrna_ctypes[,c(1,4)]),s$ctype),
+    ctype = setNames(translate_ids(s$ctype,smed_hnf_scrna_ctypes[,c(2,4)]),s$ctype),
     condition = setNames(c("#efad84","#4a42b5"),c("control","HNF4i"))[match(s$condition, c("control","HNF4i"))]
   ), show_annotation_name = FALSE
 )
@@ -431,7 +497,7 @@ ha <- HeatmapAnnotation(
 hb <- HeatmapAnnotation(
   df = s[,c(3,4)],
   col = list(
-    ctype = setNames(translate_ids(s$ctype,smed_hnf_scrna_ctypes[,c(1,4)]),s$ctype),
+    ctype = setNames(translate_ids(s$ctype,smed_hnf_scrna_ctypes[,c(2,4)]),s$ctype),
     condition = setNames(c("#efad84","#4a42b5"),c("control","HNF4i"))[match(s$condition, c("control","HNF4i"))]
   ), which = "row", show_legend = FALSE, show_annotation_name = FALSE
 )
@@ -461,12 +527,53 @@ hnf_cors <- Heatmap(
 
 ComplexHeatmap::draw(hnf_cors)
 
-pdf("graphics/smed_hnf_cors.pdf",width = 8, height = 6)
-ComplexHeatmap::draw(hnf_cors)
-dev.off()
+# pdf("graphics/smed_hnf_cors.pdf",width = 8, height = 6)
+# ComplexHeatmap::draw(hnf_cors)
+# dev.off()
 ```
 
+We see that phagocyte progenitors from the *hnf4* (RNAi) condition are more similar to neoblasts in terms of gene expression.
+
 ## Score analysis
+
+Next we will do a gene score analysis.
+
+Gene score is calculated as follows, implementing scanpy's algorithm for gene scoring:
+
+```
+gene_score <- function(x, gene_set, gene_pool = rownames(x), remove_set_from_pool = FALSE, fraction = 1, seed = 4343){
+  
+  # 1. parse gene pool
+  # 1.1. remove gene set if asked
+  if (remove_set_from_pool == TRUE){
+    filt <- !(gene_pool %in% gene_set)
+    gene_pool <- gene_pool[filt]
+  }
+  
+  # 1.2. subsample
+  n_pool <- length(gene_pool)
+  n <- trunc(n_pool*fraction) # if fraction == 1 this will be just all of them
+  set.seed(seed) # user can control the seed
+  pool <- sample(gene_pool, n)
+  
+  # 2. calculate score
+  
+  # genes of interest
+  a_i <- apply(x[gene_set,], 2, mean)
+  
+  # genes from the random pool
+  b_i <- apply(x[pool,], 2, mean)
+  
+  # difference
+  score <- a_i - b_i
+  
+  # 3. result
+  return(score)
+  
+}
+```
+
+To choose the gene scores, we will retrieve markers from each cell type.
 
 ```{r, fig.height = 4,fig.width = 6}
 cl_of_interest_0 <- 
@@ -485,7 +592,7 @@ neoblasts_markers <-
     return.thresh = 1,
     logfc.threshold = 0
   )
-markers_neo <- rownames(neoblasts_markers[1:50,])
+markers_neo <- rownames(neoblasts_markers[1:100,])
 
 phagocytes_markers <- 
   FindMarkers(
@@ -495,7 +602,7 @@ phagocytes_markers <-
     return.thresh = 1,
     logfc.threshold = 0
   )
-markers_phag <- rownames(phagocytes_markers[1:50,])
+markers_phag <- rownames(phagocytes_markers[1:100,])
 
 pgrn_markers <- 
   FindMarkers(
@@ -505,7 +612,7 @@ pgrn_markers <-
     return.thresh = 1,
     logfc.threshold = 0
   )
-markers_pgrn <- rownames(pgrn_markers[1:10,])
+markers_pgrn <- rownames(pgrn_markers[1:100,])
 
 epid_markers <- 
   FindMarkers(
@@ -515,39 +622,47 @@ epid_markers <-
     return.thresh = 1,
     logfc.threshold = 0
   )
-markers_epid <- rownames(epid_markers[1:50,])
+markers_epid <- rownames(epid_markers[1:100,])
+```
 
+Here we score the cells based on the gene score of each 
+
+```{r}
 mat = smed_hnf_scrna@assays$RNA@data
 all_genes = rownames(mat)
 
 score_neoblasts <-
   gene_score(
     x = mat, gene_set = markers_neo,
-    gene_pool = all_genes, remove_set_from_pool = FALSE,
-    fraction = 0.05
+    gene_pool = all_genes, remove_set_from_pool = TRUE,
+    fraction = 0.1
   )
 
 score_phagocytes <- 
   gene_score(
     x = mat, gene_set = markers_phag,
-    gene_pool = all_genes, remove_set_from_pool = FALSE,
-    fraction = 0.05
+    gene_pool = all_genes, remove_set_from_pool = TRUE,
+    fraction = 0.1
     )
 
 score_parenchyma <-
   gene_score(
     x = mat, gene_set = markers_pgrn,
-    gene_pool = all_genes, remove_set_from_pool = FALSE,
-    fraction = 0.05
+    gene_pool = all_genes, remove_set_from_pool = TRUE,
+    fraction = 0.1
   )
 
 score_epid <-
   gene_score(
     x = mat, gene_set = markers_epid,
-    gene_pool = all_genes, remove_set_from_pool = FALSE,
-    fraction = 0.05
+    gene_pool = all_genes, remove_set_from_pool = TRUE,
+    fraction = 0.1
   )
+```
 
+We make ourselves a data frame where to store all of this. For visualisation purposes, we clip the upper and lower 0.1% values of the distribution of each score.
+
+```{r}
 df_scores <-
   data.frame(
     cell = colnames(smed_hnf_scrna), # cells
@@ -555,20 +670,28 @@ df_scores <-
     rep = smed_hnf_scrna$replicate, # replicates
     exp_rep = smed_hnf_scrna$exp_rep, # merge of replicate and experiment
     clu_maxID = smed_hnf_scrna$clu_maxID, # cluster, name of ctype with max id
+    seurat_clusters = smed_hnf_scrna$seurat_clusters, # cluster, name of ctype with max id
     cluster = smed_hnf_scrna$ctype_dge, # cluster
-    score_neo = relativise(map_up(score_neoblasts)), # score neoblast markers
-    score_pha = relativise(map_up(score_phagocytes)), # score phagocyte markers
-    score_par = relativise(map_up(score_parenchyma)), # score parenchyma markers
-    score_epi = relativise(map_up(score_epid))   # score epidermis
+    score_neo = relativise(clip_both(score_neoblasts, Q = 0.999)), # score neoblast markers
+    score_pha = relativise(clip_both(score_phagocytes, Q = 0.999)), # score phagocyte markers
+    score_par = relativise(clip_both(score_parenchyma, Q = 0.999)), # score parenchyma markers
+    score_epi = relativise(clip_both(score_epid, Q = 0.999))   # score epidermis
   )
+
 
 df_scores <- df_scores[df_scores$clu_maxID %in% cl_of_interest_0,]
 df_scores$clu_maxID <- droplevels(df_scores$clu_maxID)
 df_scores$cluster <- droplevels(df_scores$cluster)
+df_scores <- df_scores %>% mutate(cluster=factor(cluster, labels = c("neoblasts","epidermis","phag.prog","phagocytes","pgrn+ cells")))
+
+# score plot
+set.seed(123)
+z <- df_scores %>% group_by(exp_rep,cluster) %>% sample_n(50) %>% .$cell
 ```
 
-```{r}
+Here we create the plots:
 
+```{r}
 # Neoblast score plot
 boxpl_neo <- ggplot(
   data = df_scores,
@@ -577,11 +700,12 @@ boxpl_neo <- ggplot(
         y = score_neo,
         fill = exp_rep,
         color = exp_rep)) +
-  geom_boxplot(outlier.colour = rgb(0.1,0.1,0.1,0.1), outlier.size = .4)+
+  geom_boxplot(outlier.shape = NA)+
+  geom_point(data = df_scores[df_scores$cell %in% z,], mapping = aes(x = cluster, color = exp_rep), shape = 20, position = position_jitterdodge(), size = 1, alpha = .25)+
   theme_classic()+
   scale_fill_manual(values = exp_cols)+
   scale_color_manual(values = darken(exp_cols,0.5))+
-  theme(axis.text.x = element_text(angle = 45, vjust = 0.5, hjust=1, size = 6))+
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1, size = 8))+
   coord_cartesian(ylim=c(0,1))
 
 # Phagocyte score plot
@@ -592,11 +716,12 @@ boxpl_pha <- ggplot(
         y = score_pha,
         fill = exp_rep,
         color = exp_rep)) +
-  geom_boxplot(outlier.colour = rgb(0.1,0.1,0.1,0.1), outlier.size = .4)+
+  geom_boxplot(outlier.shape = NA)+
+  geom_point(data = df_scores[df_scores$cell %in% z,], mapping = aes(x = cluster, color = exp_rep), shape = 20, position = position_jitterdodge(), size = 1, alpha = .25)+
   theme_classic()+
   scale_fill_manual(values = exp_cols)+
   scale_color_manual(values = darken(exp_cols,0.5))+
-  theme(axis.text.x = element_text(angle = 45, vjust = 0.5, hjust=1, size = 6))+
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1, size = 8))+
   coord_cartesian(ylim=c(0,1))
 
 # Parenchyma score plot
@@ -607,11 +732,12 @@ boxpl_par <- ggplot(
         y = score_par,
         fill = exp_rep,
         color = exp_rep)) +
-  geom_boxplot(outlier.colour = rgb(0.1,0.1,0.1,0.1), outlier.size = .4)+
+  geom_boxplot(outlier.shape = NA)+
+  geom_point(data = df_scores[df_scores$cell %in% z,], mapping = aes(x = cluster, color = exp_rep), shape = 20, position = position_jitterdodge(), size = 1, alpha = .25)+
   theme_classic()+
   scale_fill_manual(values = exp_cols)+
   scale_color_manual(values = darken(exp_cols,0.5))+
-  theme(axis.text.x = element_text(angle = 45, vjust = 0.5, hjust=1, size = 6))+
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1, size = 8))+
   coord_cartesian(ylim=c(0,1))
 
 # Epidermis score plot
@@ -622,28 +748,18 @@ boxpl_epi <- ggplot(
         y = score_epi,
         fill = exp_rep,
         color = exp_rep)) +
-  geom_boxplot(outlier.colour = rgb(0.1,0.1,0.1,0.1), outlier.size = .4)+
+  geom_boxplot(outlier.shape = NA)+
+  geom_point(data = df_scores[df_scores$cell %in% z,], mapping = aes(x = cluster, color = exp_rep), shape = 20, position = position_jitterdodge(), size = 1, alpha = .25)+
   theme_classic()+
   scale_fill_manual(values = exp_cols)+
   scale_color_manual(values = darken(exp_cols,0.5))+
-  theme(axis.text.x = element_text(angle = 45, vjust = 0.5, hjust=1, size = 6))+
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1, size = 8))+
   coord_cartesian(ylim=c(0,1))
 ```
 
-```{r, fig.width = 12, fig.height = 4}
-prow<- plot_grid(
-  boxpl_neo + theme(legend.position="none"),
-  boxpl_pha + theme(legend.position="none"),
-  align = 'vh',
-  labels = c("Neoblast Score", "Phagocyte Score", "Parenchyma Score", "Epidermis Score"),
-  nrow = 1
-)
-lll <- get_legend(boxpl_neo + theme(legend.box.margin = margin(0, 0, 0, 12)))
-plot_grid(prow, lll, rel_widths = c(3, .4))
-pdf("graphics/smed_hnf_scores_by_cluster_by_exp_by_rep.pdf", height = 4, width = 8)
-plot_grid(prow, lll, rel_widths = c(3, .4))
-dev.off()
+And here we visualise them:
 
+```{r, fig.width = 15, fig.height = 4}
 prow_supp<- plot_grid(
   boxpl_neo + theme(legend.position="none"),
   boxpl_pha + theme(legend.position="none"),
@@ -652,13 +768,17 @@ prow_supp<- plot_grid(
   align = 'vh',
   labels = c("Neoblast Score", "Phagocyte Score", "Parenchyma Score", "Epidermis Score"),
   nrow = 1)
-pdf("graphics/smed_hnf_scores_by_cluster_by_exp_by_rep_SUPP.pdf", height = 4, width = 12)
+plot_grid(prow_supp, lll, rel_widths = c(3, .4))
+
+pdf("graphics/smed_hnf_scores_by_cluster_by_exp_by_rep_SUPP.pdf", height = 4, width = 15)
 plot_grid(prow_supp, lll, rel_widths = c(3, .4))
 dev.off()
 ```
 
+Next, a heatmap to show just the median of gene score for the cells from each cluster/condition/experiment. This info is repetitive and does not appear in the manuscript.
+
 ```{r, fig.width = 8, fig.height = 2}
-test <- df_scores[,-c(1:3,5)]
+test <- df_scores[,-c(1:3,5,6)]
 test$group <- paste(test$cluster,test$exp_rep, sep = "__")
 test <- aggregate(test[,3:6],by = list(group = test$group), FUN = median) # maybe multiple columns can be passed to aggregate and my life becomes easier
 test$exp_rep <- sapply(test$group,function(x){strsplit(x,"__")[[1]][2]})
@@ -696,6 +816,391 @@ Heatmap(
   )
 ```
 
+## Significant differences for each score
+
+To see whether and where we have significant differences in the scores shown above, we will use Wilcoxon for each cluster and score.
+
+Since we have two replicates, we opted for doing it for each replicate separately, and for both together (in other words, mingling cells from the same replicates and not regard this). Of note that we will not be showing the plot outputs from each run, only the "both replicates" one. The rest are present in the Manuscript.
+
+First we will declare some functions that are useful, such as boxcox transformation, and a function to remove outliers.
+
+```{r}
+library(rcompanion)
+library(FSA)
+
+bct <- function(a){
+  
+  # boxcox model
+  bc <- MASS::boxcox(a ~ 1, plotit = FALSE)
+  
+  # choosing optimal lambda parameter
+  optimal <- which( bc$y == max(bc$y) )
+  l <- bc$x[optimal]
+  
+  # transformation
+  y <- (a ^ l - 1) / l
+}
+
+remove_outliers <- function(x, na.rm = TRUE, ...) {
+  qnt <- quantile(x, probs=c(.25, .75), na.rm = na.rm, ...)
+  H <- 1.5 * IQR(x, na.rm = na.rm)
+  y <- x
+  y[x < (qnt[1] - H)] <- NA
+  y[x > (qnt[2] + H)] <- NA
+  y
+}
+```
+
+Here's a quick colour-cluster association for the plots that we will see later down below.
+
+```{r}
+score_box_cols <- 
+  setNames(c("#C8C8C8", "#2171B5", "#80C480", "#228B22", "#FF69B4"), levels(dat$cluster))
+```
+
+Here is a big function that will perform the Schreire Ray Hare test of differences (omnibus) followed by a Dunn test and by pairwise comparisons for each cluster. It takes as input the `dat` data frame of gene scores, with boxcox transformed values, the `sco` parameter which indicates what score we are going to compare, and a TRUE/FALSE to remove (or not) the outliers from the individual Wilcoxon tests.
+
+The function creates a formula that will use to model the data for the Scheirer Ray Hare test, followed by post hoc Wilcoxon tests.
+
+```{r}
+compare_gene_scores <- function(dat,sco, plot_results = TRUE, remove_outliers_from_individual_wilcox = FALSE){
+  f <-
+    paste(
+      sco, "~", "cluster + exp"
+    )
+  
+  srh <- do.call("scheirerRayHare", list(as.formula(f), data = as.name("dat")))
+  
+  
+  # post hoc tests: propagating cluster and experiment grouping factors to create groups of all combinations
+  dat$clu_exp <-
+    factor(
+      paste(dat$cluster,dat$exp, sep = "|"),
+      levels = apply(expand.grid(levels(dat$cluster),levels(dat$exp)), 1, paste, collapse="|")
+    )
+  
+  f2 <- 
+    paste(
+      sco, "~", "clu_exp"
+    )
+  
+  # dunn test across combinations of clusters and treatments
+  DT <-
+    do.call(
+      "dunnTest",
+      list(
+        as.formula(f2),
+        data = as.name("dat"),
+        alpha = 0.005,
+        method = "bonferroni"
+      )
+    )
+  
+  cld = cldList(P.adj ~ Comparison,
+                data = DT,
+                threshold = 0.005)
+  
+  # pairwise wilcoxon test across combinations of clusters and treatments
+  pwtest <- pairwise.wilcox.test(
+    dat[,sco],
+    dat$clu_exp,
+    alternative = "two.sided",
+    p.adjust.method = "bonferroni"
+  )
+  
+  m_res <- matrix(NA,nrow = length(levels(dat$clu_exp)), ncol = length(levels(dat$clu_exp)))
+  diag(m_res) <- 1
+  m_res[lower.tri(m_res)] <- pwtest$p.value[complete.cases(pwtest$p.value)]
+  m_res[upper.tri(m_res)] <- t(m_res)[upper.tri(m_res)]
+  dimnames(m_res) <- list(levels(dat$clu_exp),levels(dat$clu_exp))
+  diag(m_res) <- NA
+  
+  g_ <- 
+    graph_from_adjacency_matrix(
+      m_res,weighted = TRUE, mode = "undirected")
+  
+  g_ <- subgraph_from_edges( g_, eids = which(E(g_)$weight < 0.001 ))
+  E(g_)$value <- log(-log(E(g_)$weight))
+  
+  V(g_)$color <- score_box_cols[match(gsub("\\|.*","",V(g_)$name), names(score_box_cols))]
+  V(g_)$shape <- "square"
+  V(g_)$shape[grep("control",V(g_)$name)] <- "circle"
+  V(g_)$label <- "-"
+  V(g_)$label[grep("control",V(g_)$name)] <- "+"
+  
+  colf <- colorRamp2(col = c(alpha("gray",.5),alpha("#241f31",.75)), breaks = c(min(E(g_)$value), max(E(g_)$value)))
+  
+  E(g_)$col <- colf(E(g_)$value)
+  
+  set.seed(1234)
+  l <- layout_with_graphopt(g_)
+  
+  
+  if(plot_results == TRUE){
+    boxplot(
+      as.formula(f2),
+      dat,
+      main = sco,
+      col = score_box_cols,
+      border = darken(score_box_cols, 0.4),
+      outcol = alpha(darken(score_box_cols,.4),.25),
+      pch = 20,
+      ylim = c(0.4,1)
+    )
+    plot(g_, edge.color = E(g_)$col, layout = l, edge.width = 3^relativise(E(g_)$value), vertex.label.cex = 2, main = sco)
+  }
+  
+  # individual wilcoxon tests for each cluster
+  l_ <- list()
+  for(cluster in levels(dat$cluster)){
+    d_ <- dat[dat$cluster == cluster,]
+    d_$cluster <- droplevels(d_$cluster)
+    
+    if(remove_outliers_from_individual_wilcox == TRUE){
+      d_2 <- d_
+      
+      d_2[d_2$exp == "control",sco] <- remove_outliers(d_2[d_2$exp == "control",sco])
+      d_2[d_2$exp == "HNF4i",sco] <- remove_outliers(d_2[d_2$exp == "HNF4i",sco])
+      
+      d_ <- d_2
+    }
+    
+    f3 <- paste(sco, "~", "exp")
+    w <- 
+      do.call(
+        "wilcox.test",
+        list(
+          as.formula(f3),
+          data = as.name("d_"),
+          alternative = "greater"
+        )
+      )
+    
+    l_[[cluster]] <- w
+  }
+  
+  res <-
+    list(
+      data = dat,
+      scheirerRayHare = srh,
+      dunnTest = DT,
+      dunnTest_comparisons = cld,
+      pairwise_wilcox = pwtest,
+      pairwise_wilcox_full_matrix = m_res,
+      graph = g_,
+      graph_layout = l,
+      individual_wilcoxon_tests = l_
+    )
+  
+  return(res)
+}
+
+# save(df_scores,file = "~/20250224_scores_temporary_backup.rds")
+dat <- df_scores
+```
+
+First for replicate 1. We subset the data frame of scores, retrieve only cells from Rep B1, and then perform a boxcox transformation of the data. After this, we compare the scores between replicates and conditions:
+
+```{r}
+dat_B1 <- dat[dat$rep == "B1",]
+dat_B1$exp = factor(dat_B1$exp, levels = c("control", "HNF4i"))
+
+# Box-Cox Transforms, relativised to range between 0-1
+dat_B1$score_neo_bc <- relativise(bct(dat_B1$score_neo+0.00000000001))
+dat_B1$score_epi_bc <- relativise(bct(dat_B1$score_epi+0.00000000001))
+dat_B1$score_pha_bc <- relativise(bct(dat_B1$score_pha+0.00000000001))
+dat_B1$score_par_bc <- relativise(bct(dat_B1$score_par+0.00000000001))
+
+# sco <- "score_pha_bc"
+neo_sco_comp_B1 <- compare_gene_scores(dat = dat_B1, sco = "score_neo_bc", plot_results = FALSE, remove_outliers_from_individual_wilcox = TRUE)
+epi_sco_comp_B1 <- compare_gene_scores(dat = dat_B1, sco = "score_epi_bc", plot_results = FALSE, remove_outliers_from_individual_wilcox = TRUE)
+pha_sco_comp_B1 <- compare_gene_scores(dat = dat_B1, sco = "score_pha_bc", plot_results = FALSE, remove_outliers_from_individual_wilcox = TRUE)
+par_sco_comp_B1 <- compare_gene_scores(dat = dat_B1, sco = "score_par_bc", plot_results = FALSE, remove_outliers_from_individual_wilcox = TRUE)
+
+
+pdf("graphics/individual_wilcoxon_scores_B1.pdf", wi = 3.5, he = 9)
+par(mfrow = c(4,1))
+plot(
+  sapply(neo_sco_comp_B1$individual_wilcoxon_tests, function(x){-log(x$p.value)}),
+  ylab = "-logp(wilcox.test Control/HNF4i, upper-tail)", main = "neoblasts score", xlab = "",
+  type = "b", pch = 21, col = darken(score_box_cols,.4), bg = score_box_cols, cex = 2,
+  ylim = c(0,30), bty = "n", axes = FALSE
+  )
+text(sapply(neo_sco_comp_B1$individual_wilcoxon_tests, function(x){-log(x$p.value)}), labels = round(sapply(neo_sco_comp_B1$individual_wilcoxon_tests, function(x){-log(x$p.value)}),digits = 2),pos = 3)
+axis(2)
+plot(
+  sapply(epi_sco_comp_B1$individual_wilcoxon_tests, function(x){-log(x$p.value)}),
+  ylab = "-logp(wilcox.test Control/HNF4i, upper-tail)", main = "epidermis score", xlab = "",
+  type = "b", pch = 21, col = darken(score_box_cols,.4), bg = score_box_cols, cex = 2,
+  ylim = c(0,30), bty = "n", axes = FALSE
+)
+text(sapply(epi_sco_comp_B1$individual_wilcoxon_tests, function(x){-log(x$p.value)}), labels = round(sapply(epi_sco_comp_B1$individual_wilcoxon_tests, function(x){-log(x$p.value)}),digits = 2),pos = 3)
+axis(2)
+plot(
+  sapply(pha_sco_comp_B1$individual_wilcoxon_tests, function(x){-log(x$p.value)}),
+  ylab = "-logp(wilcox.test Control/HNF4i, upper-tail)", main = "phagocytes score", xlab = "",
+  type = "b", pch = 21, col = darken(score_box_cols,.4), bg = score_box_cols, cex = 2,
+  ylim = c(0,30), bty = "n", axes = FALSE
+)
+text(sapply(pha_sco_comp_B1$individual_wilcoxon_tests, function(x){-log(x$p.value)}), labels = round(sapply(pha_sco_comp_B1$individual_wilcoxon_tests, function(x){-log(x$p.value)}),digits = 2),pos = 3)
+axis(2)
+plot(
+  sapply(par_sco_comp_B1$individual_wilcoxon_tests, function(x){-log(x$p.value)}),
+  ylab = "-logp(wilcox.test Control/HNF4i, upper-tail)", main = "parenchyma score",
+  type = "b", pch = 21, col = darken(score_box_cols,.4), bg = score_box_cols, cex = 2,
+  ylim = c(0,100), bty = "n"
+)
+text(sapply(par_sco_comp_B1$individual_wilcoxon_tests, function(x){-log(x$p.value)}), labels = round(sapply(par_sco_comp_B1$individual_wilcoxon_tests, function(x){-log(x$p.value)}),digits = 2),pos = c(3,3,4,3,3))
+par(mfrow = c(1,1))
+dev.off()
+```
+
+Then for replicate 2. We subset the data frame of scores, retrieve only cells from Rep B2, and then perform a boxcox transformation of the data. After this, we compare the scores between replicates and conditions:
+
+```{r}
+dat_B2 <- dat[dat$rep == "B2",]
+dat_B2$exp = factor(dat_B2$exp, levels = c("control", "HNF4i"))
+
+# Box-Cox Transforms, relativised to range between 0-1
+dat_B2$score_neo_bc <- relativise(bct(dat_B2$score_neo+0.00000000001))
+dat_B2$score_epi_bc <- relativise(bct(dat_B2$score_epi+0.00000000001))
+dat_B2$score_pha_bc <- relativise(bct(dat_B2$score_pha+0.00000000001))
+dat_B2$score_par_bc <- relativise(bct(dat_B2$score_par+0.00000000001))
+
+# sco <- "score_pha_bc"
+neo_sco_comp_B2 <- compare_gene_scores(dat = dat_B2, sco = "score_neo_bc", plot_results = FALSE, remove_outliers_from_individual_wilcox = TRUE)
+epi_sco_comp_B2 <- compare_gene_scores(dat = dat_B2, sco = "score_epi_bc", plot_results = FALSE, remove_outliers_from_individual_wilcox = TRUE)
+pha_sco_comp_B2 <- compare_gene_scores(dat = dat_B2, sco = "score_pha_bc", plot_results = FALSE, remove_outliers_from_individual_wilcox = TRUE)
+par_sco_comp_B2 <- compare_gene_scores(dat = dat_B2, sco = "score_par_bc", plot_results = FALSE, remove_outliers_from_individual_wilcox = TRUE)
+
+
+pdf("graphics/individual_wilcoxon_scores_B2.pdf", wi = 3.5, he = 9)
+par(mfrow = c(4,1))
+plot(
+  sapply(neo_sco_comp_B2$individual_wilcoxon_tests, function(x){-log(x$p.value)}),
+  ylab = "-logp(wilcox.test Control/HNF4i, upper-tail)", main = "neoblasts score", xlab = "",
+  type = "b", pch = 21, col = darken(score_box_cols,.4), bg = score_box_cols, cex = 2,
+  ylim = c(0,30), bty = "n", axes = FALSE
+)
+text(sapply(neo_sco_comp_B2$individual_wilcoxon_tests, function(x){-log(x$p.value)}), labels = round(sapply(neo_sco_comp_B2$individual_wilcoxon_tests, function(x){-log(x$p.value)}),digits = 2),pos = 3)
+axis(2)
+plot(
+  sapply(epi_sco_comp_B2$individual_wilcoxon_tests, function(x){-log(x$p.value)}),
+  ylab = "-logp(wilcox.test Control/HNF4i, upper-tail)", main = "epidermis score", xlab = "",
+  type = "b", pch = 21, col = darken(score_box_cols,.4), bg = score_box_cols, cex = 2,
+  ylim = c(0,30), bty = "n", axes = FALSE
+)
+text(sapply(epi_sco_comp_B2$individual_wilcoxon_tests, function(x){-log(x$p.value)}), labels = round(sapply(epi_sco_comp_B2$individual_wilcoxon_tests, function(x){-log(x$p.value)}),digits = 2),pos = 3)
+axis(2)
+plot(
+  sapply(pha_sco_comp_B2$individual_wilcoxon_tests, function(x){-log(x$p.value)}),
+  ylab = "-logp(wilcox.test Control/HNF4i, upper-tail)", main = "phagocytes score", xlab = "",
+  type = "b", pch = 21, col = darken(score_box_cols,.4), bg = score_box_cols, cex = 2,
+  ylim = c(0,30), bty = "n", axes = FALSE
+)
+text(sapply(pha_sco_comp_B2$individual_wilcoxon_tests, function(x){-log(x$p.value)}), labels = round(sapply(pha_sco_comp_B2$individual_wilcoxon_tests, function(x){-log(x$p.value)}),digits = 2),pos = 3)
+axis(2)
+plot(
+  sapply(par_sco_comp_B2$individual_wilcoxon_tests, function(x){-log(x$p.value)}),
+  ylab = "-logp(wilcox.test Control/HNF4i, upper-tail)", main = "parenchyma score",
+  type = "b", pch = 21, col = darken(score_box_cols,.4), bg = score_box_cols, cex = 2,
+  ylim = c(0,35), bty = "n"
+)
+text(sapply(par_sco_comp_B2$individual_wilcoxon_tests, function(x){-log(x$p.value)}), labels = round(sapply(par_sco_comp_B2$individual_wilcoxon_tests, function(x){-log(x$p.value)}),digits = 2),pos = c(3,3,4,3,3))
+par(mfrow = c(1,1))
+dev.off()
+```
+
+For both replicates, we just leave it as-is. We show here example plots of what we get from this function:
+
+```{r}
+dat_bothreps <- dat
+dat_bothreps$exp = factor(dat_bothreps$exp, levels = c("control", "HNF4i"))
+
+# Box-Cox Transforms, relativised to range between 0-1
+dat_bothreps$score_neo_bc <- relativise(bct(dat_bothreps$score_neo+0.00000000001))
+dat_bothreps$score_epi_bc <- relativise(bct(dat_bothreps$score_epi+0.00000000001))
+dat_bothreps$score_pha_bc <- relativise(bct(dat_bothreps$score_pha+0.00000000001))
+dat_bothreps$score_par_bc <- relativise(bct(dat_bothreps$score_par+0.00000000001))
+
+# sco <- "score_pha_bc"
+neo_sco_comp_bothreps <- compare_gene_scores(dat = dat_bothreps, sco = "score_neo_bc", plot_results = FALSE, remove_outliers_from_individual_wilcox = TRUE)
+epi_sco_comp_bothreps <- compare_gene_scores(dat = dat_bothreps, sco = "score_epi_bc", plot_results = FALSE, remove_outliers_from_individual_wilcox = TRUE)
+pha_sco_comp_bothreps <- compare_gene_scores(dat = dat_bothreps, sco = "score_pha_bc", plot_results = FALSE, remove_outliers_from_individual_wilcox = TRUE)
+par_sco_comp_bothreps <- compare_gene_scores(dat = dat_bothreps, sco = "score_par_bc", plot_results = FALSE, remove_outliers_from_individual_wilcox = TRUE)
+
+par(mfrow = c(4,1))
+plot(
+  sapply(neo_sco_comp_bothreps$individual_wilcoxon_tests, function(x){-log(x$p.value)}),
+  ylab = "-logp(wilcox.test Control/HNF4i, upper-tail)", main = "neoblasts score", xlab = "",
+  type = "b", pch = 21, col = darken(score_box_cols,.4), bg = score_box_cols, cex = 2,
+  ylim = c(0,30), bty = "n", axes = FALSE
+)
+text(sapply(neo_sco_comp_bothreps$individual_wilcoxon_tests, function(x){-log(x$p.value)}), labels = round(sapply(neo_sco_comp_bothreps$individual_wilcoxon_tests, function(x){-log(x$p.value)}),digits = 2),pos = 3)
+axis(2)
+plot(
+  sapply(epi_sco_comp_bothreps$individual_wilcoxon_tests, function(x){-log(x$p.value)}),
+  ylab = "-logp(wilcox.test Control/HNF4i, upper-tail)", main = "epidermis score", xlab = "",
+  type = "b", pch = 21, col = darken(score_box_cols,.4), bg = score_box_cols, cex = 2,
+  ylim = c(0,30), bty = "n", axes = FALSE
+)
+text(sapply(epi_sco_comp_bothreps$individual_wilcoxon_tests, function(x){-log(x$p.value)}), labels = round(sapply(epi_sco_comp_bothreps$individual_wilcoxon_tests, function(x){-log(x$p.value)}),digits = 2),pos = 3)
+axis(2)
+plot(
+  sapply(pha_sco_comp_bothreps$individual_wilcoxon_tests, function(x){-log(x$p.value)}),
+  ylab = "-logp(wilcox.test Control/HNF4i, upper-tail)", main = "phagocytes score", xlab = "",
+  type = "b", pch = 21, col = darken(score_box_cols,.4), bg = score_box_cols, cex = 2,
+  ylim = c(0,45), bty = "n", axes = FALSE
+)
+text(sapply(pha_sco_comp_bothreps$individual_wilcoxon_tests, function(x){-log(x$p.value)}), labels = round(sapply(pha_sco_comp_bothreps$individual_wilcoxon_tests, function(x){-log(x$p.value)}),digits = 2),pos = 3)
+axis(2)
+plot(
+  sapply(par_sco_comp_bothreps$individual_wilcoxon_tests, function(x){-log(x$p.value)}),
+  ylab = "-logp(wilcox.test Control/HNF4i, upper-tail)", main = "parenchyma score",
+  type = "b", pch = 21, col = darken(score_box_cols,.4), bg = score_box_cols, cex = 2,
+  ylim = c(0,130), bty = "n"
+)
+text(sapply(par_sco_comp_bothreps$individual_wilcoxon_tests, function(x){-log(x$p.value)}), labels = round(sapply(par_sco_comp_bothreps$individual_wilcoxon_tests, function(x){-log(x$p.value)}),digits = 2),pos = c(3,3,4,3,3))
+par(mfrow = c(1,1))
+
+pdf("graphics/individual_wilcoxon_scores_bothreps.pdf", wi = 3.5, he = 9)
+par(mfrow = c(4,1))
+plot(
+  sapply(neo_sco_comp_bothreps$individual_wilcoxon_tests, function(x){-log(x$p.value)}),
+  ylab = "-logp(wilcox.test Control/HNF4i, upper-tail)", main = "neoblasts score", xlab = "",
+  type = "b", pch = 21, col = darken(score_box_cols,.4), bg = score_box_cols, cex = 2,
+  ylim = c(0,30), bty = "n", axes = FALSE
+)
+text(sapply(neo_sco_comp_bothreps$individual_wilcoxon_tests, function(x){-log(x$p.value)}), labels = round(sapply(neo_sco_comp_bothreps$individual_wilcoxon_tests, function(x){-log(x$p.value)}),digits = 2),pos = 3)
+axis(2)
+plot(
+  sapply(epi_sco_comp_bothreps$individual_wilcoxon_tests, function(x){-log(x$p.value)}),
+  ylab = "-logp(wilcox.test Control/HNF4i, upper-tail)", main = "epidermis score", xlab = "",
+  type = "b", pch = 21, col = darken(score_box_cols,.4), bg = score_box_cols, cex = 2,
+  ylim = c(0,30), bty = "n", axes = FALSE
+)
+text(sapply(epi_sco_comp_bothreps$individual_wilcoxon_tests, function(x){-log(x$p.value)}), labels = round(sapply(epi_sco_comp_bothreps$individual_wilcoxon_tests, function(x){-log(x$p.value)}),digits = 2),pos = 3)
+axis(2)
+plot(
+  sapply(pha_sco_comp_bothreps$individual_wilcoxon_tests, function(x){-log(x$p.value)}),
+  ylab = "-logp(wilcox.test Control/HNF4i, upper-tail)", main = "phagocytes score", xlab = "",
+  type = "b", pch = 21, col = darken(score_box_cols,.4), bg = score_box_cols, cex = 2,
+  ylim = c(0,45), bty = "n", axes = FALSE
+)
+text(sapply(pha_sco_comp_bothreps$individual_wilcoxon_tests, function(x){-log(x$p.value)}), labels = round(sapply(pha_sco_comp_bothreps$individual_wilcoxon_tests, function(x){-log(x$p.value)}),digits = 2),pos = 3)
+axis(2)
+plot(
+  sapply(par_sco_comp_bothreps$individual_wilcoxon_tests, function(x){-log(x$p.value)}),
+  ylab = "-logp(wilcox.test Control/HNF4i, upper-tail)", main = "parenchyma score",
+  type = "b", pch = 21, col = darken(score_box_cols,.4), bg = score_box_cols, cex = 2,
+  ylim = c(0,130), bty = "n"
+)
+text(sapply(par_sco_comp_bothreps$individual_wilcoxon_tests, function(x){-log(x$p.value)}), labels = round(sapply(par_sco_comp_bothreps$individual_wilcoxon_tests, function(x){-log(x$p.value)}),digits = 2),pos = c(3,3,4,3,3))
+par(mfrow = c(1,1))
+dev.off()
+```
+
+## Saving things
 
 ```{r}
 smed_hnf_scrna_cluster_replicate_identity <-
@@ -759,4 +1264,10 @@ xlsx::write.xlsx(
   col.names = TRUE, row.names = FALSE, showNA = TRUE
 )
 
+```
+
+## The End!
+
+```{r}
+sessionInfo()
 ```

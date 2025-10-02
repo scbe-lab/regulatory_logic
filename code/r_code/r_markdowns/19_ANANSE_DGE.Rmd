@@ -1,5 +1,5 @@
 ---
-title: 'Smed CisReg project 08: RNA counts for ANANSE'
+title: 'Smed CisReg project 19: RNA counts for ANANSE'
 author: "Alberto Perez-Posada @apposada"
 date: "08/05/2024"
 output: html_document
@@ -49,7 +49,7 @@ scRNA-seq:
 scdata <- readRDS("outputs/rda/seurat_scrna/smed_cisreg_scRNA_consensus_identities.RDS")
 smed_ctypes <- 
   read.delim2(
-    file = "outputs/smed_cisreg_ctypes.tsv",
+    file = "outputs/celltype_annotation/smed_cisreg_ctypes.tsv",
     sep = "\t",
     header = TRUE
     )
@@ -115,6 +115,7 @@ samples$id_combined <- gsub("_ANANSE_", "_", samples$id_combined)
 samples$ctype <- factor(samples$ctype, levels = levels(broad_idents))
 samples$replicate <- factor(samples$replicate, levels = levels(exps))
 ```
+
 ```{r, fig.height = 6, fig.width = 10}
 # Do the thing
 list_contrasts <-
@@ -190,6 +191,6 @@ dev.off()
 ```{r}
 save(
   list_DGE_vs_neo,
-  file = "outputs/rda/ananse_dge_vs_neoblast.rda"
+  file = "outputs/rda/ananse/ananse_dge_vs_neoblast.rda"
 )
 ```

@@ -1,0 +1,784 @@
+--
+title: 'Smed CisReg project 17.C: OCR co-accesibility analysis using WGCNA. Motif Enrichment'
+author: "Alberto Perez-Posada @apposada"
+date: "20/3/2025"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+dir <- '~/storage/projects/smed_cisreg/'
+fcha <- function(){ gsub("-","",Sys.Date()) }
+
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_knit$set(root.dir = dir)
+options(scipen=999)
+options(family="ArialMT")
+Sys.setenv(VROOM_CONNECTION_SIZE=5000072)
+```
+
+## About
+
+In this markdown we will run WGCNA on the pseudobulk of the single-cell ATAC-seq (see previous markdown). We will use the vast majority of OCRs detected in our dataset. An alternative run using OCRs detected as open in differentiated cells (vs neoblasts or vs all the rest) also exists (see Markdown #__).
+
+This markdown is split into three different smaller markdowns to make it easier to navigate. Markdown A is just the WGCNA Run, markdown B is the agreement between accessibility and gene expression, markdown C is about motif enrichment in the ATAC OCRs plus agreement with TF expression.
+
+In markdown C, we will analyse the motif enrichment of the different modules of OCRs and check its agreement with the connectivity of certain TFs to those same modules.
+
+## Load libraries
+
+```{r libraries, message=FALSE, warning=FALSE}
+# Libraries
+library(circlize)
+library(cola)
+library(colorspace)
+library(ComplexHeatmap)
+library(dplyr)
+library(ggplot2)
+library(igraph)
+library(plyr)
+library(rtracklayer)
+library(viridis)
+library(WGCNA)
+```
+
+## Load functions
+
+```{r load_functions}
+source("code/r_code/functions/sourcefolder.R")
+
+sourceFolder(
+  "code/r_code/functions/", #change for definitive path once its final
+  recursive = TRUE
+  )
+```
+
+## Load Data
+
+We load previous data including the pseudobulk of the previous markdown.
+
+```{r}
+load("outputs/rda/scatac_psbulk_counts_clustering_allpeaks_revision.rda")
+
+load("outputs/rda/scatac_celltype_utils.rda")
+
+load("outputs/rda/smed_cisreg_scatac_wgcna_revision.rda")
+
+load("outputs/rda/smed_cisreg_scatac_wgcna_agreement_revision.rda")
+
+mclu_cur <- read.delim2("outputs/functional_annotation/homer_motifs_clustered.tsv")
+```
+
+
+## Motif analysis
+
+We save bed files of the peak regions for every module of OCR co-accessibility:
+
+```{r, eval = FALSE}
+load("outputs/rda/scatac_peaks.rda")
+
+for (i in unique(coacc_id_module$module)){
+  message(i)
+  pks <- smed_peaks$id %in% coacc_id_module$id[coacc_id_module$module == i]
+  bed <- smed_peaks[pks,]
+  filename <- 
+    paste0(
+      "outputs/scatac/seurat_outputs/homer/modules_revision_allpeaks/smed_cisreg_scatac_module_",
+      i,".bed"
+      )
+  write.table(
+    bed, file = filename, sep = "\t", quote = F, row.names = F, col.names = F
+  )
+  rm(bed,pks)
+}
+```
+
+We load the table with the results here:
+
+```{r, fig.width = 8, fig.height = 15}
+load("outputs/rda/motif_clustering.rda")
+
+#consider using -h option in homer as well as -mis 3 instead of -mis 2
+# Load table
+motif_modules_coacc_allpeaks_all_0 <- 
+  read_tsv("outputs/motif_analyses/scatac_wgcna/homer/results_modules_revision_allpeaks/motifs_all.tsv")
+
+motif_modules_coacc_allpeaks_all_0$module <- gsub("s","sO",motif_modules_coacc_allpeaks_all_0$module)
+motif_modules_coacc_allpeaks_all_0$module <- gsub("m","mO",motif_modules_coacc_allpeaks_all_0$module)
+
+motif_modules_coacc_allpeaks_all_0$mclu <-
+  translate_ids(
+    motif_modules_coacc_allpeaks_all_0$`Motif Name`,
+    dict = mclu_cur
+  )
+
+motif_modules_coacc_allpeaks_all_0$mclu[
+  is.na(motif_modules_coacc_allpeaks_all_0$mclu)
+] <- "C_00"
+
+# tidyr wrapper to present a tidy table
+motif_modules_coacc_allpeaks_all <- parse_homer_output_table(
+  tsv_motifs = motif_modules_coacc_allpeaks_all_0,
+  categ_regex1 = "homer_output_promoters_module_",
+  categ_regex2 = "",
+  qval_thresh = 0.1,
+  max_logqval = 10
+)
+colnames(motif_modules_coacc_allpeaks_all)[1] <- "module"
+
+```
+
+Here is the plot, aggregated at the motif archetype level:
+
+```{r}
+# Transform module names column into ordered factor much like other plots from the WGCNA analysis
+motif_modules_coacc_allpeaks_all$module <- 
+  factor(motif_modules_coacc_allpeaks_all$module, levels = levels(coacc_modules_table$newname))
+
+motif_modules_coacc_allpeaks_all$mclu_name <-
+  translate_ids(
+    motif_modules_coacc_allpeaks_all$mclu,
+    dict = mclu_cur[,c(2,3)]
+  )
+
+# group by cluster of motifs and calculate mean qvalue and enrichment %
+motif_modules_coacc_allpeaks_archetype <-
+  aggregate(
+    motif_modules_coacc_allpeaks_all[,c(8,12,16)],
+    by = list(
+      motif = motif_modules_coacc_allpeaks_all$mclu_name,
+      module = motif_modules_coacc_allpeaks_all$module
+      ),
+    FUN = mean
+    )
+
+motif_modules_coacc_allpeaks_archetype$size_pct <- round(motif_modules_coacc_allpeaks_archetype$size_pct)
+
+# Arrange by module name and decreasing values of % peaks with motif found, to facilitate readability
+motif_modules_coacc_allpeaks_archetype <- 
+  motif_modules_coacc_allpeaks_archetype[
+    with(motif_modules_coacc_allpeaks_archetype,order(module,-as.numeric(pct_target_seqs_with_motif))),
+  ]#https://stackoverflow.com/questions/16205232/order-data-frame-by-columns-in-increasing-and-decreasing-order
+
+# Transform motifs names column into ordered factor so that ggplot respects the ordering we did in the step immediately above
+motif_modules_coacc_allpeaks_archetype$motif <- 
+  factor(motif_modules_coacc_allpeaks_archetype$motif, levels = rev(unique(motif_modules_coacc_allpeaks_archetype$motif)))
+```
+
+Here is the plot
+
+```{r, fig.height = 10, fig.width = 6}
+motifs_all_plot <- 
+  ggplot(
+    data = motif_modules_coacc_allpeaks_archetype, 
+    aes(x = module, y = motif,
+        color = `logqval`, size = as.factor(size_pct))) +
+  geom_point() +
+  scale_color_gradient(
+    low = alpha("#401af0",0.6), high = alpha("#be0143",0.6)
+    ) +
+  theme_bw() +
+  xlab("") + ylab("") +
+  ggtitle("Motif enrichment analysis (qvalue <0.1)") +
+  theme(
+    text = element_text(size=10), legend.text = element_text(size=10), 
+    axis.text.x = element_text(angle = 90, vjust = 0.5)
+    ) +
+  scale_size_manual(values = c(1, 2, 3, 4,5), labels = c("1-10", "10-20", "20-50", "50+")) +
+  guides(size=guide_legend(title="% peaks with motif"))
+
+print(motifs_all_plot)
+```
+
+```{r}
+# Supp Panel
+pdf("graphics/motifs_coacc_allpeaks_supp.pdf", height = 20, width = 8)
+print(motifs_all_plot)
+dev.off()
+```
+
+Here we parse and transform the table we made above table to extract two matrices, one for motif qvalues and another for percentage of peaks with enriched motif, for later clustering and showing as a heatmap:
+
+```{r}
+motifs <- motif_modules_coacc_allpeaks_archetype
+
+# Pivot the data to create the matrix of percentages
+matrix_pct <- as.data.frame(
+  motifs[!duplicated(motifs[,c("module","motif")]),c("module","motif","pct_target_seqs_with_motif")] %>%
+    pivot_wider(names_from = motif, values_from = pct_target_seqs_with_motif, values_fill = 0)
+)
+rownames(matrix_pct) <- matrix_pct$module
+matrix_pct <- matrix_pct[, -1]
+matrix_pct <- as.matrix(matrix_pct)
+
+# Pivot the data to create the matrix of qvalues
+matrix_qval <- as.data.frame(
+  motifs[!duplicated(motifs[,c("module","motif")]),c("module","motif","logqval")] %>%
+    pivot_wider(names_from = motif, values_from = logqval, values_fill = 0)
+)
+rownames(matrix_qval) <- matrix_qval$module
+matrix_qval <- 
+  data.frame(
+    sapply(matrix_qval[, -1],as.numeric),
+    row.names = matrix_qval$module
+  )
+matrix_qval <- as.matrix(matrix_qval)
+colnames(matrix_qval) <- colnames(matrix_pct)
+```
+
+Here is how these look:
+
+```{r}
+matrix_pct[1:5,1:5]
+```
+
+```{r}
+matrix_qval[1:5,1:5]
+```
+
+We will bin the values of pct into intervals to facilitate the visualisation:
+
+```{r}
+m <- matrix(
+  as.numeric( as.character(
+    cut(
+      x=matrix_pct,
+      breaks = c(0,0.7,10,20,50,100),
+      labels = c(0,1,1.5,2,2.5), 
+      right = FALSE)
+    )),
+  ncol = ncol(matrix_pct), nrow = nrow(matrix_pct)
+)
+dimnames(m) <- dimnames(matrix_pct)
+
+m[1:5,1:5]
+```
+
+We arrange the rows (modules) of the abridged pct matrix and the qvalue matrix to keep the same order of modules we've been doing all the time
+
+```{r}
+m <- m[match(levels(coacc_modules_table$newname),rownames(m)),]
+matrix_qval <- matrix_qval[match(levels(coacc_modules_table$newname),rownames(matrix_qval)),]
+m <- m[complete.cases(m),]
+matrix_qval <- matrix_qval[complete.cases(matrix_qval),]
+```
+
+We also order the columns (motifs) of these matrices by highest value using a custom function. Refer to the TFs markdown, it's the same one.
+
+```{r}
+where_highest <- data.frame(motif = rownames(t(matrix_qval)),module = apply(t(matrix_qval),1,highest_val))
+where_highest$module <- factor(where_highest$module,levels = levels(coacc_id_module$module))
+where_highest <- where_highest[order(where_highest$module),]
+
+m <- m[,match(where_highest$motif,colnames(m))]
+mq <- matrix_qval[,match(where_highest$motif,colnames(matrix_qval))]
+```
+
+Below the different annotations to create the heatmap:
+
+```{r}
+# Colouring function for logqvalue in heatmap
+col_fun = circlize::colorRamp2(breaks=c(2,4,6,8,10),colors=colorRampPalette(c("#401af0","#be0143"))(5))
+
+wg_mod <-
+  HeatmapAnnotation(
+    stack = 
+      anno_barplot(
+        hm_bp[rownames(hm_bp) %in% rownames(m),],
+        gp = gpar(fill = smed_broadtypes$col, col = NA)
+      ),
+    which = "column",
+    show_legend = FALSE
+  )
+
+```
+
+And the motif heatmap in the style of a dot blot:
+
+```{r, fig.height = 12, fig.width = 8}
+motif_hm <- Heatmap(
+  t(mq), # we flip it to put motifs in rows
+  name = "logqvalue",
+  col = col_fun,
+  rect_gp = gpar(type = "none"), 
+  cell_fun = function(j, i, x, y, width, height, fill) { # the embedded heatmap of dot size: basically either draw dots of certain sizes or do nothing
+    grid.rect(x = x, y = y, width = width, height = height, 
+              gp = gpar(col = "grey", fill = NA))
+    if(t(m)[i,j] == 0){
+      NULL
+    } else{
+      grid.circle(
+        x = x, y = y, r = t(m)[i,j]/3 * min(unit.c(width, height)), 
+        gp = gpar(fill = col_fun(t(mq)[i, j]), col = NA)
+      )
+      }
+    },
+  cluster_rows = TRUE,
+  clustering_method_rows = "ward.D2",
+  cluster_columns = TRUE,
+  clustering_method_columns = "ward.D2",
+  row_names_side = "left",
+  row_names_gp = gpar(cex=0.7),
+  # column_labels = translate_ids(rownames(mq),smed_modules_table[,c(4,9)]),
+  column_names_side = "top",
+  top_annotation = wg_mod
+)
+draw(motif_hm)
+```
+
+```{r}
+pdf("graphics/motif_all_scatac_revision_wgcna_allpeaks_revision.pdf",height = 10, width = 6)
+draw(motif_hm)
+dev.off()
+```
+
+
+
+```{r}
+smed_tfs_broad <-
+  psbulk_broad_norm[
+    rownames(psbulk_broad_norm) %in%
+    rosetta_ext$gene[rosetta_ext$Class != "-"],
+  ]
+```
+
+
+
+```{r, fig.width = 5, fig.height = 10}
+tfs_coaccmodules_cor <-
+  cor(
+    t(smed_tfs_broad),
+    t(ata_mods[rownames(ata_mods) %in% rownames(mq),])
+  )
+
+modules_ha_tfcorhm <- 
+  HeatmapAnnotation(
+    stack = 
+      anno_barplot(
+        hm_bp[rownames(hm_bp) %in% rownames(mq),],
+        gp = gpar(fill = smed_broadtypes$col, col = NA)
+      ),
+    which = "column",
+    show_legend = FALSE
+  )
+
+Heatmap(
+  name = "PCC",
+  tfs_coaccmodules_cor,
+  show_row_names = FALSE,
+  show_column_names = FALSE,
+  top_annotation = modules_ha_tfcorhm,
+  col = colorRamp2(breaks = c(-.8,0,.8), colors = rev(brewer.pal(5,"RdBu"))[c(1,3,5)]),
+  clustering_method_rows = "ward.D2",
+  clustering_method_columns = "ward.D2"
+)
+```
+
+
+```{r, fig.width = 4, fig.height = 10}
+tf_motif_atac_cor <-
+  cor(
+    t(tfs_coaccmodules_cor[,colnames(tfs_coaccmodules_cor) %in% rownames(m)]),
+    matrix_pct*matrix_qval
+  )
+
+Heatmap(
+  name = "PCC",
+  tf_motif_atac_cor,
+  show_row_names = FALSE,
+  show_column_names = FALSE,
+  col = rev(brewer.pal(5,"RdBu")),
+  clustering_method_rows = "ward.D2",
+  clustering_method_columns = "ward.D2"
+)
+```
+
+We will correlate the TFs and motif enrichments related to motifs that we saw as interesting. For more details please check markdown #12 where we did this for TFs and motifs enriched in promoters.
+
+```{r}
+tfs_of_interest <- 
+  c(
+    "h1SMcG0010789","h1SMcG0003132","h1SMcG0009867","h1SMcG0008833",
+    "h1SMcG0013730","h1SMcG0009317","h1SMcG0016896","h1SMcG0019688",
+    "h1SMcG0008388","h1SMcG0016868","h1SMcG0008441","h1SMcG0000267",
+    "h1SMcG0001396"
+    )
+
+motifs_of_interest <- 
+  c(
+    "NFY(CCAAT)", "Homeobox(CUX/HNF6)", "HMG(Sox)"  , "POU_1",
+    "POU_2"     , "Nkx/Bapx"          , "Forkhead_1", "NR(HNF4/RXR)",
+    "GATA"      , "p53/63/73"         , "Pax_1"     , "ETS",
+    "Homeobox(Meis/Tgif)"
+    )
+```
+
+Here the loop.
+
+```{r, warning = FALSE, message = FALSE}
+rm(q,x,y,fk,fm,f,d,d_c)
+
+list_cors_coacc <- list()
+
+for(i in 1:length(tfs_of_interest) ) {
+  tf <- tfs_of_interest[i]
+  mot <- motifs_of_interest[i]
+  
+  tf_mot <- paste(tf,mot, sep = "__")
+  
+  x <- as.numeric(tfs_coaccmodules_cor[tf,])
+  q <- antimode(x, hard_threshold = TRUE, q = 0.75)
+  fk <- x > q
+  
+  y <- as.numeric(matrix_pct[,mot])
+  fm <- y > 0
+  f <- fk | fm
+  
+  
+  d <- data.frame(
+    module = factor(colnames(tfs_coaccmodules_cor)[f], levels = colnames(tfs_coaccmodules_cor)[f]),
+    motif_FC = y[f],
+    motif_FC_rel = relativise(y[f]),
+    kME = x[f],
+    kME_rel = relativise(x[f]),
+    sum = relativise(y[f]) + relativise(x[f]),
+    qval = as.numeric(matrix_qval[f,mot]),
+    col = coacc_modules_table$cell_color[match(colnames(tfs_coaccmodules_cor)[f],coacc_modules_table$newname)],
+    border = darken(coacc_modules_table$cell_color[match(colnames(tfs_coaccmodules_cor)[f],coacc_modules_table$newname)],.4)
+  )
+  
+  d <- d[complete.cases(d),]
+  
+  if(nrow(d) < 3 ){
+    rm(tf_mot,q,fk,fm,f,d,d_c,p,res,y,x)
+    next()
+  }
+  
+  d_c <- cor(d$motif_FC,d$kME)
+  tf_labs <- round(c(min(x[f]),(min(x[f])+max(x[f]))/2,max(x[f])), digits = 2)
+  mot_labs <- round(c(min(y[f]),(min(y[f])+max(y[f]))/2,max(y[f])), digits = 2)
+  
+  p <- d %>%
+    ggplot(
+      aes(
+        x = motif_FC_rel,
+        y = kME_rel,
+        size = qval,
+        colour = factor(module),
+        fill = factor(module)
+      )
+    )+
+    geom_hline(aes(yintercept = 0, colour = "gray"),linetype = 2)+
+    geom_vline(aes(xintercept = 0, colour = "gray"),linetype = 2)+
+    geom_abline(aes(intercept = 0,slope = 1, colour = "gray"),linetype = 2)+
+    geom_point(shape = 21)+
+    scale_fill_manual(guide = "none", values = setNames(d$col,d$module))+
+    scale_color_manual(guide = "none", values = setNames(d$border,d$module))+
+    scale_size(guide = "none")+
+    scale_x_continuous(breaks=c(0,0.5,1),labels = mot_labs)+
+    scale_y_continuous(breaks=c(0,0.5,1),labels = tf_labs)+
+    xlab(paste0(mot," mot. enr."))+
+    ylab(paste0(tf," connectivity"))+
+    theme_classic()+
+    ggrepel::geom_text_repel(mapping = aes(x = motif_FC_rel,y = kME_rel, size = 1.5), label = d$module)+
+    ggtitle(paste0(tf," / ",mot," (cor = ",round(d_c,2),")"))
+  
+  
+  
+  res = list(
+    data = d,
+    corr = d_c,
+    plot = p
+  )
+  
+  list_cors_coacc[[tf_mot]] <- res
+  
+  # message(tf_mot)
+  
+  rm(tf_mot,q,fk,fm,f,d,d_c,p,res,y,x,mot_labs, tf_labs)
+}
+
+```
+
+And here the plot:
+
+```{r, fig.width = 10, fig.height = 15}
+plot_grid(
+  plotlist = lapply(list_cors_coacc,function(x){x$plot}),
+  nrow = 5, ncol = 3
+  )
+```
+
+```{r}
+pdf("graphics/smed_cisreg_wgcna_coacc_motifs_and_tfs_correlation_revision.pdf", wi = 10, he = 15)
+plot_grid(
+  plotlist = lapply(list_cors_coacc,function(x){x$plot}),
+  nrow = 5, ncol = 3
+  )
+dev.off()
+```
+
+## Main panels for main figure
+
+```{r, fig.width = 5, fig.height = 6}
+ata_x <- c(
+  "mO01", 
+  "mO11", 
+  "mO12", 
+  "mO48", 
+  "mO03", 
+  "mO24", 
+  "mO50", 
+  "mO25", 
+  "mO39", 
+  "mO57",
+  "sO06", 
+  "mO08", 
+  "mO43", 
+  "sO02", 
+  "mO55", 
+  "mO33", 
+  "mO29", 
+  "sO05",
+  "sO07",
+  "mO37", 
+  "mO52"
+  )
+
+# subset from these modules in the best order
+
+coacc_wg_module_x <- coacc_wg_module[coacc_wg_module$module %in% ata_x,]
+coacc_wg_module_x$module <- droplevels(coacc_wg_module_x$module)
+coacc_wg_module_x$module <- factor(coacc_wg_module_x$module,levels = ata_x)
+
+nOCRs_per_module <- 20
+
+coacc_wg_module_x_viz <- 
+  coacc_wg_module_x[
+    rownames(coacc_wg_module_x) %in% rownames(coacc_wg_module_viz),
+  ]
+coacc_wg_module_x_viz <- coacc_wg_module_x_viz[order(coacc_wg_module_x_viz$module),]
+
+wg_mod_x <-
+  HeatmapAnnotation(
+    stack = 
+      anno_barplot(
+        hm_bp[match(ata_x,rownames(hm_bp)),][rep(1:length(levels(coacc_wg_module_x$module)),each=nOCRs_per_module),],
+        gp = gpar(col = smed_broadtypes$col),
+        border = FALSE
+      ),
+    npeaks = 
+      anno_barplot(
+        rep(moduleSizes[match(ata_x, names(moduleSizes))],each=nOCRs_per_module),
+        gp = gpar(col = "#444444"),#rep(coacc_modules_table$general_color,each=30),xlim = c(50,1000)),
+        border = FALSE
+      ),
+    gap = unit(10, "points"),
+    which = "row"
+  )
+
+Heatmap(
+  t(apply(coacc_wg_module_x_viz[,-modulecolumn],1,relativise)),
+  name = "accessibility",
+  cluster_rows= F,
+  show_row_names = F,
+  show_row_dend = F,
+  cluster_columns = as.hclust(cooc$tree),
+  show_column_names = FALSE,
+  column_names_side = "bottom",
+  row_split = coacc_wg_module_x_viz$module,
+  row_title_gp = gpar(fontsize = 6),
+  column_names_gp = gpar(fontsize = 6),
+  row_title_side = "right",
+  row_title_rot = 0,
+  column_split = 4,
+  col = c("#fcfdff", "#174fbc"),
+  top_annotation=wg_ha,
+  bottom_annotation = wg_ha,
+  left_annotation = wg_mod_x,
+  heatmap_legend_param = gpar(nrow = 2)
+)
+
+ata_top_x <- ata_top[ata_top$module %in% ata_x,]
+ata_top_x$module <- factor(ata_top_x$module, levels = ata_x)
+ata_top_x <- ata_top_x[order(ata_top_x$module),]
+
+exp_top_x <- exp_top[rownames(exp_top) %in% closest_module$V10[closest_module$V4 %in% rownames(ata_top_x)],]
+exp_top_x$module <- factor(exp_top_x$module, levels = ata_x)
+exp_top_x <- exp_top_x[order(exp_top_x$module),]
+
+h_exp_top_x <-
+  Heatmap(
+    name = "expression",
+    as.matrix(exp_top_x[,1:11]),
+    cluster_rows = FALSE,
+    cluster_columns = as.hclust(cooc$tree),
+    column_split = 4,
+    row_split = exp_top_x$module,
+    row_title_rot = 0,
+    show_row_names = FALSE,
+    show_column_names = FALSE,
+    col = c("#f1f5ff","#b1b8c4","#2c2b46"),
+    row_title_gp = gpar(fontsize = 3),
+    top_annotation = 
+      HeatmapAnnotation(
+        cluster = factor(colnames(psbulk_closest), levels = colnames(psbulk_closest)),
+        col = list(cluster = setNames(broad_cols, colnames(psbulk_closest))), show_legend = FALSE
+      )
+  )
+wg_mod_top_x <-
+  HeatmapAnnotation(
+    stack = 
+      anno_barplot(
+        hm_bp[match(ata_x,rownames(hm_bp)),][unlist(sapply(1:length(ata_x), function(x){rep(x,table(ata_top_x$module)[x])})),],
+        gp = gpar(col = smed_broadtypes$col),
+        border = FALSE
+      ),
+    npeaks = 
+      anno_barplot(
+        moduleSizes[match(ata_x,names(moduleSizes))][unlist(sapply(1:length(ata_x), function(x){rep(x,table(ata_top_x$module)[x])}))],
+        gp = gpar(col = "#444444"),#rep(coacc_modules_table$general_color,each=30),xlim = c(50,1000)),
+        border = FALSE
+      ),
+    gap = unit(10, "points"),
+    which = "row"
+  )
+
+wg_ha@anno_list$cluster@label <- NULL
+
+
+h_atac_wg_top_x <-
+  Heatmap(
+    t(apply(ata_top_x[,-modulecolumn],1,relativise)),
+    name = "accessibility",
+    cluster_rows= F,
+    show_row_names = F,
+    show_row_dend = F,
+    cluster_columns = as.hclust(cooc$tree),
+    show_column_names = FALSE,
+    column_names_side = "bottom",
+    row_split = ata_top_x$module,
+    row_title_gp = gpar(fontsize = 6),
+    column_names_gp = gpar(fontsize = 6),
+    row_title_side = "right",
+    row_title_rot = 0,
+    column_split = 4,
+    col = c("#fcfdff", "#174fbc"),
+    top_annotation=wg_ha,
+    bottom_annotation = wg_ha,
+    left_annotation = wg_mod_top_x,
+    heatmap_legend_param = gpar(nrow = 2)
+  )
+
+
+draw(h_atac_wg_top_x+h_exp_top_x)
+
+pdf("graphics/smed_cisreg_scatac_wg_MAIN.pdf",wi = 5, he = 6)
+draw(h_atac_wg_top_x+h_exp_top_x)
+dev.off()
+```
+
+```{r}
+mm <-
+  c("Pax_1", "HMG(Sox)", "p53/63/73", "Nkx/Bapx", "GATA", "NR(HNF4/RXR)",
+    "Homeobox(Meis/Tgif)", "NFY(CCAAT)", "Forkhead_1", "ETS", "POU_1",
+    "Homeobox(CUX/HNF6)", "POU_2")
+
+rb  = c("#401af0","#be0143")
+col_fun = circlize::colorRamp2(breaks=c(2,4,6,8,10),colors=colorRampPalette(rb)(5))
+
+f_mot_1 <- match(mm, colnames(mq))
+f_mot_2 <- match(mm, colnames(m))
+
+f_mod_1 <- match(ata_x, rownames(mq))
+f_mod_2 <- match(ata_x, rownames(m))
+
+wg_mod_row <-
+  HeatmapAnnotation(
+    stack = 
+      anno_barplot(
+        hm_bp[match(ata_x,rownames(hm_bp)),],
+        gp = gpar(fill = smed_broadtypes$col, col = NA)
+      ),
+    which = "row",
+    show_legend = FALSE
+  )
+
+h_motif_main <- Heatmap(
+  mq[f_mod_1,f_mot_1], # we flip it to put motifs in rows
+  name = "logqvalue",
+  col = col_fun,
+  rect_gp = gpar(type = "none"), 
+  cell_fun = function(j, i, x, y, w, h, fill) { # the embedded heatmap of dot size: basically either draw dots of certain sizes or do nothing
+    grid.rect(x = x, y = y, width = w, height = h, 
+              gp = gpar(col = NA, fill = NA))
+
+    grid.segments(x, y-h*0.5, x, y+h*0.5, gp = gpar(col = "grey"))
+    grid.segments(x-w*0.5, y, x+w*0.5, y, gp = gpar(col = "grey"))
+    
+    if(m[f_mod_2,f_mot_2][i,j] == 0){
+      NULL
+    } else{
+      grid.circle(
+        x = x, y = y, r = m[f_mod_2,f_mot_2][i,j]/4 * min(unit.c(w, h)), 
+        gp = gpar(fill = col_fun(mq[f_mod_1,f_mot_1][i, j]), col = NA)
+      )
+    }
+  },
+  cluster_rows = FALSE,
+  clustering_method_rows = "ward.D2",
+  cluster_columns = FALSE,
+  clustering_method_columns = "average",
+  row_names_side = "left",
+  row_names_gp = gpar(cex=0.7),
+  column_names_side = "top",
+  left_annotation = wg_mod_row,
+  column_names_gp = gpar(fontsize = 6)
+)
+```
+
+```{r, fig.height = 6, fig.width = 5}
+draw(h_motif_main)
+```
+
+```{r}
+pdf("graphics/atac_heatmap_motifs_top_MAIN.pdf", wi = 5, he = 6)
+draw(h_motif_main)
+dev.off()
+```
+
+
+Also throwing in some umaps of the TFs for good measure:
+
+```{r}
+scdata <- 
+  readRDS("outputs/rda/seurat_scrna/smed_cisreg_scRNA_consensus_identities.RDS")
+
+for(x in tfs_of_interest){
+  p <-
+    FeaturePlot(
+      scdata,
+      reduction = "umap",
+      dims = c(1,2),
+      features = x,
+      pt.size = 0.5,
+      order = T,
+      label = FALSE,
+      slot = "counts"
+    )+NoAxes() & 
+    scale_colour_gradientn(colours = colorRampPalette(c("lightgrey","#a100d2","#4c1f89"))(10)) & 
+    theme(legend.position = c(0.01,0.15))
+  
+  png(paste0("graphics/",x,".png"), wi = 256, he = 256)
+  print(p)
+  dev.off()
+  
+  # message(x)
+  
+}
+```
+
+## The End
+
+```{r}
+sessionInfo()
+```

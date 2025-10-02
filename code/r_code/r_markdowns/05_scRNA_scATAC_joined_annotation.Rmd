@@ -6,7 +6,7 @@ output: html_document
 ---
 
 ```{r setup, include=FALSE}
-dir <- '~/projects/smed_cisreg/'
+dir <- '~/storage/projects/smed_cisreg_2025_github_repository/regulatory_logic/'
 fcha <- function(){ gsub("-","",Sys.Date()) }
 
 knitr::opts_chunk$set(echo = TRUE)
@@ -84,7 +84,7 @@ However, given the lower resolution of the scATAC-seq data, we will use this as 
 smed_cisreg_scrna <- readRDS(file = "outputs/rda/seurat_scrna/smed_cisreg_scRNA_consensus_identities.RDS")
 smed_cisreg_scrna_ctypes <- 
   read.delim2(
-    file = "~/projects/smed_cisreg/outputs/smed_cisreg_ctypes.tsv",
+    file = "outputs/celltype_annotation/smed_cisreg_ctypes.tsv",
     sep = "\t",
     header = TRUE
   )
@@ -301,7 +301,7 @@ With this information, we can assign broad identities of the clusters in a simil
 ```{r}
 smed_cisreg_scatac_ctypes <-
   read.delim2(
-    file = "~/projects/smed_cisreg/outputs/smed_cisreg_scatac_broadtypes.tsv",
+    file = "outputs/celltype_annotation/smed_cisreg_scatac_broadtypes.tsv",
     header = TRUE
   )
 
@@ -432,7 +432,7 @@ vio_scatac_umi_peaks <- vio_scatac_umi_peaks + geom_jitter(
   theme(legend.position = "none")
 
 
-pdf("~/projects/smed_cisreg/graphics/supp_1_1_CD.pdf", width = 5, height = 10)
+pdf("graphics/supp_1_1_CD.pdf", width = 5, height = 10)
 cowplot::plot_grid(
   vio_scatac_feat_peaks,vio_scatac_umi_peaks, labels = c("A","B"),ncol = 1
 )
@@ -471,7 +471,7 @@ vio_scatac_umi_genact <- vio_scatac_umi_genact + geom_jitter(
   theme(legend.position = "none")
 
 
-pdf("~/projects/smed_cisreg/graphics/supp_1_1_EF.pdf", width = 5, height = 10)
+pdf("graphics/supp_1_1_EF.pdf", width = 5, height = 10)
 cowplot::plot_grid(
   vio_scatac_feat_genact,vio_scatac_umi_genact, labels = c("A","B"),ncol = 1
 )
@@ -533,7 +533,7 @@ for(i in names(scores)){
     coord_cartesian(ylim=c(0,1))
 }
 
-pdf("~/projects/smed_cisreg/graphics/markers_broad_geneAct_score.pdf",width=9, height = 12)
+pdf("graphics/markers_broad_geneAct_score.pdf",width=9, height = 12)
 cowplot::plot_grid(plotlist = list_plots, labels = LETTERS[1:9], ncol = 3)
 dev.off()
 ```
@@ -541,7 +541,7 @@ dev.off()
 ## Save the data
 
 ```{r}
-saveRDS(smed_cisreg_scrna, file = "~/projects/smed_cisreg/outputs/rda/seurat_scrna/smed_cisreg_scRNA_consensus_identities.RDS")
+saveRDS(smed_cisreg_scrna, file = "outputs/rda/seurat_scrna/smed_cisreg_scRNA_consensus_identities.RDS")
 
 save(
   smed_cisreg_scrna_markers_broad,
@@ -551,12 +551,12 @@ save(
 ```
 
 ```{r}
-saveRDS(smed_cisreg_scatac, file = "~/projects/smed_cisreg/outputs/rda/seurat_scatac/smed_cisreg_scATAC_consensus_identities.RDS")
+saveRDS(smed_cisreg_scatac, file = "outputs/rda/seurat_scatac/smed_cisreg_scATAC_consensus_identities.RDS")
 
 smed_cisreg_scatac_clusters <- 
    setNames(
      Idents(smed_cisreg_scatac),
      colnames(smed_cisreg_scatac)
      )
-saveRDS(smed_cisreg_scatac_clusters, file = "~/projects/smed_cisreg/outputs/rda/seurat_scatac/smed_cisreg_scATAC_clusters.RDS")
+saveRDS(smed_cisreg_scatac_clusters, file = "outputs/rda/seurat_scatac/smed_cisreg_scATAC_clusters.RDS")
 ```

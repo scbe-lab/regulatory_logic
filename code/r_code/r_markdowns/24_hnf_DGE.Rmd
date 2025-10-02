@@ -1,5 +1,5 @@
 ---
-title: "Smed CisReg project: Planarian HNF4 knock-down and Differential Gene Expression; DESeq2"
+title: "Smed CisReg project 20=4: Planarian HNF4 knock-down and Differential Gene Expression; DESeq2"
 author: "Alberto Perez-Posada @apposada"
 date: "08/05/2024"
 output: html_document
@@ -19,7 +19,7 @@ pdf.options(family = "Helvetica")
 
 ## About
 
-This markdown helps in Differential Gene Expression Analysis using DESeq2. This is a much simpler, abridged version of Maria Rosello's original markdown file which was the basis for this entire markdown. I reccommend checking her markdown as well as it delves much deeper into data structure and normalisation, as well as provides a more in-detail explanation and an additional method for DGE analysis (the package `limma`).
+This markdown contains a step-by-step explanation of how we retrieve the gene expression data in the right format using a specific pseudobulk function that takes into account cell type, condition, and replicates. It also contains a step-by-step explanation of how to further tailor this data to run a wrapper of DESeq2. This is in order to analyse the differences in gene expression between control and knock-down animals at the cell type level.
 
 ## Load libraries
 
@@ -41,17 +41,6 @@ library(ggrastr)
 ```
 
 ## Load functions
-
-We will use here a simple wrapper of DESeq and a couple of plotting functions. The way this works is:
-
- - It takes the a count matrix and a samples information matrix to perform DGE analysis.
- - If no DGEs are found, it ends with a message indicating so.
- - If it only finds one DGE, it reports its ID.
- - If it finds more than one DGE, it proceeds to plot a volcano plot and a heatmap of normalised gene expression.
- - In the two latter cases, a list of things is returned: the DESeq2 object which contains the whole DGE analysis, the results table from running DESeq2, and a list of differentially expressed genes.
- - If plots were made, they will also be in the output of the function.
-
-In the future, this function will allow to select what type of p to filter by: p-value or adjusted p-value, as well as a LFC threshold.
 
 ```{r load_functions}
 source("~/projects/smed_cisreg/code/r_code/functions/sourcefolder.R")
@@ -78,9 +67,15 @@ rosetta <- read.delim2(file = "~/../Standard_References/Smed_Rink/20231127_Roset
 
 ### Count matrix
 
-This is the matrix of counts as retrieved from Jordi's python function `get_counts_for_DEseq2` .
+Below we will retrieve a gene x sample matrix to perform differential gene expression analysis.
 
-We will also run this at the broad cell type level
+We will do this, for each gene, by aggregating counts from cells belonging to the same combination of cell type, condition, and replicate.
+
+The resulting matrix will be many columns wide, and it is accompanied by a "sample table" data frame with information for what each column is/means.
+
+This function is adjacent to the pseudobulk function we have discussed in previous markdowns.
+
+We will run this at the broad cell type level.
 
 ```{r psbulk_broad}
 # run pseudobulk broad
@@ -266,8 +261,6 @@ p2
 ## Volcano plots
 
 ```{r, fig.width = 12, fig.height = 2}
-#max_value <- max(unlist(sapply(hnf_DGE_all_broad, function(x){-log(x$res$pvalue)})))
-#y_max <- as.numeric(as.character(cut(floor(max_value+10**magn_order(max_value)), breaks = c(0,10,30,50,75,100), labels = c(10,30,50,75,100))))
 y_max <- 40
 library(gridExtra)
 list_volcanos <- list()
@@ -446,9 +439,7 @@ save(
 
 ### Count matrix
 
-This is the matrix of counts as retrieved from Jordi's python function `get_counts_for_DEseq2` .
-
-We will also run this at the narrow cell type level
+Just like before (see previous sections), below we run a pseudobulk function to aggregate counts from cells belonging to the same cell type, condition, and replicate. This time we do it  at the narrow cell type level.
 
 ```{r psbulk_narrow}
 # run pseudobulk narrow

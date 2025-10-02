@@ -24,17 +24,20 @@ featplot_genes_from_modules <-
       set.seed(random_seed)
       all_i <- rownames(wg_module[wg_module$module == i,])
       
-      if(length(all_i) < num_genes ){
+      if(length(all_i) <= num_genes ){
         g_i <- all_i
       } else {
         g_i <- sample(all_i, num_genes)
       }
       
-      print(i)
+      message(i)
+      # print(g_i)
       
       for(j in g_i){
         
         j_n <- which(g_i == j)
+        
+        # print(j)
         
         filename <-
           paste0(

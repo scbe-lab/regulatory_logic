@@ -1,0 +1,700 @@
+---
+title: "Reanalysis of prep RNAi (Kao et al) and leverage to TF/target networks"
+author: "Alberto Perez-Posada"
+date: "2024-12-11"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+dir <- '/omics-storage/lab-solana/alberto/projects/smed_cisreg/'
+fcha <- function(){ gsub("-","",Sys.Date()) }
+
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_knit$set(root.dir = dir)
+options(scipen=999)
+Sys.setenv(VROOM_CONNECTION_SIZE=5000072)
+pdf.options(family = "Helvetica")
+```
+
+## About
+
+This markdown reanalyses the knock-down RNAi of prep in planaria, from Kao et al., 2013 (PMID: 24238224). For more information please visit: https://pmc.ncbi.nlm.nih.gov/articles/PMC4046745/.
+
+Here we followed the same computational methods as provided in the manuscript, with the exception of the mapping of reads (here done with bowtie1 which supports colorimetric data, but done with a different tool in the original manuscript), and the subsequent quantification (here done with HTSeq).
+
+We will retrieve a set of differentially expressed genes as done in the original manuscript, and bring them over to the networks of the different cell types to test whether they tend to have a higher predicted activity from the prep TF.
+
+Part of this code has been adapted from the original publication.
+
+## Load functions
+
+```{r, message = FALSE, warning = FALSE}
+library(Matrix)
+library(topGO)
+library(readr)
+library(ggplot2)
+library(ggrepel)
+library(ggrastr)
+```
+
+```{r, message = FALSE, warning = FALSE}
+# load functions
+source("/omics-storage/lab-solana/alberto/projects/smed_cisreg/code/r_code/functions/sourcefolder.R")
+sourceFolder(
+  "/omics-storage/lab-solana/alberto/projects/smed_cisreg/code/r_code/functions/", #change for definitive path once its final
+  recursive = TRUE
+)
+```
+
+## Load libraries and functions
+
+We will load the functions as we usually do:
+
+```{r, message = FALSE, warning = FALSE}
+library(countToFPKM)
+library(ComplexHeatmap)
+library(Mfuzz)
+library(dplyr)
+library(RColorBrewer)
+library(colorspace)
+library(viridis)
+
+# load functions
+source("/omics-storage/lab-solana/alberto/projects/smed_cisreg/code/r_code/functions/sourcefolder.R")
+sourceFolder(
+  "/omics-storage/lab-solana/alberto/projects/smed_cisreg/code/r_code/functions/", #change for definitive path once its final
+  recursive = TRUE
+)
+
+```
+
+## Load Data
+
+```{r}
+prep = "h1SMcG0004695"
+load("outputs/rda/smed_counts.rda")
+load("outputs/rda/smed_wgcna.rda")
+```
+
+We load our gene information table:
+
+```{r}
+# Load gene information
+rosetta_ext <- read.delim2(
+  "/omics-storage/lab-solana/standard_references/Smed_Rink/20231127_Rosetta_EXTENDED.tsv",
+  header = TRUE
+)
+
+```
+
+Here we load the sample information (which is basically the SRA metadata table)
+
+```{r}
+sampletable <- 
+  read.delim2(
+    "/omics-storage/lab-solana/alberto/DATA/static/reads/prep_kao/sra_table.tsv",
+    header = TRUE
+  )
+
+sampletable <- sampletable[grep("RNAi", sampletable$Submitter_Id),]
+
+head(sampletable)
+```
+
+We load the samples here.
+First we specify the directory where we have stored the counts.
+Then, with a lapply function, we collate together all these files.
+
+```{r}
+# Load the counts
+samplesdir <- "/home/alberto/storage/projects/smed_cisreg/outputs/rna/prep_kao/bowtie1C_htseq_counts/"
+
+prep_counts_list <- lapply(
+  list.files(path = samplesdir, pattern=".counts",recursive = TRUE),
+  function(x){
+    y = read.delim2(paste0(samplesdir,x),header = FALSE)
+    y = setNames(y$V2,y$V1)
+    return(y)
+  }
+)
+names(prep_counts_list) <- gsub(".*/","",gsub(".counts","",list.files(path = samplesdir, pattern=".counts",recursive = TRUE)))
+
+prep_bowtie2_counts <- do.call(cbind,prep_counts_list)
+
+prep_bowtie2_counts[1:5,1:5]
+```
+
+## Calculation of FPKMs
+
+For calculating the FPKMs, we will load the gene annotation file of the latest version of the genome. We will use the length of the gene features as a normalising factor when quantifying the FPKMs.
+
+```{r}
+# Load the gtf file to extract the gene length information
+smed_gtf <- read.delim2("~/storage/../standard_references/Smed_Rink/Smed_Rink_MASKED.gtf", header = FALSE)
+smed_genes <- smed_gtf[smed_gtf$V3 == "gene",]
+smed_gene_length <- 
+  setNames(
+    abs(smed_genes$V4-smed_genes$V5),
+    gsub("; .*","",sub("ID ","",smed_genes$V9))
+  )
+```
+
+We subset both ways to keep the same genes in the counts table and in the gene length file, and in the same order.
+
+```{r}
+# subset and keep only those genes for which we have the gene lengths
+prep_bowtie2_counts <- prep_bowtie2_counts[rownames(prep_bowtie2_counts) %in% names(smed_gene_length),]
+
+# Reorder counts matrix and gene length info on the same order
+smed_gene_length <- 
+  smed_gene_length[match(rownames(prep_bowtie2_counts),names(smed_gene_length))]
+```
+
+Here we calculate the FPKMs with the `countsToFPKM` package.
+
+```{r}
+# CALCULATE FPKMs
+prep_fpkm <- countToFPKM::fpkm(counts = prep_bowtie2_counts, featureLength = smed_gene_length, meanFragmentLength = rep(70,ncol(prep_bowtie2_counts)))
+
+prep_bowtie2_counts <- 
+  prep_bowtie2_counts[,colnames(prep_fpkm) %in% sampletable$Run]
+
+```
+
+## Assessing genes changing expression levels
+
+This experiment does not have replicates. Because of it, we cannot truly do a Differential Gene Expression Analysis as done with DESeq2, limma, or edgeR.
+
+Following the original paper as explained in methods:
+
+"Transcripts with less than 50 reads were removed from all libraries."
+
+We filter out the <50-count genes:
+
+```{r}
+prep_bowtie2_counts <- 
+  prep_bowtie2_counts[
+    apply(prep_bowtie2_counts,1,function(x){ifelse(any(x>50),TRUE,FALSE)}),
+    ]
+
+# we subset the FPKM table to keep the same genes as those we kept in the counts filtering. And also the columns corresponding with the prep RNAi samples (we re-mapped the whole dataset).
+
+prep_fpkm <-
+  prep_fpkm[
+    rownames(prep_fpkm) %in% rownames(prep_bowtie2_counts),
+    colnames(prep_fpkm) %in% sampletable$Run
+    ]
+```
+
+We then normalise by quantile normalisation, rename columns etc.
+
+```{r}
+prep_qnorm <- quantnorm(prep_fpkm)
+colnames(prep_qnorm) <- c("Smed gfp RNAi tail 24 hours","Smed prep RNAi tail 24 hours")
+prep_qnorm <- as.data.frame(prep_qnorm)
+```
+
+Again, following the methods of the original paper:
+
+"We instead relied on a high filter of 50 reads for lowly expressed transcripts and a fold-change threshold of at least 2 for assessing differential expression."
+
+We first generate a score consisting of a fold change:
+
+```{r}
+prep_qnorm$FC <- 
+  prep_qnorm$`Smed prep RNAi tail 24 hours` /
+  prep_qnorm$`Smed gfp RNAi tail 24 hours`
+prep_qnorm_orig <- prep_qnorm
+```
+
+After which we subset and only keep those with a minimum value of 2 (or a maximum of 0.5, as in, they're halved in expression)
+
+```{r}
+prep_qnorm <- prep_qnorm[prep_qnorm$FC > 2 | prep_qnorm$FC < 0.5 , ]
+
+head(prep_qnorm)
+```
+
+And just the "down-regulated"
+
+```{r}
+prep_down <- rownames(prep_qnorm)[prep_qnorm$FC < 0.5]
+```
+
+A quick plot to show them (I tried to reorder the dots based on a quick residuals from linear model):
+
+```{r, fig.width = 6.5, fig.height = 4}
+prep_lm <-
+  lm(
+    y~x,
+    data = 
+      data.frame(
+        x = log1p(prep_qnorm_orig$`Smed gfp RNAi tail 24 hours`),
+        y = log1p(prep_qnorm_orig$`Smed prep RNAi tail 24 hours`)
+      )
+  )
+
+prep_qnorm_orig <- prep_qnorm_orig[order(abs(prep_lm$residuals)),]
+
+prep_colfun = 
+  colorRamp2(
+    breaks = c(min(prep_qnorm_orig$FC),0.5,2,max(prep_qnorm_orig$FC)),
+    colors = c("tomato",alpha("#e7e7e7",.75),alpha("#e7e7e7",.75),"#7ad796")
+    )
+
+par(mfrow = c(1,2))
+plot(
+  log1p(prep_qnorm_orig$`Smed gfp RNAi tail 24 hours`),
+  log1p(prep_qnorm_orig$`Smed prep RNAi tail 24 hours`),
+  col = darken(prep_colfun(prep_qnorm_orig$FC),.2),
+  bg = prep_colfun(prep_qnorm_orig$FC),
+  pch = 21,
+  xlab = "log1p(RNAi GFP)",
+  ylab = "log1p(RNAi prep)",
+  main = "prep RNAi\nscatter",
+  bty = "n"
+)
+abline(a = 0, b = 1, lty = 2)
+
+plot(
+  sort(log(prep_qnorm_orig$FC)),
+  col = darken(prep_colfun(sort(prep_qnorm_orig$FC)),.2),
+  bg = prep_colfun(sort(prep_qnorm_orig$FC)),
+  pch = 21,
+  xlab = "",
+  ylab = "log(foldchange)",
+  main = "prep RNAi FC",
+  bty = "n"
+)
+abline(h=log(c(0.5,2)), lty = 2)
+par(mfrow = c(1,1))
+```
+
+```{r}
+pdf("graphics/prep_rnai_foldchange.pdf", wi = 6.5, he = 4)
+par(mfrow = c(1,2))
+plot(
+  log1p(prep_qnorm_orig$`Smed gfp RNAi tail 24 hours`),
+  log1p(prep_qnorm_orig$`Smed prep RNAi tail 24 hours`),
+  col = darken(prep_colfun(prep_qnorm_orig$FC),.2),
+  bg = prep_colfun(prep_qnorm_orig$FC),
+  pch = 21,
+  xlab = "log1p(RNAi GFP)",
+  ylab = "log1p(RNAi prep)",
+  main = "prep RNAi\nscatter",
+  bty = "n"
+)
+abline(a = 0, b = 1, lty = 2)
+
+plot(
+  sort(log(prep_qnorm_orig$FC)),
+  col = darken(prep_colfun(sort(prep_qnorm_orig$FC)),.2),
+  bg = prep_colfun(sort(prep_qnorm_orig$FC)),
+  pch = 21,
+  xlab = "",
+  ylab = "log(foldchange)",
+  main = "prep RNAi FC",
+  bty = "n"
+)
+abline(h=log(c(0.5,2)), lty = 2)
+par(mfrow = c(1,1))
+dev.off()
+```
+
+## Downstream exploration
+
+prep is described as a head transcription factor. If so, most of the genes that are less expressed compared to the control (foldchange < 0.5) (i.e. likely downstream targets of prep activity) should appear as normally expressed on the head right?
+
+We will load here the A/P transcriptome dataset that we re-analysed in a previous markdown:
+
+```{r}
+load("outputs/rda/stuckemann_AP_remapped.rda")
+```
+
+We subset this dataset to keep only the genes that appear "differentially expressed" in the prep RNAi.
+
+```{r}
+ap_prep <-
+  ap_filt[
+    rownames(ap_filt) %in% 
+      rownames(prep_qnorm),
+  ]
+```
+
+We create a heatmap
+
+```{r}
+h_ap_prep <-
+  Heatmap(
+    name = "expression",
+    t(scale(t(ap_prep))),
+    col = cividis(10),
+    cluster_columns = FALSE,
+    show_row_names = FALSE,
+    column_names_side = "top",
+    left_annotation = 
+      HeatmapAnnotation(
+        DEG = ifelse(prep_qnorm$FC[match(rownames(ap_prep), rownames(prep_qnorm))]>2,"UP","DOWN"),
+        col = list(DEG = setNames(c("#7ad796","tomato"),c("UP","DOWN"))),
+        which = "row",annotation_name_side = "top"
+      )
+  )
+```
+
+And we plot it:
+
+```{r, fig.width = 3, fig.height = 4}
+draw(h_ap_prep)
+```
+
+The vast majority of the downregulated genes indeed appear to be expressed in the head. That is really reassuring, as these were experiments done five years apart and by different labs (and now all of this mapped to a different, recent version of the genome)
+
+```{r}
+pdf("graphics/20241204_h_prep_ap.pdf", wi = 3, he = 4)
+draw(h_ap_prep)
+dev.off()
+```
+
+## Leveraging gene expression and gene network data
+
+Despite this (and other) knock-down assays were performed using bulk RNA-Seq in whole animals, we can integrate this information with our network data and ask the question of whether such genes have any different predicted interactions.
+
+If that was the case, one premise is that we should be able detect which are the cell types in which we can expect to find such genes. For that we can interrogate our single cell data. Are there any cell types expressing them more often?
+
+We will load here the single cell data.
+
+```{r}
+scdata <- readRDS("outputs/rda/seurat_scrna/smed_cisreg_scRNA_consensus_identities.RDS")
+broadcols <-
+  setNames(
+    c(
+      "#969696", # neoblast
+      "#9ECAE1", # EEP
+      "#56A0CE", # EEP
+      "#2171B5", # epidermis
+      "#228B22", # phagocytes
+      "#869E42", # basal/goblet
+      "#B22222", # muscle
+      "#FEC44F", # neurons
+      "#FF69B4", # parenchyma
+      "#FFB0AB", # protonephridia
+      "#6428C8"  # secretory
+    ),
+    unique(sort(scdata$broadtype_splitbam))[c(6,2,4,3,9,1,5,7,8,10,11)]
+  )
+
+mat = scdata@assays$RNA@data
+all_genes = rownames(mat)
+
+```
+
+We can calculate a "gene score" as done in other markdowns.
+
+```{r}
+score_prep_DGE <-
+  gene_score(
+    x = mat, gene_set = prep_down[prep_down %in% rownames(mat)],
+    gene_pool = all_genes, remove_set_from_pool = TRUE,
+    fraction = 0.05
+  )
+```
+
+We will create a data frame for a later boxplot.
+
+To accomodate for outliers in the distributions, we will clip the data from outliers (bottom 5% and top 5%). 
+
+```{r}
+df_scores <-
+  data.frame(
+    cell = colnames(scdata), # cells
+    cluster = 
+      factor(
+        scdata$broadtype_splitbam,  # cluster of the ANANSE networks
+        levels = unique(sort(scdata$broadtype_splitbam))[c(6,2,4,3,9,1,5,7,8,10,11)] # cluster of the ANANSE networks
+        ),
+    score_prep = 
+      relativise(
+        clip_q(
+          clip_q(score_prep_DGE, q=.05,method = "down"),
+          method = "up")
+        )
+  )
+```
+
+We create the plot here
+
+```{r}
+set.seed(123)
+z <- df_scores %>% group_by(cluster) %>% sample_n(200) %>% .$cell
+df_scores$jit <- ifelse(df_scores$cell %in% z, TRUE, FALSE)
+
+# score plot
+boxpl_score_prep <-
+  df_scores %>%
+  ggplot(mapping = aes(x = cluster, y = score_prep, fill = cluster, color = cluster)) +
+  geom_boxplot(outlier.shape = NA)+
+  geom_jitter(mapping = aes(shape=jit),size = .6, alpha = .25)+
+  theme_classic()+
+  scale_fill_manual(values = broadcols)+
+  scale_color_manual(values = darken(broadcols,0.5))+
+  scale_shape_manual(values = setNames(c(20,NA),c("TRUE","FALSE")))+
+  theme(axis.text.x = element_blank())+
+  ylab(label = "score prep (RNAi) downregulated genes")+
+  coord_cartesian(ylim=c(0,1))+
+  ggtitle("score prep (RNAi) downregulated genes")+NoLegend()
+```
+
+We plot it here:
+
+```{r, fig.height = 3.5, fig.width = 3.5}
+boxpl_score_prep
+```
+
+```{r}
+pdf("graphics/prep_downreg_genescore.pdf", he = 3.5, wi = 3.5)
+print(boxpl_score_prep)
+dev.off()
+```
+
+We confirm indeed the potential targets of prep are mostly expressed in the same cell types where we detected prep as influential (the epidermal lineage, a but of neurons perhaps, and protonephridia).
+
+## prep targets, prep D.E.G.s, and antero-posterior dynamics
+
+Regarding epidermis, we will load here the ANANSE network of epidermis and parse it accordingly:
+
+```{r}
+# epidermis
+epi_nw <- data.table::fread("outputs/ananse/outs/network/epidermis.network", header = TRUE)
+epi_nw <- as.data.frame(epi_nw)
+epi_nw$tf <- sub("—.*","",epi_nw$tf_target)
+epi_nw$tg <- sub(".*—","",epi_nw$tf_target)
+epi_nw <- epi_nw[,c(7,8,2,4,5,6)]
+
+df_epi_prep <- epi_nw[epi_nw$tf == prep, -1]
+
+head(df_epi_prep)
+```
+
+With this data, we will first check whether the top interactors predicted for prep are genes that express in the head.
+
+We will keep the genes with top 5% interaction score from prep and subset the A/P transcriptome data to keep only these same genes. We will arrange them based on their prob. score (descending order) and plot them as a heatmap.
+
+```{r}
+df_epi_prep_top = df_epi_prep[df_epi_prep$prob>quantile(df_epi_prep$prob,.95),c(1,2)]
+df_epi_prep_top = df_epi_prep_top[order(df_epi_prep_top$prob,decreasing = TRUE),]
+
+ap_epi_prep_top <- ap_filt[rownames(ap_filt) %in% df_epi_prep_top$tg,]
+df_epi_prep_top = df_epi_prep_top[df_epi_prep_top$tg %in% rownames(ap_epi_prep_top),]
+
+ap_epi_prep_top <- ap_epi_prep_top[match(df_epi_prep_top$tg,rownames(ap_epi_prep_top)),]
+```
+
+Here the heatmap:
+
+```{r, fig.width = 3, fig.height = 4}
+h_ap_epi_prep_top <-
+  Heatmap(
+    name = "expression",
+    t(scale(t(ap_epi_prep_top))),
+    #col = cividis(10),
+    col = c("#6ac4e7","#0c0c0c","#f3b700"),
+    cluster_rows = FALSE,
+    cluster_columns = FALSE,
+    show_row_names = FALSE,
+    left_annotation = 
+      HeatmapAnnotation(
+        score = df_epi_prep_top$prob,
+        col = list( score = colorRamp2(breaks = c(min(df_epi_prep_top$prob), max(df_epi_prep_top$prob)), colors = c("#bedaf2","#2171B5")) ),
+        which = "row",
+        annotation_name_side = "top"
+      ),
+    column_names_side = "top"
+  )
+
+draw(h_ap_epi_prep_top)
+```
+
+```{r}
+pdf("graphics/prep_rnai_hm_df_epi_top.pdf", he = 4, wi = 3)
+draw(h_ap_epi_prep_top)
+dev.off()
+```
+
+Indeed it looks like they are predominantly head-expressed. That is reassuring.
+
+We will also leverage these predicted scores with the gene expression data, to check if prep downregulated genes have a higher interaction in our networks.
+
+Provided we have single cell data to do the following, we will also incorporate a subfiltering to keep only the D.E.G.s whose higher expression is in the epidermis lineage. That is, prep RNAi D.E.G.s that are normally detected as expressed in the epidermis lineage.
+
+```{r}
+# a vector of which is the cell type with highest expression for each gene (using our pseudobulk data).
+smed_maxc <- setNames(apply(smed_counts_norm_cw, 1, function(x){names(x[x==max(x)])}),rownames(smed_counts_norm_cw))
+maxc_ep <- names(smed_maxc[smed_maxc %in% c("late epidermal progenitors","epidermis")])
+
+prep_down_specific <- prep_down[prep_down %in% maxc_ep]
+```
+
+We incorporate this in a column of the data frame. We will also create a filter of 500 random non-D.E.G.s in order to do a stripchart on top of the boxplot.
+
+```{r}
+df_epi_prep$deg <- factor(ifelse(df_epi_prep$tg %in% prep_down_specific, "down","none"), levels = c("none","down"))
+
+df_epi_prep$rank_prob <- relativise(rank(df_epi_prep$prob, ties.method = "min"))
+df_epi_prep$rank_wb <- relativise(rank(df_epi_prep$weighted_binding, ties.method = "min"))
+
+set.seed(123)
+non_deg_subsample_epi <- sample(df_epi_prep$tg[df_epi_prep$deg == "none"], 500)
+f_epi <- which(df_epi_prep$tg %in% c(non_deg_subsample_epi,df_epi_prep$tg[df_epi_prep$deg != "none"]))
+```
+
+And here the plot:
+
+```{r, fig.width = 5, fig.height = 5}
+par(mfrow = c(1,2))
+
+deg_cols <- setNames(c("#c4c4c4","#2171B5"),c("none","down"))
+deg_outl_col <- deg_cols
+deg_outl_col <- darken(deg_outl_col,.7)
+deg_outl_col[1] <- alpha(deg_outl_col[1],.2)
+deg_outl_col[c(2,3,4)] <- alpha(deg_outl_col[c(2,3,4)],.25)
+
+set.seed(1234)
+boxplot(
+  df_epi_prep$prob~df_epi_prep$deg,
+  col = deg_cols, border = darken(deg_cols,.7),
+  main = "Interaction score\nof prep predicted targets\n(epidermis)",
+  xlab = "DEGs in prep K.D. (Kao et al.)",
+  ylab = "Interaction score",
+  las = 2,
+  cex.main = .6,
+  frame.plot = FALSE,
+  outline = FALSE
+)
+stripchart(
+  df_epi_prep$prob[f_epi]~df_epi_prep$deg[f_epi],
+  col = deg_outl_col,
+  method = "jitter",
+  jitter=0.15,
+  vertical = TRUE,
+  pch = 20,
+  cex=0.7,
+  add = TRUE
+)
+
+set.seed(1234)
+boxplot(
+  df_epi_prep$rank_wb~df_epi_prep$deg,
+  col = deg_cols, border = darken(deg_cols,.7),
+  main = "Interaction score\nof prep predicted targets\n(epidermis)",
+  xlab = "DEGs in prep K.D. (Kao et al.)",
+  ylab = "Interaction score",
+  las = 2,
+  cex.main = .6,
+  frame.plot = FALSE,
+  outline = FALSE
+)
+stripchart(
+  df_epi_prep$rank_wb[f_epi]~df_epi_prep$deg[f_epi],
+  col = deg_outl_col,
+  method = "jitter",
+  jitter=0.15,
+  vertical = TRUE,
+  pch = 20,
+  cex=0.7,
+  add = TRUE
+)
+```
+
+We see that both the prob score and the weighted binding are slightly up (especially the prob, but most importantly the weighted binding).
+
+```{r, echo = FALSE}
+pdf("graphics/prep_rnai_boxplot_ananse_epidermis.pdf", he = 5, wi = 5)
+par(mfrow = c(1,2))
+
+deg_cols <- setNames(c("#c4c4c4","#2171B5"),c("none","down"))
+deg_outl_col <- deg_cols
+deg_outl_col <- darken(deg_outl_col,.7)
+deg_outl_col[1] <- alpha(deg_outl_col[1],.2)
+deg_outl_col[c(2,3,4)] <- alpha(deg_outl_col[c(2,3,4)],.25)
+
+set.seed(1234)
+boxplot(
+  df_epi_prep$prob~df_epi_prep$deg,
+  col = deg_cols, border = darken(deg_cols,.7),
+  main = "Interaction score\nof prep predicted targets\n(epidermis)",
+  xlab = "DEGs in prep K.D. (Kao et al.)",
+  ylab = "Interaction score",
+  las = 2,
+  cex.main = .6,
+  frame.plot = FALSE,
+  outline = FALSE
+)
+stripchart(
+  df_epi_prep$prob[f_epi]~df_epi_prep$deg[f_epi],
+  col = deg_outl_col,
+  method = "jitter",
+  jitter=0.15,
+  vertical = TRUE,
+  pch = 20,
+  cex=0.7,
+  add = TRUE
+)
+
+set.seed(1234)
+boxplot(
+  df_epi_prep$rank_wb~df_epi_prep$deg,
+  col = deg_cols, border = darken(deg_cols,.7),
+  main = "Interaction score\nof prep predicted targets\n(epidermis)",
+  xlab = "DEGs in prep K.D. (Kao et al.)",
+  ylab = "Interaction score",
+  las = 2,
+  cex.main = .6,
+  frame.plot = FALSE,
+  outline = FALSE
+)
+stripchart(
+  df_epi_prep$rank_wb[f_epi]~df_epi_prep$deg[f_epi],
+  col = deg_outl_col,
+  method = "jitter",
+  jitter=0.15,
+  vertical = TRUE,
+  pch = 20,
+  cex=0.7,
+  add = TRUE
+)
+dev.off()
+```
+
+## Saving data
+
+```{r}
+save(
+  prep_bowtie2_counts,
+  prep_fpkm,
+  prep_qnorm_orig,
+  prep_qnorm,
+  ap_prep,
+  df_scores,
+  ap_epi_prep_top,
+  file = "outputs/rda/prep_kaoetal_reanalysis.rda"
+)
+
+save_to_excel(
+  list_of_objects =
+    list(
+      prep_fpkm = prep_fpkm %>% as.data.frame() %>% rownames_to_column(var = "id") %>% dplyr::rename(gfp_rnai = ERR348621, prep_rnai = ERR348622) %>% relocate(id, .before = "gfp_rnai") ,
+      prep_quantnorm_filtered = prep_qnorm %>% as.data.frame() %>% rownames_to_column(var = "id") %>% relocate(id, .before = "Smed gfp RNAi tail 24 hours"),
+      prep_downreg_AP = ap_prep %>% as.data.frame() %>% rownames_to_column(var = "id") %>% relocate(id, .before = "ap1"),
+      prep_toptargets_AP = ap_epi_prep_top %>% as.data.frame() %>% rownames_to_column(var = "id") %>% relocate(id, .before = "ap1")
+      ),
+  output_file_name = paste0("./outputs/",fcha(),"_prep_kaoetal_reanalysis.xlsx")
+)
+
+```
+
+## The End
+
+
+```{r}
+sessionInfo()
+```

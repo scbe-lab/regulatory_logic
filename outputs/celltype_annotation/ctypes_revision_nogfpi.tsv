@@ -1,0 +1,56 @@
+seurat_clusters	ctype	col	broadtype	broadcol
+3	neoblasts	#c8c8c8	neoblasts	#c8c8c8
+7	neoblasts	#c8c8c8	neoblasts	#c8c8c8
+12	neoblasts	#c8c8c8	neoblasts	#c8c8c8
+18	neoblasts	#c8c8c8	neoblasts	#c8c8c8
+25	neoblasts	#c8c8c8	neoblasts	#c8c8c8
+34	neoblasts	#c8c8c8	neoblasts	#c8c8c8
+40	neoblasts	#c8c8c8	neoblasts	#c8c8c8
+41	neoblasts	#c8c8c8	neoblasts	#c8c8c8
+54	neoblasts	#c8c8c8	neoblasts	#c8c8c8
+27	germ cell progenitors	#7d7d7d	germ cell progenitors	#7d7d7d
+11	early epidermal progenitors	#9ecae1	early epidermal progenitors	#9ecae1
+23	early epidermal progenitors	#9ecae1	early epidermal progenitors	#9ecae1
+6	late epidermal progenitors	#56a0ce	late epidermal progenitors	#56a0ce
+2	epidermis	#2171b5	epidermis	#2171b5
+43	epidermis DVb	#1e90ff	epidermis	#2171b5
+32	committed neoblasts	#969696	phagocytes	#228b22
+49	committed neoblasts	#969696	phagocytes	#228b22
+8	phagocyte progenitors 1	#80c480	phagocytes	#228b22
+4	phagocytes	#228b22	phagocytes	#228b22
+19	basal cells	#869e42	basal/goblet	#228b22
+35	goblet cells	#8b8b00	basal/goblet	#228b22
+5	body wall muscle	#b22222	muscle	#b22222
+1	intestinal and DV muscle	#cd5555	muscle	#b22222
+13	muscle pharynx	#821111	muscle	#b22222
+39	muscle pharynx	#821111	muscle	#b22222
+0	chat+ neurons 1	#fec44f	neurons	#fec44f
+53	chat+ neurons 1	#fec44f	neurons	#fec44f
+50	gabrb-3+ neurons	#ff6600	neurons	#fec44f
+36	tph+ neurons	#ff9900	neurons	#fec44f
+44	trpm-2-1+ neurons	#ff8c00	neurons	#fec44f
+52	trpa-1+ neurons	#fee391	neurons	#fec44f
+47	pkd-1+ neurons	#ff5722	neurons	#fec44f
+45	tinc+ neurons	#ff7f00	neurons	#fec44f
+14	celsr-1+ neurons	#ffee00	neurons	#fec44f
+31	para+ neurons	#ffa500	neurons	#fec44f
+22	th+ neurons	#ffde00	neurons	#fec44f
+20	otf+ neurons 1	#997e04	neurons	#fec44f
+24	otf+ neurons 2	#997404	neurons	#fec44f
+9	pgrn+ parenchymal cells 1	#e066ff	parenchymal	#e066ff
+10	pgrn+ parenchymal cells 2	#ff69b4	parenchymal	#e066ff
+29	aqp+ parenchymal cells	#cd96cd	parenchymal	#e066ff
+21	psap+ parenchymal cells	#ff1493	parenchymal	#e066ff
+28	pigment cells	#cd6889	parenchymal	#e066ff
+51	glia	#cd69cd	parenchymal	#e066ff
+16	protonephridia proximal tubule cells	#ffb0ab	protonephridia	#ffb0ab
+26	protonephridia distal tubule cells	#ffbe96	protonephridia	#ffb0ab
+17	pharynx cell type	#4169e1	protonephridia	#ffb0ab
+38	psd+ cells	#bcee68	protonephridia	#ffb0ab
+15	secretory 1	#6428c8	secretory	#6428c8
+30	secretory 2	#9664c8	secretory	#6428c8
+42	secretory 3	#8264c8	secretory	#6428c8
+46	secretory 4	#9632c8	secretory	#6428c8
+37	secretory 5	#7800fa	secretory	#6428c8
+33	secretory 6	#9650fa	secretory	#6428c8
+48	secretory 7	#5014b4	secretory	#6428c8

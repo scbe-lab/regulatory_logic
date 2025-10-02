@@ -1,12 +1,12 @@
 ---
-title: 'Smed CisReg project 05c: scATAC-seq neoblast signature'
+title: 'Smed CisReg project 07: scATAC-seq neoblast signature'
 author: "Alberto Perez-Posada @apposada"
 date: "17/4/2024"
 output: html_document
 ---
 
 ```{r setup, include=FALSE}
-dir <- '~/projects/smed_cisreg/'
+dir <- '~/storage/projects/smed_cisreg_2025_github_repository/'
 fcha <- function(){ gsub("-","",Sys.Date()) }
 
 knitr::opts_chunk$set(echo = TRUE)
@@ -185,7 +185,7 @@ We can also see this if we have a look at the chromatin profile relative to the 
 ```{r}
 # load genes, tss, whatever we need
 
-smed_gtf <- rtracklayer::import("~/projects/smed_cisreg/data/standard_references/schMedS3_h1.gtf")
+smed_gtf <- rtracklayer::import("data/standard_references/schMedS3_h1.gtf")
 my_gr <- split(smed_gtf,smed_gtf$type)
 genes_all <- c(my_gr[["gene"]])
 tss_all <- GenomicRanges::promoters(genes_all, upstream = 0, downstream = 1)
@@ -255,7 +255,7 @@ for(i in levels(smed_cisreg_scatac_markers_top$cluster)){
 
 EH_list_grid <- lapply(EH_list, function(x){grid.grabExpr(draw(x))})
 
-pdf(paste0("projects/smed_cisreg/graphics/chromatin_heatmap_scatac_markers.pdf"), width = 19.8, height = 3)
+pdf(paste0("graphics/chromatin_heatmap_scatac_markers.pdf"), width = 19.8, height = 3)
 grid.arrange(grobs = EH_list_grid, nrow = 1)
 dev.off()
 ```

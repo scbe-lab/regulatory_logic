@@ -1,5 +1,5 @@
 ---
-title: 'Smed Cisreg 07.b: Transcription Factor Analysis'
+title: 'Smed Cisreg 11: Transcription Factor Analysis'
 author: 'Alberto Perez Posada @apposada'
 date: '10/25/2023'
 output:
@@ -12,7 +12,7 @@ editor_options:
 
 ```{r setup, include=FALSE}
 
-dir <- '/mnt/sda/alberto/projects/smed_cisreg/'
+dir <- '/home/alberto/storage/projects/smed_cisreg/'
 fcha <- function(){ gsub("-","",Sys.Date()) }
 
 knitr::opts_chunk$set(echo = TRUE)
@@ -54,7 +54,7 @@ We will also load the TF annotation of S. mediterranea
 
 ```{r load_TF_annotation}
 smed_tfs <- read.delim2(
-  "~/../Standard_References/Smed_Rink/20231127_Rosetta_EXTENDED.tsv",
+  "data/gene_annotation_information/20231127_Rosetta_EXTENDED.tsv",
   header = T)[,c("gene","Class")] #load column of plei ID and TF class
 smed_tfs <- smed_tfs[smed_tfs$Class != "-",]
 colnames(smed_tfs) <- c("id","class")
@@ -65,7 +65,7 @@ To this table we will add all the TFs that were found in the paper of Neiro et a
 
 ```{r}
 smed_tfs_all <- read.delim2(
-  "~/../Standard_References/Smed_Rink/20231127_Rosetta_EXTENDED.tsv",
+  "data/gene_annotation_information/20231127_Rosetta_EXTENDED.tsv",
   header = T)[,c(1,33:48)]
 ```
 
@@ -175,16 +175,6 @@ draw(h1)
 pdf("graphics/tfs_fc_all_supp.pdf", height = 7, width = 3)
 draw(h1)
 dev.off()
-```
-
-```{r echo = FALSE}
-# do we need any of this anymore??
-# draw(smed_cor_hm)
-# draw(smed_expr_zsco_hm)
-# 
-# pdf("graphics/smed_TFs_heatmap.pdf",width = 6, height = 8)
-# draw(smed_expr_zsco_hm)
-# dev.off()
 ```
 
 ## Analysing TFs and module connectivity
@@ -306,8 +296,8 @@ tfs_rowanno_common <-
       labels = translate_ids(names(where_tfs_common),tfs_fig2[,c(1,3)]))
   )
 
-h1_main <- Heatmap(
-  name="FC",
+h1_supp <- Heatmap(
+  name="expression\nz-score",
   tfs_fc_common,
   col=col_smed_tfs_expr,
   show_row_names = FALSE,
@@ -321,8 +311,8 @@ h1_main <- Heatmap(
   row_title=NULL
 )
 
-h2_main <- Heatmap(
-  name="kME",
+h2_supp <- Heatmap(
+  name="connectivity",
   tfs_eigen_common,
   col=col_kme,
   show_row_names = FALSE,
@@ -334,16 +324,86 @@ h2_main <- Heatmap(
   column_names_gp = gpar(fontsize = 7)
 )
 
-draw(h2_main+h1_main)
-# draw(h1_main+h2_main)
+draw(h2_supp+h1_supp)
 ```
 
 
 ```{r}
-pdf("graphics/tfs_expr_and_connectivity_main.pdf", width = 8, height = 10)
+pdf("graphics/tfs_expr_and_connectivity_supp.pdf", width = 8, height = 10)
+draw(h2_supp+h1_supp)
+dev.off()
+```
+
+## TF connectivity (main figure)
+
+Now for the TFs highlighted in the main figure:
+
+```{r}
+tfs_fig2 <- read.delim2("outputs/functional_annotation/tfs_fig2.tsv", header = TRUE)
+head(tfs_fig2)
+```
+
+
+
+```{r, fig.width  = 9, fig.height = 3}
+smed_tfs_fc_main <- smed_tfs_fc[rownames(smed_tfs_fc) %in% tfs_fig2$gene,]
+tf_eigen_main <- tf_eigen[rownames(tf_eigen) %in% tfs_fig2$gene,]
+
+smed_tfs_fc_main <- smed_tfs_fc_main[rownames(smed_tfs_fc_main) %in% rownames(tf_eigen_main),]
+smed_tfs_fc_main <- smed_tfs_fc_main[match(rownames(tf_eigen_main), rownames(smed_tfs_fc_main)),]
+
+modules_ha_main <-
+  HeatmapAnnotation(
+    stacked = anno_barplot(
+      hm_bp[t(apply(tf_eigen_main,2,function(x){any(x>.4)}))[1,],],
+      gp = gpar(fill = smed_ctypes$col[match(colnames(hm_bp),smed_ctypes$ctype)],col=NA),
+      border = FALSE,
+      bar_width = 1
+    ),
+    annotation_name_side='right',
+    gap = unit(5,"pt"),
+    show_legend = FALSE
+  )
+
+h1_main <- Heatmap(
+  name="expression\nz-score",
+  smed_tfs_fc_main,
+  col=col_smed_tfs_expr,
+  show_column_names = FALSE,
+  cluster_rows=FALSE,
+  cluster_columns=F,
+  top_annotation = clu_ha,
+  row_labels = translate_ids(rownames(smed_tfs_fc_main), dict = tfs_fig2[,c(1,3)]),
+  row_names_side = "left"
+)
+
+h2_main <- Heatmap(
+  name="connectivity",
+  tf_eigen_main[,t(apply(tf_eigen_main,2,function(x){any(x>.4)}))[1,]],
+  col=col_kme,
+  show_row_names = TRUE,
+  row_names_side = "left",
+  row_labels = translate_ids(rownames(tf_eigen_main), dict = tfs_fig2[,c(1,3)]),
+  row_names_gp = gpar(fontsize = 6),
+  cluster_rows=TRUE,
+  cluster_columns=F,
+  top_annotation = modules_ha_main,
+  column_names_side = "top",
+  column_names_gp = gpar(fontsize = 7)
+)
+
+draw(h2_main+h1_main)
+```
+
+
+
+```{r}
+pdf("graphics/tfs_expr_and_connectivity_main.pdf", width = 9, height = 3)
 draw(h2_main+h1_main)
 dev.off()
 ```
+
+
 
 ## Saving the data
 
@@ -365,15 +425,9 @@ save(
   modules_ha,
   col_kme,
   hm_bp,
-  # ctypes_rowAnno,
-  # clu_ha,
-  # modules_ha,
-  # wg_ha,
-  #pick color palette for TFs
   # destination
   file = paste0(
-    "./outputs/rda/",
-    "tf_analysis.rda"
+    "./outputs/rda/tf_analysis.rda"
   )
 )
 ```

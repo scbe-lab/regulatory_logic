@@ -1,12 +1,12 @@
 ---
-title: "Genomic Visualisation of the Smed Cis-Reg project"
+title: "Smed CisReg project 05: Genomic Visualisation of the Smed Cis-Reg project"
 author: "Alberto Perez-Posada @apposada"
 date: "8/1/2023"
 output: html_document
 ---
 
 ```{r setup, include=FALSE}
-dir <- '~/projects/smed_cisreg/'
+dir <- '~/storage/projects/smed_cisreg_2025_github_repository/regulatory_logic/'
 fcha <- function(){ gsub("-","",Sys.Date()) }
 
 knitr::opts_chunk$set(echo = TRUE)
@@ -43,17 +43,17 @@ library(signac)
 
 We load tha scRNA:
 ```{r}
-smed_cisreg_scrna <- readRDS("~/projects/smed_cisreg/outputs/rda/seurat_scrna/smed_cisreg_scRNA_consensus_identities.RDS")
+smed_cisreg_scrna <- readRDS("outputs/rda/seurat_scrna/smed_cisreg_scRNA_consensus_identities.RDS")
 ```
 
 And we load the scATAC:
 ```{r}
-smed_cisreg_scatac <- readRDS("~/projects/smed_cisreg/outputs/rda/seurat_scatac/smed_cisreg_scATAC_consensus_identities.RDS")
+smed_cisreg_scatac <- readRDS("outputs/rda/seurat_scatac/smed_cisreg_scATAC_consensus_identities.RDS")
 ```
 
 ```{r}
 rosetta  <- read.delim2(
-  "~/../Standard_References/Smed_Rink/20231127_Rosetta_EXTENDED.tsv",
+  "data/gene_annotation_information/20231127_Rosetta_EXTENDED.tsv",
   header = T)
 ```
 
@@ -135,7 +135,7 @@ for(i in unique(smed_cisreg_scrna_cells_cluster$lib)){
     smed_cisreg_scrna_cells_cluster$lib == i,
     c(1,2)
   ],
-  file = paste0("~/projects/smed_cisreg/outputs/scrna/split_bam/smed_cisreg_scrna_cells_cluster_L",i,".tsv"),
+  file = paste0("outputs/scrna/split_bam/smed_cisreg_scrna_cells_cluster_L",i,".tsv"),
   sep = "\t",
   col.names = FALSE,
   row.names = FALSE,
@@ -205,38 +205,38 @@ dev.off()
 
 ```{r}
 ## Genome Visualisation
-source("~/projects/smed_cisreg/code/r_code/functions/genomeviz.R")
+source("code/r_code/functions/genomeviz.R")
 options(ucscChromosomeNames=FALSE)
 
 # Load the genomic coordinates
 coords_of_interest <- read.delim2(
-  file = "~/projects/smed_cisreg/outputs/genomeviz/genomic_coordinates_of_interest.tsv",
+  file = "outputs/genomeviz/genomic_coordinates_of_interest.tsv",
   header = TRUE
 )
 
 # Create the chromosome object
-bands <- as.data.frame(readRDS("~/projects/smed_cisreg/outputs/genomeviz/cytobands.rds"))
+bands <- as.data.frame(readRDS("outputs/genomeviz/cytobands.rds"))
 itrack <- IdeogramTrack(genome="Smed", name = "",bands=bands)
 
 # Add coordinate ruler
 axisTrack <- GenomeAxisTrack()
 
 # Add genemodels
-smed_genemodels <- readRDS("~/projects/smed_cisreg/outputs/genomeviz/smed_cisreg_genomeviz_genemodels.rds")
+smed_genemodels <- readRDS("outputs/genomeviz/smed_cisreg_genomeviz_genemodels.rds")
 smed_genemodels_longestIso <- smed_genemodels[smed_genemodels$transcript %in% rosetta$longest_isoform]
 gm <- GeneRegionTrack(range=smed_genemodels_longestIso, fill = "darkblue", col = NULL)
 
 # Add peaks scATAC
-smed_peaks_scatac_bed <- import.bed("/mnt/sda/alberto/projects/smed_cisreg/outputs/scatac/NX73/outs/filtered_peak_bc_matrix/peaks.bed")
+smed_peaks_scatac_bed <- import.bed("outputs/scatac/NX73/outs/filtered_peak_bc_matrix/peaks.bed")
 peaks_sc <- AnnotationTrack(range=smed_peaks_scatac_bed, genome="Smed", name = "peaks (scATAC)", fill = "#0c9e7e", col = NULL, background.title = "#0c9e7e")
 
 # Add peaks bulk
-smed_peaks_bed <- import.bed("/mnt/sda/alberto/colabos/virginia_atac/samples_virginia/peakcalling/peaks_virginia.bed")
+smed_peaks_bed <- import.bed("outputs/bulk_atac/peakcalling/peaks_virginia.bed")
 peaks <- AnnotationTrack(range=smed_peaks_bed, genome="Smed", name = "peaks", fill = "#468499", col = NULL, background.title = "#468499")
 
 # Load the track information table
 tracks_table <- read.delim2(
-  file = "~/projects/smed_cisreg/outputs/genomeviz/smed_cisreg_tracks.tsv",
+  file = "outputs/genomeviz/smed_cisreg_tracks.tsv",
   header = TRUE
 )
 
@@ -376,54 +376,54 @@ featplot_atac <- function(x){
 }
 
 ## Early Epid Prog
-png("~/projects/smed_cisreg/graphics/featplot_scatac_early_epid_prog.png", height = 300, width = 300)
+png("graphics/featplot_scatac_early_epid_prog.png", height = 300, width = 300)
 featplot_atac("chr2-h1-195456153-195457025")
 dev.off()
 
 ## Late Epid Prog
-png("~/projects/smed_cisreg/graphics/featplot_scatac_late_epid_prog.png", height = 300, width = 300)
+png("graphics/featplot_scatac_late_epid_prog.png", height = 300, width = 300)
 featplot_atac("chr2-h1-168383475-168384395")
 dev.off()
 
 ## Epid
 # center from beginning of peak to end of gene
-png("~/projects/smed_cisreg/graphics/featplot_scatac_epid.png", height = 300, width = 300)
+png("graphics/featplot_scatac_epid.png", height = 300, width = 300)
 featplot_atac("chr2-h1-261657857-261658707")
 dev.off()
 
 ## Phag
-png("~/projects/smed_cisreg/graphics/featplot_scatac_phag.png", height = 300, width = 300)
+png("graphics/featplot_scatac_phag.png", height = 300, width = 300)
 featplot_atac("chr2-h1-14407194-14408173")
 dev.off()
 
 ## Basal/Goblet
-png("~/projects/smed_cisreg/graphics/featplot_scatac_basal_goblet.png", height = 300, width = 300)
+png("graphics/featplot_scatac_basal_goblet.png", height = 300, width = 300)
 featplot_atac("chr2-h1-125376387-125377130")
 dev.off()
 
 ## Musc
-png("~/projects/smed_cisreg/graphics/featplot_scatac_musc.png", height = 300, width = 300)
+png("graphics/featplot_scatac_musc.png", height = 300, width = 300)
 featplot_atac("chr1-h1-113840624-113841542")
 dev.off()
 
 ## Neur
-png("~/projects/smed_cisreg/graphics/featplot_scatac_neur.png", height = 300, width = 300)
+png("graphics/featplot_scatac_neur.png", height = 300, width = 300)
 featplot_atac("")
 FeaturePlot(smed_cisreg_scatac, features = "chr3-h1-57579192-57580102", cols = c("#DAE7F2","#174fbc"), order = TRUE, pt.size = 1.25)+NoAxes()+NoLegend()
 dev.off()
 
 ## Parenchyma
-png("~/projects/smed_cisreg/graphics/featplot_scatac_parenchyma.png", height = 300, width = 300)
+png("graphics/featplot_scatac_parenchyma.png", height = 300, width = 300)
 featplot_atac("chr1-h1-9570978-9571995")
 dev.off()
 
 ## Protonephridia
-png("~/projects/smed_cisreg/graphics/featplot_scatac_protonephridia.png", height = 300, width = 300)
+png("graphics/featplot_scatac_protonephridia.png", height = 300, width = 300)
 featplot_atac("chr1-h1-142152671-142153674")
 dev.off()
 
 ## Secretory
-png("~/projects/smed_cisreg/graphics/featplot_scatac_secretory.png", height = 300, width = 300)
+png("graphics/featplot_scatac_secretory.png", height = 300, width = 300)
 featplot_atac("chr3-h1-35797953-35798876")
 dev.off()
 ```
@@ -501,20 +501,20 @@ dev.off()
 ```{r}
 # load genes, tss, whatever we need
 
-smed_gtf <- rtracklayer::import("~/projects/smed_cisreg/data/standard_references/schMedS3_h1.gtf")
+smed_gtf <- rtracklayer::import("data/standard_references/schMedS3_h1.gtf")
 my_gr <- split(smed_gtf,smed_gtf$type)
 genes <- c(my_gr[["gene"]])
 tss <- GenomicRanges::promoters(genes, upstream = 0, downstream = 1)
 
 bulk_peaks <-
-  rtracklayer::import("/mnt/sda/alberto/colabos/virginia_atac/samples_virginia/peakcalling/peaks_virginia.bed")
+  rtracklayer::import("outputs/bulk_atac/peakcalling/peaks_virginia.bed")
 
 cellranger_peaks <-
   rtracklayer::import("outputs/scatac/NX73/outs/filtered_peak_bc_matrix/peaks.bed")
 
 # atac object
 bw_all <- rtracklayer::import(con = "outputs/scatac/NX73/outs/possorted_bam.bw")
-bw_bulk <- rtracklayer::import(con = "/mnt/sda/alberto/colabos/virginia_atac/samples_virginia/nucf_trim100bp/atac_vir/atac_vir_nucfree.bw")
+bw_bulk <- rtracklayer::import(con = "outputs/bulk_atac/nucf_trim100bp/atac_vir/atac_vir_nucfree.bw")
 
 # make and normalise to matrix
 mat <- normalizeToMatrix(signal = bw_all, target = bulk_peaks, value_column = "score", extend = 5000, mean_mode = "w0", w = 200, background = 0, smooth = TRUE)

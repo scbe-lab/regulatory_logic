@@ -1,13 +1,12 @@
 ---
-title: "Smed CisReg project: Downstream analysis of HNF4 K.D. Differentially Expressed genes. Targets in Network and Motif Analysis"
+title: "Smed CisReg project 25: Downstream analysis of HNF4 K.D. Differentially Expressed genes. Targets in Network and Motif Analysis"
 author: "Alberto Perez-Posada @apposada"
-date: "08/05/2024"
+date: "10/04/2025"
 output: html_document
 ---
 
 ```{r setup, include=FALSE}
-
-dir <- '/mnt/sda/alberto/projects/smed_cisreg/'
+dir <- '/home/alberto/storage/projects/smed_cisreg/'
 fcha <- function(){ gsub("-","",Sys.Date()) }
 
 knitr::opts_chunk$set(echo = TRUE)
@@ -19,7 +18,7 @@ pdf.options(family = "Helvetica")
 
 ## About
 
-This markdown helps in Differential Gene Expression Analysis using DESeq2. This is a much simpler, abridged version of Maria Rosello's original markdown file which was the basis for this entire markdown. I reccommend checking her markdown as well as it delves much deeper into data structure and normalisation, as well as provides a more in-detail explanation and an additional method for DGE analysis (the package `limma`).
+In this markdown we will perform downstream analyses on the differentially expressed genes shown in the previous markdown.
 
 ## Load libraries
 
@@ -54,7 +53,7 @@ We will use here a simple wrapper of DESeq and a couple of plotting functions. T
 In the future, this function will allow to select what type of p to filter by: p-value or adjusted p-value, as well as a LFC threshold.
 
 ```{r load_functions}
-source("~/projects/smed_cisreg/code/r_code/functions/sourcefolder.R")
+source("~/storage/projects/smed_cisreg/code/r_code/functions/sourcefolder.R")
 sourceFolder("code/r_code/functions/",recursive = FALSE)
 ```
 
@@ -65,15 +64,15 @@ sourceFolder("code/r_code/functions/",recursive = FALSE)
 
 smed_ctypes <- 
   read.delim2(
-    file = "~/projects/smed_cisreg/outputs/smed_cisreg_ctypes.tsv",
+    file = "~/storage/projects/smed_cisreg/outputs/smed_cisreg_ctypes.tsv",
     sep = "\t",
     header = TRUE
     )
 smed_ctypes <- unique(smed_ctypes)
 
-rosetta <- read.delim2(file = "~/../Standard_References/Smed_Rink/20231127_Rosetta.tsv", header = TRUE)
+rosetta <- read.delim2(file = "~/storage/../standard_references/Smed_Rink/20231127_Rosetta.tsv", header = TRUE)
 
-load("~/projects/smed_cisreg/outputs/rda/smed_hnf_analysis.rda")
+load("~/storage/projects/smed_cisreg/outputs/rda/smed_hnf_analysis.rda")
 ```
 
 We load the whole networks of phagocyte and parenchyma too:
@@ -119,6 +118,7 @@ deg_cols <- setNames(c("#c4c4c4","#D675AD","#d39898","#53cc86"),c("none","par","
 We keep only the targets of HNF4:
 
 ```{r}
+hnf4 = "h1SMcG0019688"
 # DF PHA
 df_pha <- pha_nw[pha_nw$tf == hnf4, -1]
 # DF PAR
@@ -222,6 +222,144 @@ stripchart(
 par(mfrow = c(1,1))
 ```
 
+Below a logistic regression model using the scores of differentially expressed genes in phagocytes and ANANSE's score of interaction.
+
+```{r}
+dat_pha <- data.frame(
+  p_deg = ifelse(df_pha$deg[f_pha] %in% c("pha","both"),1,0),
+  score = df_pha$prob[f_pha]
+)
+mod_pha <- glm(p_deg~score,data = dat_pha, family = binomial(link="logit"))
+mod_summ_pha <- summary.glm(mod_pha)
+nullmod_pha <- glm(p_deg~1, data = dat_pha, family=binomial(link="logit"))
+r2_pha <- 1-logLik(mod_pha)/logLik(nullmod_pha)
+```
+
+Here's the plot:
+
+```{r, fig.width = 4, fig.height = 4}
+par(mar = c(4, 4, 1, 1)) # Reduce some of the margins so that the plot fits better
+plot(0,0,xlim = c(.45,1), ylim = c(.9,2.2), type = "n", yaxt = "n", xlab = "score", ylab = "p(DEG)")
+axis(side=2,at = c(1,2), labels = c(0,1))
+set.seed(1234)
+stripchart(
+  dat_pha$score~dat_pha$p_deg,
+  method = "jitter",
+  jitter=0.05,
+  vertical = FALSE,
+  pch = 20,
+  cex=0.8,
+  col = rgb(.1,.1,.1,.2),
+  add = TRUE
+)
+curve(1+predict(mod_pha, data.frame(score=x), type="response"), col = "#53cc86", lwd = 2.5, add=TRUE) 
+text(
+  0.6,
+  1.8,
+  paste0(
+    "p(intercept) < ", formatC(mod_summ_pha$coefficients[1,4], format = "e", digits = 2),
+    "\n p(score) < ", formatC(mod_summ_pha$coefficients[1,4], format = "e", digits = 2),
+    "\n R^2 = ", round(r2_pha,2) 
+  )
+)
+```
+
+
+Same with parenchyma:
+
+```{r}
+dat_par <- data.frame(
+  p_deg = ifelse(df_par$deg[f_par] %in% c("par","both"),1,0),
+  score = df_par$prob[f_par]
+)
+mod_par <- glm(p_deg~score,data = dat_par, family = binomial(link="logit"))
+mod_summ_par <- summary.glm(mod_par)
+nullmod_par <- glm(p_deg~1, data = dat_par, family=binomial(link="logit"))
+r2_par <- 1-logLik(mod_par)/logLik(nullmod_par)
+```
+
+Here's the plot:
+
+```{r, fig.width = 4, fig.height = 4}
+par(mar = c(4, 4, 1, 1)) # Reduce some of the margins so that the plot fits better
+plot(0,0,xlim = c(.45,1), ylim = c(.9,2.2), type = "n", yaxt = "n", xlab = "score", ylab = "p(DEG)")
+axis(side=2,at = c(1,2), labels = c(0,1))
+set.seed(1234)
+stripchart(
+  dat_par$score~dat_par$p_deg,
+  method = "jitter",
+  jitter=0.05,
+  vertical = FALSE,
+  pch = 20,
+  cex=0.8,
+  col = rgb(.1,.1,.1,.2),
+  add = TRUE
+)
+curve(1+predict(mod_par, data.frame(score=x), type="response"), col = "#D675AD", lwd = 2.5, add=TRUE) 
+text(
+  0.6,
+  1.8,
+  paste0(
+    "p(intercept) < ", formatC(mod_summ_par$coefficients[1,4], format = "e", digits = 2),
+    "\n p(score) < ", formatC(mod_summ_par$coefficients[1,4], format = "e", digits = 2),
+    "\n R^2 = ", round(r2_par,2) 
+  )
+)
+```
+
+```{r}
+pdf("graphics/nw_pha_par_logreg.pdf", wi = 8, he = 4)
+par(mfrow = c(1,2))
+par(mar = c(4, 4, 1, 1)) # Reduce some of the margins so that the plot fits better
+plot(0,0,xlim = c(.45,1), ylim = c(.9,2.2), type = "n", yaxt = "n", xlab = "score", ylab = "p(DEG)")
+axis(side=2,at = c(1,2), labels = c(0,1))
+set.seed(1234)
+stripchart(
+  dat_pha$score~dat_pha$p_deg,
+  method = "jitter",
+  jitter=0.05,
+  vertical = FALSE,
+  pch = 20,
+  cex=0.8,
+  col = rgb(.1,.1,.1,.2),
+  add = TRUE
+)
+curve(1+predict(mod_pha, data.frame(score=x), type="response"), col = "#53cc86", lwd = 2.5, add=TRUE) 
+text(
+  0.6,
+  1.8,
+  paste0(
+    "p(intercept) < ", formatC(mod_summ_pha$coefficients[1,4], format = "e", digits = 2),
+    "\n p(score) < ", formatC(mod_summ_pha$coefficients[1,4], format = "e", digits = 2),
+    "\n R^2 = ", round(r2_pha,2) 
+  )
+)
+plot(0,0,xlim = c(.45,1), ylim = c(.9,2.2), type = "n", yaxt = "n", xlab = "score", ylab = "p(DEG)")
+axis(side=2,at = c(1,2), labels = c(0,1))
+set.seed(1234)
+stripchart(
+  dat_par$score~dat_par$p_deg,
+  method = "jitter",
+  jitter=0.05,
+  vertical = FALSE,
+  pch = 20,
+  cex=0.8,
+  col = rgb(.1,.1,.1,.2),
+  add = TRUE
+)
+curve(1+predict(mod_par, data.frame(score=x), type="response"), col = "#D675AD", lwd = 2.5, add=TRUE) 
+text(
+  0.6,
+  1.8,
+  paste0(
+    "p(intercept) < ", formatC(mod_summ_par$coefficients[1,4], format = "e", digits = 2),
+    "\n p(score) < ", formatC(mod_summ_par$coefficients[1,4], format = "e", digits = 2),
+    "\n R^2 = ", round(r2_par,2) 
+  )
+)
+par(mfrow = c(1,1))
+dev.off()
+```
 
 We will merge these two data frames to plot a scatter of these target genes based on their interaction with HNF4 in phagocytes or parenchyma.
 

@@ -1,0 +1,1440 @@
+---
+title: "Smed CisReg project: Differential Gene Expression Analysis of HNF4 double knock-downs"
+author: "Alberto Perez-Posada @apposada"
+date: "10/04/2025"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+
+dir <- '/home/alberto/storage/projects/smed_cisreg/'
+fcha <- function(){ gsub("-","",Sys.Date()) }
+
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_knit$set(root.dir = dir)
+options(scipen=999)
+Sys.setenv(VROOM_CONNECTION_SIZE=5000072)
+pdf.options(family = "Helvetica")
+```
+
+## About
+
+In this markdown we will analyse the RNA-seq libraries coming from the double knock-down experiments of HNF4 and other TFs (FoxF-1, Nkx2-2). For this we will use DESeq2.
+
+## Load libraries
+
+We will need these libraries for the markdown to run.
+
+```{r libraries, message=FALSE, warning=FALSE}
+library(circlize)
+library(colorspace)
+library(ComplexHeatmap)
+library(DESeq2)
+library(dplyr)
+library(ggplot2)
+library(ggrastr)
+library(ggrepel)
+library(ggvenn)
+library(gplots)
+library(gridExtra)
+library(RColorBrewer)
+library(readr)
+library(Seurat)
+library(SeuratObject)
+library(tximport)
+library(UpSetR)
+library(topGO)
+library(openxlsx)
+```
+
+## Load functions
+
+```{r load_functions}
+# load functions
+source("/omics-storage/lab-solana/alberto/projects/smed_cisreg/code/r_code/functions/sourcefolder.R")
+sourceFolder(
+  "/omics-storage/lab-solana/alberto/projects/smed_cisreg/code/r_code/functions/", #change for definitive path once its final
+  recursive = TRUE
+)
+```
+## Load data (Phenotype and survival)
+
+```{r, fig.width = 4, fig.height = 7}
+survival <- read.delim2("data/knockdown_data/double_KD_survival_absolute_values.tsv", header = TRUE, row.names = 1)
+
+survival_pct <- sapply(1:ncol(survival), function(x){survival[[x]]/survival[1,x]})
+
+dimnames(survival_pct) <- dimnames(survival)
+
+surv_df <- melt(survival_pct) %>%
+  dplyr::rename(dpi = Var1, condition = Var2, freq = value) %>%
+  dplyr::mutate(across(
+    'condition',
+    str_replace_all,
+    setNames(c('hnf4+','nkx2-2','foxF-1','(RNAi)'),c('hnf4.','nkx2','foxf1','.RNAi.'))
+    )) %>%
+  mutate(
+    condition = factor(condition, levels = c("gfp(RNAi)","hnf4+gfp(RNAi)","hnf4(RNAi)","hnf4+nkx2-2(RNAi)","hnf4+foxF-1(RNAi)")),
+    dpi = factor(dpi, levels = c("d0","d7","d12","d14","d16","d20","d27"))
+    )
+
+col_conds <- setNames(c("#c6d1d7", "#ffd966", "#FDAE61", "#ABDDA4", "#d5a6bd"), levels(surv_df$condition))
+
+p_surv <-
+  surv_df %>%
+    ggplot(
+      mapping = 
+        aes(
+          x = as.numeric(dpi),
+          y = freq,
+          colour = condition
+        )
+      )+
+    geom_step()+
+    geom_point()+
+    scale_color_manual(values = col_conds)+
+    theme_classic()+
+    scale_x_continuous(
+      breaks = c(1:7),
+      labels= levels(surv_df$dpi)
+      )+
+    xlab("days after injection")+
+    ylab("% survival")+
+    ggtitle("Survival rate of knock-down animals")
+
+
+phenotype_pct <- read.delim2("data/knockdown_data/double_KD_phenotype_percentages.tsv", row.names = 1, header = TRUE)
+
+phenotype_pct <- as.matrix(sapply(phenotype_pct,as.numeric))
+rownames(phenotype_pct) <- c("d0","d5","d6","d7","d12","d14","d16","d20")
+
+phen_df <- melt(phenotype_pct) %>%
+  dplyr::rename(dpi = Var1, condition = Var2, freq = value) %>%
+  dplyr::mutate(across(
+    'condition',
+    str_replace_all,
+    setNames(c('hnf4+','nkx2-2','foxF-1','(RNAi)'),c('hnf4.','nkx2','foxf1','.RNAi.'))
+  )) %>%
+  mutate(
+    condition = factor(condition, levels = c("gfp(RNAi)","hnf4+gfp(RNAi)","hnf4(RNAi)","hnf4+nkx2-2(RNAi)","hnf4+foxF-1(RNAi)")),
+    dpi = factor(dpi, levels = c("d0","d5","d6","d7","d12","d14","d16","d20"))
+  )
+
+p_phen <-
+  phen_df %>%
+  ggplot(
+    mapping = 
+      aes(
+        x = as.numeric(dpi),
+        y = freq,
+        colour = condition
+      )
+  )+
+  geom_step()+
+  geom_point()+
+  scale_color_manual(values = col_conds)+
+  theme_classic()+
+  scale_x_continuous(
+    breaks = c(1:8),
+    labels= levels(phen_df$dpi)
+  )+
+  xlab("days after injection")+
+  ylab("% control phenotype")+
+  ggtitle("Phenotype curves of knock-down animals")
+
+
+pdf("graphics/double_KD_phenotype_curves.pdf",wi = 5.5, he = 3)
+print(p_phen)
+dev.off()
+
+pdf("graphics/double_KD_survival_curves.pdf",wi = 5.5, he = 3)
+print(p_surv)
+dev.off()
+
+lp_surv <- list()
+for(i in levels(surv_df$condition)){
+  d <- surv_df[surv_df$condition == i,]
+  
+  p_i <- 
+    d %>%
+    ggplot(
+      mapping = 
+        aes(
+          x = as.numeric(dpi),
+          y = freq,
+          colour = condition
+        )
+    )+
+    geom_step()+
+    geom_point()+
+    scale_color_manual(values = col_conds)+
+    theme_classic()+
+    theme(legend.position = "none")+
+    scale_x_continuous(
+      breaks = c(1:7),
+      labels= levels(surv_df$dpi)
+    )+
+    ylim(c(0,1))+
+    xlab("days after injection")+
+    ylab("% survival")+
+    ggtitle("Survival rate of knock-down animals")
+  
+  lp_surv[[i]] <- p_i
+}
+plot_grid(plotlist = lp_surv, ncol = 1)
+
+pdf("graphics/survival_separated.pdf", wi = 4, he = 7)
+plot_grid(plotlist = lp_surv, ncol = 1)
+dev.off()
+
+```
+
+
+## Load data (RNA-Seq)
+
+We load the libraries data and the sample information
+
+```{r load DESeq2 data}
+# Load files information
+samplesdir <- "/omics-storage/lab-solana/alberto/projects/smed_cisreg/outputs/rna/hnf4_combined_knockdown_bulk/kallisto_output/raw_kallisto_output/"
+files <- list.files(path = samplesdir,pattern = ".h5",recursive = TRUE)
+
+sampletable_0 <- 
+  read.delim2(
+  "/omics-storage/lab-solana/alberto/projects/smed_cisreg/outputs/rna/hnf4_combined_knockdown_bulk/sampletable.tsv",
+    header = TRUE
+  )
+rownames(sampletable_0) <- sampletable_0$sample
+sampletable_0$condition <- factor(sampletable_0$condition, levels = c("GFPi", "HNF4i+GFPi", "HNF4i", "HNF4i+FOXF1i", "HNF4i+NKX2-2i") )
+sampletable_0$batch <- factor(sampletable_0$replicate, levels = c("R1","R2","R3"))
+sampletable_0 <- sampletable_0[,c("sample","condition","batch")]
+
+head(sampletable_0)
+```
+
+We will load gene/transcript information which will be useful to swap transcript IDs for gene IDs (we have only 1gene-1isoform in our annotation for simplicity); also the GO term database for Smed.
+
+```{r load gene info}
+# Load gene information
+rosetta_ext <- read.delim2(
+  "/omics-storage/lab-solana/standard_references/Smed_Rink/20231127_Rosetta_EXTENDED.tsv",
+  header = TRUE
+)
+
+smed_ctypes <- 
+  read.delim2(
+    file = "~/storage/projects/smed_cisreg/outputs/smed_cisreg_ctypes.tsv",
+    sep = "\t",
+    header = TRUE
+    )
+smed_ctypes <- unique(smed_ctypes)
+
+smed_id2go <- topGO::readMappings("outputs/gene_annotation/smed_GOs.tsv")
+
+```
+
+And we load the counts:
+
+```{r tximport}
+# Load the counts
+txi <- tximport(paste0(samplesdir,files), type = "kallisto", tx2gene = rosetta_ext[,c(2,1)])
+```
+
+## Creation of DESeq2 object
+
+
+```{r dds0}
+# DESeq dds object
+dds_0 <- DESeqDataSetFromTximport(txi,colData = sampletable_0, ~batch + condition)
+sampletable_0 <- sampletable_0[order(sampletable_0$condition, sampletable_0$batch),]
+dds_0 <- dds_0[,match(rownames(sampletable_0),colnames(dds_0))]
+
+smallestGroupSize <- 4
+keep <- rowSums(counts(dds_0) >= 15) >= smallestGroupSize
+dds_0 <- dds_0[keep,]
+```
+
+We will have a look at the structure of the data by plotting a PCA. We will extract the variance-stabilised transformed data to plot the PCA.
+
+```{r vsd0}
+# heatmap, PCA
+vsd_0 <- vst(dds_0, blind=FALSE)
+```
+
+Here the heatmap
+
+```{r pca_0, fig.width = 5, fig.height = 3}
+pcsToUse <- c(1,2)
+pcaData <- plotPCA(vsd_0, ntop = 500, intgroup = c("condition","batch"), pcsToUse = pcsToUse, returnData=TRUE)
+colnames(pcaData)[c(1,2)] <- c("pc.x","pc.y")
+percentVar <- round(100 * attr(pcaData, "percentVar"))
+
+col_conds <- setNames(c("#c6d1d7", "#ffd966", "#FDAE61", "#d5a6bd", "#ABDDA4"), levels(sampletable_0$condition))
+
+p_pca <-
+  ggplot(pcaData, aes(pc.x, pc.y,  shape = batch, fill=condition, color=condition)) +
+  geom_point(size=3) +
+  ggtitle("PCA")+
+  scale_fill_manual( values = col_conds)+
+  scale_color_manual(values = darken(col_conds,.5))+
+  scale_shape_manual(values = setNames(c(21:23), c("R1","R2","R3")))+
+  guides(fill = guide_legend(override.aes = list(shape = 21) ),
+         shape = guide_legend(override.aes = list(fill = "black") ) )+ # thank god https://aosmith.rbind.io/2020/07/09/ggplot2-override-aes/
+  theme_bw()+
+  xlab(paste0("PC2: ",percentVar[1],"% variance")) +
+  ylab(paste0("PC3: ",percentVar[2],"% variance")) + 
+  coord_fixed()
+
+print(p_pca)
+```
+
+We save the panel for the figure
+
+```{r}
+pdf("graphics/hnf_double_KD_pca.pdf", wi = 5, he = 3)
+print(p_pca)
+dev.off()
+```
+
+There are two replicates, from two different conditions. that fall way off the trend of the rest of samples. Based on this PCA we decided to exclude them from the analysis. We also remove any gene with all zeroes.
+
+```{r outliers}
+# REMOVE GFP_HNF_R2 AND HNF_FOXF_R2
+outl <-
+  c("kallisto_out_HNF4_GFP_R2", "kallisto_out_HNF4_FOXF_R2")
+outl_columns <- which(colnames(dds_0) %in% outl)
+
+dds <- dds_0[, -outl_columns]
+dds <- dds[rowSums(counts(dds)) > 0,]
+
+sampletable <- sampletable_0[-outl_columns,]
+
+vsd <-vsd_0[,-outl_columns]
+```
+
+## DESeq2 modelling of the data
+
+Here we run the functions of DESeq2:
+
+```{r DESEQ}
+# DGE ANALYSIS
+dds <- estimateSizeFactors(dds)
+dds <- estimateDispersions(dds)
+dds <- nbinomWaldTest(dds)
+```
+
+## The results and contrasts
+
+We pick threshold values for the p.adjusted and the logFC:
+
+```{r}
+p_thres <- 0.1
+fc_thres <- log(2,2) # CONSIDER CHANGING TO log(1.5,2) == 0.58 == A 1.5X FOLDCHANGE. RIGHT NOW IS 1 == LOG(2,2) == 2X FC
+```
+
+And next we retrieve the results. Initially we compare every condition of interest against GFPi (we will discuss the HNF4i+GFPi later below). First with the single HNF4i knockdown:
+
+```{r resHNF4, fig.width = 3.5, fig.height = 3}
+res_hnf4 <- results(dds, contrast=c("condition","HNF4i","GFPi"))
+res_hnf4 <- res_hnf4[complete.cases(res_hnf4),]
+
+f_signif_hnf4 <- res_hnf4$padj < p_thres & abs(res_hnf4$log2FoldChange) > fc_thres
+
+res_hnf4$deg <- ifelse(f_signif_hnf4, "DEG", "none")
+hnf4_diffreg <- rownames(res_hnf4)[f_signif_hnf4]
+
+p_v_hnf4 <- volcano_plot(res_hnf4, fc_thres = fc_thres, p_thres = p_thres, main = "hnf4 RNAi vs gfp RNAi")
+
+print(p_v_hnf4)
+```
+
+Then with the HNF4i+NKX2-2i double knockdown:
+
+```{r resHNF4NKX, fig.width = 3.5, fig.height = 3}
+res_hnf4nkx <- results(dds, contrast=c("condition","HNF4i+NKX2-2i","GFPi"))
+res_hnf4nkx <- res_hnf4nkx[complete.cases(res_hnf4nkx),]
+
+f_signif_hnf4nkx <- res_hnf4nkx$padj < p_thres & abs(res_hnf4nkx$log2FoldChange) > fc_thres
+
+res_hnf4nkx$deg <- ifelse(f_signif_hnf4nkx, "DEG", "none")
+hnf4nkx_diffreg <- rownames(res_hnf4nkx)[f_signif_hnf4nkx]
+
+p_v_hnf4nkx <- volcano_plot(res_hnf4nkx, fc_thres = fc_thres, p_thres = p_thres, main = "hnf4+nkx2-2 RNAi vs gfp RNAi")
+
+print(p_v_hnf4nkx)
+```
+
+Then with the HNF4i+FOXF-1i double knockdown:
+
+```{r resHNF4FOXF, fig.width = 3.5, fig.height = 3}
+res_hnf4foxf <- results(dds, contrast=c("condition","HNF4i+FOXF1i","GFPi"))
+res_hnf4foxf <- res_hnf4foxf[complete.cases(res_hnf4foxf),]
+
+f_signif_hnf4foxf <- res_hnf4foxf$padj < p_thres & abs(res_hnf4foxf$log2FoldChange) > fc_thres
+res_hnf4foxf$deg <- ifelse(f_signif_hnf4foxf, "DEG", "none")
+
+hnf4foxf_diffreg <- rownames(res_hnf4foxf)[f_signif_hnf4foxf]
+
+p_v_hnf4foxf <- volcano_plot(res_hnf4foxf, fc_thres = fc_thres, p_thres = p_thres, main = "hnf4+foxf-1 RNAi vs gfp RNAi")
+
+print(p_v_hnf4foxf)
+```
+
+We found DGEs for all of them. We find a higher amount of down-regulated genes than up-regulated genes, which is consistent with the pattern of knocking down TFs.
+
+```{r}
+pdf("graphics/hnf_double_KD_volcanoes.pdf", wi = 12, he = 3)
+plot_grid(plotlist = list(p_v_hnf4,p_v_hnf4nkx, p_v_hnf4foxf), ncol = 3)
+dev.off()
+```
+
+## Comparing results
+
+We will check the degree of overlap of these TF knockdowns, by checking the number of differentially expressed genes in common between them.
+
+```{r venn1, fig.width = 4, fig.height = 4}
+venn_1 <- eulerr::venn(
+  list(
+    hnf4 = hnf4_diffreg,
+    hnf4_nkx =  hnf4nkx_diffreg,
+    hnf4_foxf = hnf4foxf_diffreg
+  ),
+  intersections = TRUE, show.plot = FALSE
+  )
+venn_1_genes <- attr(venn_1,"intersections")
+
+par(mar = c(0,0,0,0))
+plot(venn_1)
+par(mar = c(5,4,4,2)+0.1)
+```
+
+That is surprising. HNF4i and the double HNF4i+NKX2-2i have a lot of D.E.G.s in common, but HNF4i and HNF4i+FOXF-1i do not have that many (in fact it has more with the double knockdown of HNF4i+NKX2-2i). We will keep these results in mind for downstream analyses.
+
+```{r}
+pdf("graphics/hnf_double_KD_venn_doubleKDs.pdf", wi = 4, he = 4)
+plot(venn_1)
+dev.off()
+```
+
+Below a PCA just with the differentially expressed genes.
+
+```{r pca_degs, warnings = FALSE, message = FALSE, fig.width = 5, fig.height = 3}
+pcsToUse_degs <- c(1,3)
+pcaData_degs <- 
+  plotPCA(
+    vsd[rownames(vsd) %in% unique(c(hnf4_diffreg,hnf4nkx_diffreg,hnf4foxf_diffreg)),],
+    ntop =length(unique(c(hnf4_diffreg,hnf4nkx_diffreg,hnf4foxf_diffreg))), # all D.E.G.s
+    intgroup = c("condition","batch"), pcsToUse = pcsToUse_degs, returnData=TRUE)
+colnames(pcaData_degs)[c(1,2)] <- c("pc.x","pc.y")
+percentVar_degs <- round(100 * attr(pcaData_degs, "percentVar"))
+
+p_pca_degs <-
+  ggplot(pcaData_degs, aes(pc.x, pc.y,  shape = batch, fill=condition, color=condition)) +
+  geom_point(size=3) +
+  ggtitle("PCA (D.E.G.s only)")+
+  scale_fill_manual( values = col_conds)+
+  scale_color_manual(values = darken(col_conds,.5))+
+  scale_shape_manual(values = setNames(c(21:23), c("R1","R2","R3")))+
+  guides(fill = guide_legend(override.aes = list(shape = 21) ),
+         shape = guide_legend(override.aes = list(fill = "black") ) )+ # thank god https://aosmith.rbind.io/2020/07/09/ggplot2-override-aes/
+  theme_bw()+
+  xlab(paste0("PC",pcsToUse_degs[1],": ",percentVar_degs[1],"% variance")) +
+  ylab(paste0("PC",pcsToUse_degs[2],": ",percentVar_degs[2],"% variance")) + 
+  coord_fixed()
+
+print(p_pca_degs)
+```
+
+PCs 1 and 3 seem to recapitulate a bit better the variance inherent to each condition. Please note how the two outlier replicates were excluded.
+
+```{r}
+pdf("graphics/hnf_double_KD_pca_degs.pdf", wi = 5, he = 3)
+print(p_pca_degs)
+dev.off()
+```
+
+We will extract the variance-stabilised data to visualise the expression of these genes across the different replicates and conditions, by doing a heatmap.
+
+```{r matrix_M}
+M <- 
+  assay(vsd)[rownames(vsd) %in% unique(c(hnf4_diffreg,hnf4nkx_diffreg,hnf4foxf_diffreg)),]
+M[1:5,1:5]
+```
+
+Here we construct and plot the heatmap:
+
+```{r heatmap_allDGE, fig.width = 4.5, fig.height = 6}
+hnf4_comb_hm <- 
+  Heatmap(
+    t(scale(t(log1p(M)))),
+    name = "expression",
+    cluster_rows = T,
+    cluster_columns = F,
+    clustering_method_rows = "ward.D2",
+    clustering_method_columns = "ward.D2",
+    top_annotation =
+      HeatmapAnnotation(
+        condition = sampletable$condition,#[-c(5, 8)],
+        batch = sampletable$batch,#[-c(5, 8)],
+        col =
+          list(
+            condition = col_conds,
+            batch = setNames(colorspace::lighten(c("red","green","blue"),.2), c("R1","R2","R3"))
+          )
+      ),
+    column_split = sampletable$condition,
+    column_title = NULL,
+    # col = c(lighten("purple",.3),"#0c0c0c","#ffe599"),
+    col = colorRamp2(breaks = seq(-2,2,length = 10), colors = rev(brewer.pal(10,"RdBu"))),
+    show_row_names = FALSE,
+    show_column_names = FALSE
+  )
+
+draw(hnf4_comb_hm)
+```
+
+
+
+```{r}
+pdf("graphics/hnf_double_KD_heatmap_all_DEGs.pdf", wi = 4, he = 6)
+draw(hnf4_comb_hm)
+dev.off()
+```
+
+## Comparison with the Differentially expressed genes from the single cell knock-down of HNF4
+
+Here we will keep digging the nature of these D.E.G.s by comparing them with the differential gene expression results from our HNF4i knock-down that was analysed via single cell transcriptomics.
+
+```{r load_data_for_scDGE}
+load("~/storage/projects/smed_cisreg/outputs/rda/smed_hnf_analysis.rda")
+```
+
+Here we generate a venn diagram just to retrieve the intersections:
+
+```{r venn_scDGE}
+comb_dge_vs_sc_dge_venn <-
+  venn(
+    list(
+      `hnf4i+nkxi` =  hnf4nkx_diffreg,
+      `hnf4i(pha)` = hnf_DGE_all_broad$phagocytes$diffgenes,
+      `hnf4i(par)` = hnf_DGE_all_broad$parenchyma$diffgenes,
+      `hnf4i+foxfi` = hnf4foxf_diffreg,
+      `hnf4i` = hnf4_diffreg
+    ),
+    show.plot = FALSE,
+    intersections = TRUE
+    )
+
+comb_dge_vs_sc_dge_genes <-
+  attr(comb_dge_vs_sc_dge_venn,"intersections")
+```
+
+Followed by a simple function that generates a presence/absence matrix (1/0) of different events (D.E.G.s) in different sets (the separate DGE analyses):
+
+```{r upset}
+m_upset <- make_yesno(
+  list(
+    `hnf4i+nkxi` =  hnf4nkx_diffreg,
+    `hnf4i(pha)` = hnf_DGE_all_broad$phagocytes$diffgenes,
+    `hnf4i(par)` = hnf_DGE_all_broad$parenchyma$diffgenes,
+    `hnf4i+foxfi` = hnf4foxf_diffreg,
+    `hnf4i` = hnf4_diffreg
+  )
+)
+head(m_upset)
+```
+
+As there are many intersections, we will plot this with the upsetR package:
+
+```{r, fig.width = 6, fig.height = 6}
+upset(as.data.frame(m_upset), order.by = "freq",sets.bar.color = brewer.pal(5,"Spectral"))
+```
+
+
+
+```{r}
+pdf("graphics/hnf_double_KD_upsetplot.pdf", wi = 6, he = 6)
+upset(as.data.frame(m_upset), order.by = "freq",sets.bar.color = brewer.pal(5,"Spectral"))
+dev.off()
+```
+
+We can see how, in general, the single and double knockdowns of HFN4i and HNF4i+NKX2-2i share a sizable number of D.E.G.s, regardless of sharing them with other sets. And they also share a sizable number of D.E.G.s with the single cell DGE analyses at the phagocytes and parenchymal level.
+
+The double knock-down of HNF4 and FoxF-1 falls off of this trend. It shares genes with other knockdowns, but it does not share a sizable number of DEGs with the single knockdown of HNF4 in parenchymal cells, which is not reassuring of a cooperative role between FOXF and HFN4.
+
+Several things need to be taken into account here.
+
+First and foremost, when performing double knockdowns, there is no guarantee that the penetrance of the phenotype will be as strong as the independent knock-downs from each gene. This is because each RNAi competes against the other (we will discuss this in more detail when analysing the HNF4i+GFPi), as the same limited amount of cellular machinery is available for only so many molecules of dsRNAi that trigger the degradation of mRNA. Conversely, this also means that if two genes cooperate, and their dsRNA are co-injected into the same animal, the effect might be synergic -and despite the apparent competence between each dsRNAi, the penetrance of the phenotype will be as strong or even stronger. We suspect we the first is happening in HNF4i+FOXF1i, and the second is happening in HNF4i+NKX2-2i.
+
+Secondly, one must also consider other factors such as the overall speed at which processes happen in each cell type. This can directly translate into a more pronounced phenotype, or vice versa. For example, phagocytic cells are gut cells, and it is known that they have a very high turnover rate, as they are exposed to foreign material and need to be replenished constantly. This turnover rate means that, the moment there is a perturbation in the overall functioning of how pluripotent cells differentiate into phagocyte cells, this effect will be visible earlier, and its effect will acumulate more over the course of the days of the experiment. This is not necessarily the case in parenchymal cells, which live within the "body wall" of the animal and are not exposed to that much foreign material. This means that, for example, HNF4 might be as important for determining parenchymal cell fate --but our experimental design, plus the slower turnover of parenchymal cells, partially masks this observation.
+
+There might also be a case that other genes are being activated/deactivated across the whole organism, and not the cells of interest. It might be that FoxF (or any of the genes of interest) is not even affecting parenchymal cells. At least this we can try to assess by checking where these genes are being expressed, via our single cell transcriptomics dataset.
+
+## Assessing the localised expression of differentially expressed genes
+
+We will first load our single cell dataset. We also load some colors that will be useful for the plots later:
+
+```{r load_scores_data}
+scdata <- readRDS("outputs/rda/seurat_scrna/smed_cisreg_scRNA_consensus_identities.RDS")
+# gene scores
+broadcols <-
+  setNames(
+    c( "#969696", "#9ECAE1", "#56A0CE", "#2171B5", 
+       "#228B22", "#869E42", "#B22222", "#FEC44F", 
+       "#FF69B4", "#FFB0AB", "#6428C8" ),
+    unique(sort(scdata$broadtype_splitbam))[c(6,2,4,3,9,1,5,7,8,10,11)]
+  )
+mat = scdata@assays$RNA@data
+all_genes = rownames(mat)
+```
+
+Here we create a data frame that will be the basis to deposit all the values of the gene scores
+
+```{r df_scores}
+df_scores <-
+  data.frame(
+    cell = colnames(scdata), # cells
+    cluster =  factor(scdata$broadtype_splitbam, levels = unique(sort(scdata$broadtype_splitbam))[c(6,2,4,3,9,1,5,7,8,10,11)] ),
+    ctype = scdata$ctype
+  )
+```
+
+
+
+```{r list_scores}
+list_scores <-
+  list(
+    score_hnf4i = hnf4_diffreg,
+    score_hnf4inkx22i = hnf4nkx_diffreg,
+    score_hnf4ifoxf1i = hnf4foxf_diffreg,
+    score_hnf4_pha = hnf_DGE_all_broad$phagocytes$diffgenes,
+    score_hnf4_par = hnf_DGE_all_broad$parenchyma$diffgenes
+  )
+
+list_scores <-
+  append(
+    list_scores,
+    comb_dge_vs_sc_dge_genes[
+      sapply(comb_dge_vs_sc_dge_genes,length) %>% sort() %>% rev() %>% sapply(., function(x){x > 10}) %>% which(.) %>% names(.)
+    ])
+
+list_scores_0 <- list_scores
+
+list_scores <- sapply(list_scores, function(x){x[x %in% rownames(mat)]})
+
+list_plot_scores <- list()
+```
+
+
+```{r loop_scores, warning = FALSE}
+for (i in names(list_scores)){
+  message(i)
+  
+  sco <-  gene_score(x = mat, gene_set = list_scores[[i]],gene_pool = all_genes, remove_set_from_pool = TRUE, fraction = 0.05 )
+
+  df_scores[[i]] <- relativise( clip_q( clip_q(sco, q=.05,method = "down"), method = "up") )
+  
+  d <- df_scores
+  d$y <- df_scores[[i]]
+  
+  set.seed(123)
+  z <- d %>% group_by(cluster) %>% sample_n(200) %>% .$cell
+  d$jit <- ifelse(d$cell %in% z, TRUE, FALSE)
+
+# score plot
+  list_plot_scores[[i]] <-
+    d %>%
+    ggplot(mapping = aes(x = cluster, y = y, fill = cluster, color = cluster)) +
+    geom_boxplot(outlier.shape = NA)+
+    geom_jitter(mapping = aes(shape=jit),size = .6, alpha = .25)+
+    theme_classic()+
+    scale_fill_manual(values = broadcols)+
+    scale_color_manual(values = darken(broadcols,0.5))+
+    scale_shape_manual(values = setNames(c(20,NA),c("TRUE","FALSE")))+
+    theme(axis.text.x = element_blank())+
+    ylab(label = i)+
+    coord_cartesian(ylim=c(0,1))+
+    labs(title=i, subtitle=paste0(length(list_scores_0[[i]])," genes"))+NoLegend()
+  
+  rm(sco,d,z)
+  
+  message("Done with ",i)
+  
+}
+```
+
+
+
+```{r plot_scores, fig.width = 12, fig.height = 13, warning = FALSE}
+plot_grid(
+  plotlist = list_plot_scores,
+  ncol = 5,
+  nrow = 4
+)
+```
+
+
+
+```{r, warning = FALSE}
+pdf("graphics/hnf_double_KD_scores_DEGs.pdf",wi = 12, he = 13)
+plot_grid(
+  plotlist = list_plot_scores,  # twice to make it even, will remove one in post-production
+  ncol = 5,
+  nrow = 4
+)
+dev.off()
+```
+
+```{r double_KD_GOs}
+double_KD_GOs <-
+  getGOs(
+    genelist = list_scores[c(2,3,5,6)],
+    gene_universe = rownames(dds),
+    gene2GO = smed_id2go
+  )
+```
+
+```{r, fig.width = 8, fig.height = 8}
+plot_grid(plotlist = double_KD_GOs$GOplot, nrow = 2, ncol = 2)
+
+pdf("graphics/hnf_double_KD_GOs_hnf4inkx22i_hnf4ifoxf1i.pdf", wi = 8, he = 8)
+plot_grid(plotlist = double_KD_GOs$GOplot, nrow = 2, ncol = 2)
+dev.off()
+```
+
+We can see that the DEGs found exclusively in the double knockdown of HNF4i+FoxF-1i, and not in any of the other DGE analyses, have a high score in parenchyma. These genes seem to be enriched in different biological processes, based on gene ontologies. This (especially the first bit) suggests that indeed these are targets of Foxf and not genes that are expressed elsewhere for indirectly-related reasons.
+
+We can then ask ourselves: are they in any way connected to foxf in the parenchyma network?
+
+We load here the network and keep the interactions between foxf and predicted targets.
+
+```{r load_network_parenchyma}
+par_nw <- data.table::fread("outputs/ananse/outs/network/parenchyma.network", header = TRUE)
+par_nw <- as.data.frame(par_nw)
+par_nw$tf <- sub("—.*","",par_nw$tf_target)
+par_nw$tg <- sub(".*—","",par_nw$tf_target)
+par_nw <- par_nw[,c(7,8,2,4,5,6)]
+
+df_par_foxf <- par_nw[par_nw$tf == "h1SMcG0016896", -1] # foxf
+```
+
+Now, in this data frame, we label DEGs apart from the others, and between each other based on whether they were found in common with other DGE analyses, or just in the double knockdown of HNF4i+FoxF-1i.
+
+```{r}
+df_par_foxf$deg_foxfi <- ifelse(df_par_foxf$tg %in% hnf4foxf_diffreg, "hnf4foxf", "none")
+# df_par_foxf$deg_foxfi[df_par_foxf$tg %in% comb_dge_vs_sc_dge_genes$`hnf4i+foxfi`] <- "hnf4foxf-only" # alternatively not even in the phag/par sc
+df_par_foxf$deg_foxfi[df_par_foxf$tg %in% venn_1_genes$hnf4_foxf] <- "hnf4foxf-only"
+df_par_foxf$deg_foxfi <- factor(df_par_foxf$deg_foxfi, levels = c("none","hnf4foxf", "hnf4foxf-only"))
+```
+
+Some colouring filters and random (n=500) subsets of non-DEGs for rasterisation (although they're all in the boxplot when plotted)
+
+```{r DGEs_parenchyma_foxf_network}
+# DEGs par
+set.seed(123)
+non_deg_subsample_par <- sample(df_par_foxf$tg[df_par_foxf$deg_foxfi == "none"], 500)
+f_par <- which(df_par_foxf$tg %in% c(non_deg_subsample_par,df_par_foxf$tg[df_par_foxf$deg != "none"]))
+
+deg_cols_foxfi <- setNames(c("#c6d1d7","#d5a6bd","#D675AD"),c("none","hnf4foxf","hnf4foxf-only"))
+deg_outl_col <- deg_cols_foxfi
+deg_outl_col <- darken(deg_outl_col,.7)
+deg_outl_col[1] <- alpha(deg_outl_col[1],.2)
+deg_outl_col[c(2,3,4)] <- alpha(deg_outl_col[c(2,3,4)],.25)
+```
+
+Here's the plot:
+
+```{r DGEs_parenchyma_foxf_network_plot, fig.width = 4.5, fig.height = 4.5}
+set.seed(1234)
+par(mfrow = c(1,2))
+boxplot(
+  df_par_foxf$prob~df_par_foxf$deg_foxfi,
+  col = deg_cols_foxfi, border = darken(deg_cols_foxfi,.7),
+  main = "Interaction score\nof foxf1 predicted targets\n(double RNAi with hnf4)",
+  xlab = "DEGs in Hnf4+FoxF1 K.D.",
+  ylab = "Interaction score",
+  las = 2, cex.main = .6, frame.plot = FALSE, outline = FALSE )
+stripchart(
+  df_par_foxf$prob[f_par]~df_par_foxf$deg_foxfi[f_par],
+  col = deg_outl_col, method = "jitter", jitter=0.15, vertical = TRUE,
+  pch = 20, cex=0.7, add = TRUE )
+boxplot(
+  df_par_foxf$weighted_binding~df_par_foxf$deg_foxfi,
+  col = deg_cols_foxfi, border = darken(deg_cols_foxfi,.7),
+  main = "Interaction score\nof foxf1 predicted targets\n(double RNAi with hnf4)",
+  xlab = "DEGs in Hnf4+FoxF1 K.D.",
+  ylab = "weighted_binding",
+  las = 2, cex.main = .6, frame.plot = FALSE, outline = FALSE )
+stripchart(
+  df_par_foxf$weighted_binding[f_par]~df_par_foxf$deg_foxfi[f_par],
+  col = deg_outl_col, method = "jitter", jitter=0.15, vertical = TRUE,
+  pch = 20, cex=0.7, add = TRUE )
+par(mfrow = c(1,1))
+```
+
+
+
+```{r}
+pdf("graphics/hnf_double_KD_boxplot_ananse_parenchyma_foxf.pdf", wi = 4.5, he = 4.5)
+set.seed(1234)
+par(mfrow = c(1,2))
+boxplot(
+  df_par_foxf$prob~df_par_foxf$deg_foxfi,
+  col = deg_cols_foxfi, border = darken(deg_cols_foxfi,.7),
+  main = "Interaction score\nof foxf1 predicted targets\n(double RNAi with hnf4)",
+  xlab = "DEGs in Hnf4+FoxF1 K.D.",
+  ylab = "Interaction score",
+  las = 2, cex.main = .6, frame.plot = FALSE, outline = FALSE )
+stripchart(
+  df_par_foxf$prob[f_par]~df_par_foxf$deg_foxfi[f_par],
+  col = deg_outl_col, method = "jitter", jitter=0.15, vertical = TRUE,
+  pch = 20, cex=0.7, add = TRUE )
+boxplot(
+  df_par_foxf$weighted_binding~df_par_foxf$deg_foxfi,
+  col = deg_cols_foxfi, border = darken(deg_cols_foxfi,.7),
+  main = "Interaction score\nof foxf1 predicted targets\n(double RNAi with hnf4)",
+  xlab = "DEGs in Hnf4+FoxF1 K.D.",
+  ylab = "weighted_binding",
+  las = 2, cex.main = .6, frame.plot = FALSE, outline = FALSE )
+stripchart(
+  df_par_foxf$weighted_binding[f_par]~df_par_foxf$deg_foxfi[f_par],
+  col = deg_outl_col, method = "jitter", jitter=0.15, vertical = TRUE,
+  pch = 20, cex=0.7, add = TRUE )
+par(mfrow = c(1,1))
+dev.off()
+```
+
+Indeed we see that the weighted binding and the predicted score is higher than non-DEGs, and even higher for those only in the double knockdown (not anywhere else).
+
+We interpret this result as follows: we can assume them as transcriptional targets of foxf1, in a more or less reliable manner (as always, experimental validation for direct evidence is required.)
+
+In addition, our results do not support a strong cooperation between HNF4 and FoxF-1, and instead do suggest cooperation between HNF4 and NKX. There is a small chance that HNF4 and FoxF might share some target genes, but this does not mean that HNF4 and FoxF are required for the same process that drives differentiation of parenchymal cells.
+
+We're going to check this too with NKX in phagocytes:
+
+```{r}
+pha_nw <- data.table::fread("outputs/ananse/outs/network/phagocytes.network", header = TRUE)
+pha_nw <- as.data.frame(pha_nw)
+pha_nw$tf <- sub("—.*","",pha_nw$tf_target)
+pha_nw$tg <- sub(".*—","",pha_nw$tf_target)
+pha_nw <- pha_nw[,c(7,8,2,4,5,6)]
+
+df_pha_nkx <- pha_nw[pha_nw$tf == "h1SMcG0009317", -1] # nkx
+df_pha_nkx$deg_nkxi <- ifelse(df_pha_nkx$tg %in% hnf4nkx_diffreg, "hnf4nkx", "none")
+df_pha_nkx$deg_nkxi[df_pha_nkx$tg %in% venn_1_genes$hnf4_nkx] <- "hnf4nkx-only"
+df_pha_nkx$deg_nkxi <- factor(df_pha_nkx$deg_nkxi, levels = c("none","hnf4nkx", "hnf4nkx-only"))
+# DEGs pha
+set.seed(123)
+non_deg_subsample_pha <- sample(df_pha_nkx$tg[df_pha_nkx$deg_nkxi == "none"], 500)
+f_pha <- which(df_pha_nkx$tg %in% c(non_deg_subsample_pha,df_pha_nkx$tg[df_pha_nkx$deg != "none"]))
+
+deg_cols_nkxi <- setNames(c("#c6d1d7","#82DB82","#228B22"),c("none","hnf4nkx","hnf4nkx-only"))
+deg_outl_col <- deg_cols_nkxi
+deg_outl_col <- darken(deg_outl_col,.7)
+deg_outl_col[1] <- alpha(deg_outl_col[1],.2)
+deg_outl_col[c(2,3,4)] <- alpha(deg_outl_col[c(2,3,4)],.25)
+
+set.seed(1234)
+par(mfrow = c(1,2))
+boxplot(
+  df_pha_nkx$prob~df_pha_nkx$deg_nkxi,
+  col = deg_cols_nkxi, border = darken(deg_cols_nkxi,.7),
+  main = "Interaction score\nof nkx2-2 predicted targets\n(double RNAi with hnf4)",
+  xlab = "DEGs in Hnf4+nkx2-2 K.D.",
+  ylab = "Interaction score",
+  las = 2, cex.main = .6, frame.plot = FALSE, outline = FALSE )
+stripchart(
+  df_pha_nkx$prob[f_pha]~df_pha_nkx$deg_nkxi[f_pha],
+  col = deg_outl_col, method = "jitter", jitter=0.15, vertical = TRUE,
+  pch = 20, cex=0.7, add = TRUE )
+boxplot(
+  df_pha_nkx$weighted_binding~df_pha_nkx$deg_nkxi,
+  col = deg_cols_nkxi, border = darken(deg_cols_nkxi,.7),
+  main = "Interaction score\nof nkx2-2 predicted targets\n(double RNAi with hnf4)",
+  xlab = "DEGs in Hnf4+nkx2-2 K.D.",
+  ylab = "weighted_binding",
+  las = 2, cex.main = .6, frame.plot = FALSE, outline = FALSE )
+stripchart(
+  df_pha_nkx$weighted_binding[f_pha]~df_pha_nkx$deg_nkxi[f_pha],
+  col = deg_outl_col, method = "jitter", jitter=0.15, vertical = TRUE,
+  pch = 20, cex=0.7, add = TRUE )
+par(mfrow = c(1,1))
+```
+
+```{r}
+pdf("graphics/hnf_double_KD_boxplot_ananse_phagocytes_nkx.pdf",wi = 4.5, he = 4.5)
+set.seed(1234)
+par(mfrow = c(1,2))
+boxplot(
+  df_pha_nkx$prob~df_pha_nkx$deg_nkxi,
+  col = deg_cols_nkxi, border = darken(deg_cols_nkxi,.7),
+  main = "Interaction score\nof nkx2-2 predicted targets\n(double RNAi with hnf4)",
+  xlab = "DEGs in Hnf4+nkx2-2 K.D.",
+  ylab = "Interaction score",
+  las = 2, cex.main = .6, frame.plot = FALSE, outline = FALSE )
+stripchart(
+  df_pha_nkx$prob[f_pha]~df_pha_nkx$deg_nkxi[f_pha],
+  col = deg_outl_col, method = "jitter", jitter=0.15, vertical = TRUE,
+  pch = 20, cex=0.7, add = TRUE )
+boxplot(
+  df_pha_nkx$weighted_binding~df_pha_nkx$deg_nkxi,
+  col = deg_cols_nkxi, border = darken(deg_cols_nkxi,.7),
+  main = "Interaction score\nof nkx2-2 predicted targets\n(double RNAi with hnf4)",
+  xlab = "DEGs in Hnf4+nkx2-2 K.D.",
+  ylab = "weighted_binding",
+  las = 2, cex.main = .6, frame.plot = FALSE, outline = FALSE )
+stripchart(
+  df_pha_nkx$weighted_binding[f_pha]~df_pha_nkx$deg_nkxi[f_pha],
+  col = deg_outl_col, method = "jitter", jitter=0.15, vertical = TRUE,
+  pch = 20, cex=0.7, add = TRUE )
+par(mfrow = c(1,1))
+dev.off()
+```
+
+## Notes on dose-dependent effect by leveraging dsRNAi amounts with control RNAi
+
+Back in our heatmap of expression of the DEGs, we could see how the HNF4i+GFPi behaved a bit in between the GFPi and the HNF4i sample. Some of the DEGs detected in the HNF4i knockdown appeared with lower expression.
+
+Together with our previous comments on phenotype penetrance (see above), we wondered if this meant that treating animals with a mix of HNF4 and GFP dsRNAi was comparable to treat them with a lower concentration, and we also wondered if this could be exploited to better fine-tune the dose (and the intensity of the perturbation).
+
+For this we retrieved the DEGs when comparing the HNF4i+GFPi "double" knockdown (or "half-dose") against the GFPi samples, and explored this data in combination with the DEGs detected when comparing the HNF4i ("full-dose") against the GFPi-treated animals.
+
+```{r res_HNF4GFPi}
+p_thres <- 0.1
+fc_thres <- 1
+
+res_hnf4gfpi <- results(dds, contrast=c("condition","HNF4i+GFPi","GFPi"))
+res_hnf4gfpi <- res_hnf4gfpi[complete.cases(res_hnf4gfpi),]
+f_signif_hnf4gfpi <- res_hnf4gfpi$padj < p_thres & abs(res_hnf4gfpi$log2FoldChange) > fc_thres
+res_hnf4gfpi$deg <- ifelse(f_signif_hnf4gfpi, "DEG", "none")
+hnf4gfpi_diffreg <- rownames(res_hnf4gfpi)[f_signif_hnf4gfpi]
+```
+
+Here the volcano, just for reference
+
+```{r plot_res_HNF4GFPi, fig.width = 5, fig.height = 4}
+p_v_hnf4gfpi <- volcano_plot(res_hnf4gfpi, fc_thres = fc_thres, p_thres = p_thres, main = "hnf4+gfp RNAi vs gfp RNAi")
+
+print(p_v_hnf4gfpi)
+
+pdf("graphics/hnf_double_KD_volcano_hnf4igfpi.pdf", he = 3.5, wi = 3)
+print(p_v_hnf4gfpi)
+dev.off()
+```
+
+And just for simplicity we retrieve the HNF4i again (no changes from before, just to refresh)
+
+```{r, fig.width = 5, fig.height = 4}
+res_hnf4 <- results(dds, contrast=c("condition","HNF4i","GFPi"))
+res_hnf4 <- res_hnf4[complete.cases(res_hnf4),]
+f_signif_hnf4 <- res_hnf4$padj < p_thres & abs(res_hnf4$log2FoldChange) > fc_thres
+res_hnf4$deg <- ifelse(f_signif_hnf4, "DEG", "none")
+hnf4_diffreg <- rownames(res_hnf4)[f_signif_hnf4]
+
+volcano_plot(res_hnf4, fc_thres = fc_thres, p_thres = p_thres, main = "hnf4 RNAi vs gfp RNAi")
+```
+
+A venn diagram to see how many are shared (or not):
+
+```{r venn_HNF4GFPi, fig.width = 4, fig.height = 4}
+venn_gfpi_hnf4i <- 
+  venn(
+  list(
+    hnf4gfpi_diffreg = hnf4gfpi_diffreg,
+    hnf4_diffreg = hnf4_diffreg
+  ), show.plot = FALSE, intersections = TRUE
+  )
+
+par(mar = c(0,0,0,0))
+plot(venn_gfpi_hnf4i)
+par(mar = c(5,4,4,2)+0.1)
+```
+
+Nice, as expected a number of them are in common.
+
+```{r}
+pdf("graphics/hnf_double_KD_venn_hnf4igfpi.pdf", wi = 4, he = 4)
+plot(venn_gfpi_hnf4i)
+dev.off()
+```
+
+We're going to retrieve them from the vsd matrix to better visualise them. We're going to keep the double-knockdown samples out of this, understandably.
+
+```{r M_HNF4GFPi}
+M_ <- 
+  assay(vsd)[
+    rownames(vsd) %in% unique(c(hnf4_diffreg,hnf4gfpi_diffreg)),
+    -grep("NKX|FOX",colnames(M)) # keep the double-knockdown columns out of this.
+    ]
+```
+
+Here's the heatmap:
+
+```{r heatmap_HNF4GFPi_0, fig.width = 5, fig.height = 5}
+hnf4_hnf4gfpi_hm <- 
+  Heatmap(
+    t(scale(t(log1p(M_)))),
+    name = "expression",
+    cluster_rows = T,
+    cluster_columns = F,
+    clustering_method_rows = "complete",
+    clustering_method_columns = "complete",
+    top_annotation =
+      HeatmapAnnotation(
+        condition = sampletable$condition[-grep("NKX|FOX",colnames(M))],
+        batch = sampletable$batch[-grep("NKX|FOX",colnames(M))],
+        col =
+          list(
+            condition = col_conds,
+            batch = setNames(colorspace::lighten(c("red","green","blue"),.2), c("R1","R2","R3"))
+          )
+      ),
+    column_split = sampletable$condition[-grep("NKX|FOX",colnames(M))],
+    column_title = NULL,
+    # col = c(lighten("purple",.3),"#0c0c0c","#ffe599"),
+    col = colorRamp2(breaks = seq(-2,2,length = 10), colors = rev(brewer.pal(10,"RdBu"))),
+    show_row_names = FALSE,
+    show_column_names = FALSE
+  )
+
+draw(hnf4_hnf4gfpi_hm)
+```
+
+
+
+```{r}
+pdf("graphics/hnf_double_KD_heatmap_hnf4i_hnf4igfpi.pdf", wi = 5, he = 5)
+draw(hnf4_hnf4gfpi_hm)
+dev.off()
+```
+
+Here are the gene ontologies for the two different subsets:
+
+```{r gos_HNF4GFPi}
+hnf_gfpi_gos <-
+  getGOs(
+    genelist = attr(venn_gfpi_hnf4i,"intersections"),
+    gene_universe = rownames(dds),gene2GO = smed_id2go
+  )
+```
+
+
+
+```{r}
+plot_grid(plotlist = hnf_gfpi_gos$GOplot[c(2,3,1)], ncol = 3)
+
+pdf("graphics/hnf_double_KD_GOs_hnf4i_hnf4igfpi.pdf", wi = 15, he = 5)
+plot_grid(plotlist = hnf_gfpi_gos$GOplot[c(2,3,1)], ncol = 3)
+dev.off()
+```
+
+If we look at the GFPi+HNF4i samples, we can see some genes are more lowly expressed than others. Can we detect patterns of gene expression that might recapitulate a dynamic response to the dose of HNF4 dsRNAi? i.e. are there genes that respond more sensitively to HNF4 perturbation than others?
+
+For that, we can average expression between replicates and perform partitioning into clusters.
+
+We do this with a function called merge_reps, which takes the matrix of interest, a vector of identities, and a function such as mean or sum. This is passed to dist and hclust, making a hierarchical clustering. Upon visual inspection, we split it and get the gene/cluster table.
+
+Here's the heatmap. Note clusters 4, 2+3, and 1, how they showcase different behaviour.
+
+```{r merge_rep_and_kmeans_and_HM_HNF4GFPi, fig.width = 4, fig.height = 5}
+M_byrep <- 
+  merge_reps(
+    x = M_,
+    idents = setNames( sampletable$condition[-grep("NKX|FOX",colnames(M))],colnames(M_) ),
+    FUNCTION = mean 
+  )
+
+cl <- hclust(dist(t(scale(t(log1p(M_byrep)))), method = "euclidean"),method = "ward.D2")
+
+cx <- cutree(cl, k = 10)
+
+clu_df <-
+  data.frame(
+    id = names(cx),
+    cluster = factor(paste0("cluster",cx), levels = paste0("cluster",sort(unique(cx))))
+  )
+
+HM <- Heatmap(
+  t(scale(t(log1p(M_byrep)))),
+  name = "expression",
+  cluster_rows = FALSE,
+  # cluster_rows = cl,
+  row_split = cx,
+  cluster_columns = FALSE,
+  col = colorRamp2(breaks = seq(-2,2,length = 10), colors = rev(brewer.pal(10,"RdBu"))),
+  show_row_names = FALSE,
+  show_column_names = TRUE,
+  top_annotation = HeatmapAnnotation(condition = colnames(M_byrep), col = list(condition = col_conds[-c(4,5)]))
+)
+
+draw(HM)
+```
+
+```{r}
+pdf("graphics/hnf_double_KD_heatmap_hnf4i_hnf4igfpi_kmeans.pdf", wi = 4, he = 5)
+draw(HM)
+dev.off()
+```
+
+To clean this up a bit better, we can cross this information with the info of whether they are common or exclusive to either treatment.
+
+```{r upset_HNF4GFPi_dose_dep, fig.width = 4.5, fig.height = 3}
+list_for_venn <-
+  list(
+    common = attr(venn_gfpi_hnf4i,"intersections")[[3]],
+    hnf4i = attr(venn_gfpi_hnf4i,"intersections")[[1]],
+    lowdose = clu_df$id[clu_df$cluster %in% c("cluster2", "cluster3")],
+    middose = clu_df$id[clu_df$cluster == "cluster4"],
+    highdose = clu_df$id[clu_df$cluster == "cluster1"]
+  )
+
+venn_common_earlylate <- 
+  venn(
+    list_for_venn, intersections = TRUE, show.plot = FALSE
+  )
+upset(as.data.frame(make_yesno(list_for_venn)), order.by = "freq")
+```
+
+```{r}
+pdf("graphics/hnf_double_KD_upset_hnfigfpi.pdf", wi = 4.5, height = 3)
+upset(as.data.frame(make_yesno(list_for_venn)), order.by = "freq")
+dev.off()
+```
+
+We retrieve what we define as sets of dose-dependent genes. Low-dose dependant are those which appear as commonly D.E. to both treatments, and belong to the cluster we termed "lowdose". Mid-dose dependent are those which appear as D.E. in any of the two treatments (i.e. common but also HNF4i-exclusive DEGs) that belong to the cluster we termed "mid-dose". High-dose dependent are those which appear as D.E. only in the HNF4i treatment and that belong to the cluster we termed "highdose".
+
+```{r dose_dep_g}
+dose_dep_g <-
+  list(
+    lo = attr(venn_common_earlylate,"intersections")$`common:lowdose`,
+    mid = c(attr(venn_common_earlylate,"intersections")$`common:middose`,attr(venn_common_earlylate,"intersections")$`hnf4i:middose`),
+    hi = attr(venn_common_earlylate,"intersections")$`hnf4i:highdose`
+  )
+```
+
+Here's a plot representing their behaviour. Every dot is a data point of average expression, and every sets of three dots connected by a line is the same gene. Dots have been coloured based on the sample. Lines have been coloured based on the category of dose-dependence.
+
+```{r plot_dose_dep_genes, fig.width = 4.5, fig.height = 4.5}
+plot(x = c(1,3), y = range(t(scale(t(log1p(M_byrep))))), type = "n", xaxt = "n", ylab = "expression", xlab = "dose", bty = "n")
+axis(side = 1, at = c(1,2,3), labels = colnames(M_byrep))
+
+for (i in dose_dep_g$lo){
+  lines(x=1:3,y=t(scale(t(log1p(M_byrep))))[i,], col = alpha("#ffd966",.5))
+  points(x = 1:3, y = t(scale(t(log1p(M_byrep))))[i,], pch = 21,col = darken(col_conds[1:3],.3), bg = col_conds[1:3])
+}
+for (i in dose_dep_g$mid){
+  lines(x=1:3,y = t(scale(t(log1p(M_byrep))))[i,], col = alpha("#FDAE61",.5))
+  points(x = 1:3, y = t(scale(t(log1p(M_byrep))))[i,], pch = 21,col = darken(col_conds[1:3],.3), bg = col_conds[1:3])
+}
+for (i in dose_dep_g$hi){
+  lines(x=1:3,y = t(scale(t(log1p(M_byrep))))[i,], col = alpha("#cc7979",.5))
+  points(x = 1:3, y = t(scale(t(log1p(M_byrep))))[i,], pch = 21,col = darken(col_conds[1:3],.3), bg = col_conds[1:3])
+}
+```
+
+
+
+```{r}
+pdf("graphics/hnf_double_KD_dose_dependent_curves.pdf", he = 4.5, wi = 4.5)
+plot(x = c(1,3), y = range(t(scale(t(log1p(M_byrep))))), type = "n", xaxt = "n", ylab = "expression", xlab = "dose", bty = "n")
+axis(side = 1, at = c(1,2,3), labels = colnames(M_byrep))
+
+for (i in dose_dep_g$lo){
+  lines(x=1:3,y=t(scale(t(log1p(M_byrep))))[i,], col = alpha("#ffd966",.5))
+  points(x = 1:3, y = t(scale(t(log1p(M_byrep))))[i,], pch = 21,col = darken(col_conds[1:3],.3), bg = col_conds[1:3])
+}
+for (i in dose_dep_g$mid){
+  lines(x=1:3,y = t(scale(t(log1p(M_byrep))))[i,], col = alpha("#FDAE61",.5))
+  points(x = 1:3, y = t(scale(t(log1p(M_byrep))))[i,], pch = 21,col = darken(col_conds[1:3],.3), bg = col_conds[1:3])
+}
+for (i in dose_dep_g$hi){
+  lines(x=1:3,y = t(scale(t(log1p(M_byrep))))[i,], col = alpha("#cc7979",.5))
+  points(x = 1:3, y = t(scale(t(log1p(M_byrep))))[i,], pch = 21,col = darken(col_conds[1:3],.3), bg = col_conds[1:3])
+}
+dev.off()
+```
+
+Also a heatmap of only these genes:
+
+```{r HM_HNF4GFPi_dose_dep_genes, fig.width = 3.6, fig.height = 6}
+M_viz <-
+  as.data.frame(M_[rownames(M_) %in% unique(unlist(dose_dep_g)),])
+
+M_viz$type <- translate_ids(rownames(M_viz), stack(dose_dep_g))
+
+HM_viz <- 
+  Heatmap(
+    t(scale(t(log1p(M_viz[,-ncol(M_viz)])))),
+    name = "expression",
+    cluster_rows = T,
+    row_split = M_viz$type,
+    column_split = sampletable$condition[-grep("NKX|FOX",colnames(M))],
+    clustering_method_rows = "ward.D2",
+    cluster_columns = FALSE,
+    col = colorRamp2(breaks = seq(-2,2,length = 10), colors = rev(brewer.pal(10,"RdBu"))),
+    show_row_names = FALSE,
+    show_column_names = FALSE,
+    cluster_row_slices = FALSE,
+    column_title = NULL,
+    top_annotation =
+      HeatmapAnnotation(
+        condition = sampletable$condition[-grep("NKX|FOX",colnames(M))],
+        batch = sampletable$batch[-grep("NKX|FOX",colnames(M))],
+        col =
+          list(
+            condition = col_conds[1:3],
+            batch = setNames(colorspace::lighten(c("red","green","blue"),.2), c("R1","R2","R3"))
+          )
+      )
+  )
+
+draw(HM_viz)
+```
+
+```{r}
+pdf("graphics/hnf_double_KD_heatmap_dose_dependent.pdf", wi = 3.5, he = 6)
+draw(HM_viz)
+dev.off()
+```
+
+Here we retrieve the GOs.
+
+```{r HNF4GFPi_dose_dep_GOs}
+dose_dep_go <-
+  getGOs(genelist = dose_dep_g, gene_universe = rownames(dds), gene2GO = smed_id2go)
+```
+
+They are not particularly different in any way.
+
+```{r, fig.width = 12, fig.height = 4}
+plot_grid(plotlist = dose_dep_go$GOplot, ncol = 3)
+
+pdf("graphics/hnf_double_KD_GOs_hnf4i_gfpi.pdf", wi = 15, he = 5)
+plot_grid(plotlist = dose_dep_go$GOplot, ncol = 3)
+dev.off()
+```
+
+Now we'll explore their behaviour in our single cell dataset. Perhaps every cluster of interest responded differently.
+
+First we calculate the scores:
+
+```{r scores_HNF4GFPi_dose_dep}
+score_lo <-
+  gene_score(
+    x = mat, gene_set = dose_dep_g$lo[dose_dep_g$lo %in% rownames(mat)],
+    gene_pool = all_genes, remove_set_from_pool = TRUE, fraction = 0.05
+  )
+
+score_mid <-
+  gene_score(
+    x = mat, gene_set = dose_dep_g$mid[dose_dep_g$mid %in% rownames(mat)],
+    gene_pool = all_genes, remove_set_from_pool = TRUE, fraction = 0.05
+  )
+
+score_hi <-
+  gene_score(
+    x = mat, gene_set = dose_dep_g$hi[dose_dep_g$hi %in% rownames(mat)],
+    gene_pool = all_genes, remove_set_from_pool = TRUE, fraction = 0.05
+  )
+```
+
+Next we put this (with relativised values) in a DF:
+
+```{r}
+df_scores_hnfgfpi <-
+  data.frame(
+    cell = colnames(scdata), # cells
+    cluster =  factor(scdata$broadtype_splitbam, levels = unique(sort(scdata$broadtype_splitbam))[c(6,2,4,3,9,1,5,7,8,10,11)] ),
+    ctype = scdata$ctype,
+    score_lo = 
+      relativise( clip_q( clip_q(score_lo, q=.05,method = "down"), method = "up") ),
+    score_mid = 
+      relativise( clip_q( clip_q(score_mid, q=.05,method = "down"), method = "up") ),
+    score_hi =
+      relativise( clip_q( clip_q(score_hi, q=.05,method = "down"), method = "up") )
+  )
+```
+
+Then we make the plots...
+
+```{r}
+# score plot
+  set.seed(123)
+  z <- df_scores_hnfgfpi %>% group_by(ctype) %>% sample_n(100) %>% .$cell
+  df_scores_hnfgfpi$jit <- ifelse(df_scores_hnfgfpi$cell %in% z, TRUE, FALSE)
+
+# score plot
+  boxpl_score_lo <- 
+    df_scores_hnfgfpi %>%
+    ggplot(mapping = aes(x = ctype, y = score_lo, fill = ctype, color = ctype)) +
+    geom_boxplot(outlier.shape = NA)+
+    geom_jitter(mapping = aes(shape=jit),size = .6, alpha = .25)+
+    theme_classic()+
+    scale_fill_manual(values = setNames(smed_ctypes$col,smed_ctypes$ctype))+
+    scale_color_manual(values = darken(setNames(smed_ctypes$col,smed_ctypes$ctype),0.5))+
+    scale_shape_manual(values = setNames(c(20,NA),c("TRUE","FALSE")))+
+    theme(axis.text.x = element_blank())+
+    ylab(label = i)+
+    coord_cartesian(ylim=c(0,1))+
+    ggtitle("score low dose response genes")+NoLegend()
+
+  boxpl_score_mid <-
+    df_scores_hnfgfpi %>%
+    ggplot(mapping = aes(x = ctype, y = score_mid, fill = ctype, color = ctype)) +
+    geom_boxplot(outlier.shape = NA)+
+    geom_jitter(mapping = aes(shape=jit),size = .6, alpha = .25)+
+    theme_classic()+
+    scale_fill_manual(values = setNames(smed_ctypes$col,smed_ctypes$ctype))+
+    scale_color_manual(values = darken(setNames(smed_ctypes$col,smed_ctypes$ctype),0.5))+
+    scale_shape_manual(values = setNames(c(20,NA),c("TRUE","FALSE")))+
+    theme(axis.text.x = element_blank())+
+    ylab(label = i)+
+    coord_cartesian(ylim=c(0,1))+
+    ggtitle("score mid dose response genes")+NoLegend()
+  
+  boxpl_score_hi <- 
+    df_scores_hnfgfpi %>%
+    ggplot(mapping = aes(x = ctype, y = score_hi, fill = ctype, color = ctype)) +
+    geom_boxplot(outlier.shape = NA)+
+    geom_jitter(mapping = aes(shape=jit),size = .6, alpha = .25)+
+    theme_classic()+
+    scale_fill_manual(values = setNames(smed_ctypes$col,smed_ctypes$ctype))+
+    scale_color_manual(values = darken(setNames(smed_ctypes$col,smed_ctypes$ctype),0.5))+
+    scale_shape_manual(values = setNames(c(20,NA),c("TRUE","FALSE")))+
+    theme(axis.text.x = element_blank())+
+    ylab(label = i)+
+    coord_cartesian(ylim=c(0,1))+
+    ggtitle("score high dose response genes")+NoLegend()
+```
+
+... and we plot them:
+
+```{r, fig.width = 7, fig.height = 7}
+plot_grid(
+  plotlist = 
+    list(
+      boxpl_score_lo,
+      boxpl_score_mid,
+      boxpl_score_hi
+    ),
+  ncol = 1, nrow = 3
+)
+```
+
+
+
+```{r}
+pdf("graphics/hnf_double_KD_dose_dependent_scores.pdf", wi = 7, he = 7)
+plot_grid(
+  plotlist = 
+    list(
+      boxpl_score_lo,
+      boxpl_score_mid,
+      boxpl_score_hi
+    ),
+  ncol = 1, nrow = 3
+)
+dev.off()
+```
+
+In addition to that: how many of these genes are in each of the list of overlapping DEGs from the double knockdowns?
+
+```{r}
+lo_in_lists <- 
+  sapply(
+    list_scores_0[-c(1:4)],
+    function(x){
+      setNames(
+        length(which(dose_dep_g$lo %in% x)),
+        paste0(names(x),"(",length(x),")")
+      )
+    }
+  )
+
+hi_in_lists <-
+  sapply(
+    list_scores_0[-c(1:4)],
+    function(x){
+      setNames(
+        length(which(dose_dep_g$hi %in% x)),
+        paste0(names(x),"(",length(x),")")
+      )
+    }
+  )
+
+par(mar = c(5,12,4,2)+0.1)
+barplot(
+  rev(lo_in_lists),
+  horiz = TRUE,
+  las = 1,
+  main = "low dose dep",
+  xlim = c(0,20)
+)
+barplot(
+  rev(hi_in_lists),
+  horiz = TRUE,
+  las = 1,
+  main = "hi dose dep",
+  xlim = c(0,20)
+)
+par(mar = c(5,4,4,2)+0.1)
+```
+
+```{r}
+pdf("graphics/dose_dep_genes_in_overlapping_DEGs.pdf",wi = 5, he = 5)
+par(mar = c(5,12,4,2)+0.1)
+barplot(
+  rev(lo_in_lists),
+  horiz = TRUE,
+  las = 1,
+  main = "low dose dep",
+  xlim = c(0,20)
+)
+barplot(
+  rev(hi_in_lists),
+  horiz = TRUE,
+  las = 1,
+  main = "hi dose dep",
+  xlim = c(0,20)
+)
+par(mar = c(5,4,4,2)+0.1)
+dev.off()
+```
+
+## Saving the data
+
+Saving the count matrix and the sampletable information used for the DGE analysis, keeping the excluded replicates.
+
+Saving the results of the differential gene expression analysis (HNF4i and double knock-downs, against GFPi), including a "DEG/none" column for checking whether a gene was detected as differentially expressed.
+
+Saving also the set of overlapping/non-overlapping sets of DEGs.
+
+Saving the results of the differential gene expression analysis (HNF4i and HNF4i+GFPi, against GFPi), including a "DEG/none"  column for checking whether a gene was detected as differentially expressed. Also saving the assignment to low-, mid-, or high-dose-dependant genes. Also saving the overlap between HNF4i and HNF4i+GFPi DEGs.
+
+```{r saving}
+save_to_excel(
+  list_of_objects =
+    list(
+      raw_counts = counts(dds_0, normalized = FALSE),
+      sample_information = colData(dds_0),
+      `HNF4i_vs_GFPi` = as.data.frame(res_hnf4),
+      `HNF4i+NKX2-2i_vs_GFPi` = as.data.frame(res_hnf4nkx),
+      `HNF4i+FOXF-1i_vs_GFPi` = as.data.frame(res_hnf4foxf),
+      `Overlap_doubleKD_singlecell` = m_upset,
+      `DEGs_by_set_of_overlap` = stack(comb_dge_vs_sc_dge_genes) %>% as_tibble() %>% `colnames<-`(c("id","set")),
+      `HNF4i+GFPi_vs_GFPi` = as.data.frame(res_hnf4gfpi),
+      `Dose-dependant_genes` = stack(dose_dep_g) %>% as_tibble() %>% `colnames<-`(c("id","type")),
+      `Overlap_HNF4i_HNF4iGFPi` = stack(attr(venn_gfpi_hnf4i,"intersections")) %>% as_tibble() %>% `colnames<-`(c("id","overlap"))
+    )
+    ,
+  output_file_name = paste0("./outputs/",fcha(),"_smed_double_hnf_DGE_allresults.xlsx"),
+  rowNames = TRUE
+)
+```
+
+
+## The End!
+
+```{r}
+sessionInfo()
+```

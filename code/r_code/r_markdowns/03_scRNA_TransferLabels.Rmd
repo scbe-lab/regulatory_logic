@@ -12,7 +12,7 @@ editor_options:
 ---
 
 ```{r setup, include=FALSE}
-dir <- '/mnt/sda/alberto/projects/smed_cisreg/'
+dir <- '~/storage/projects/smed_cisreg_2025_github_repository/regulatory_logic/'
 fcha <- function(){ gsub("-","",Sys.Date()) }
 
 knitr::opts_chunk$set(echo = TRUE)
@@ -322,7 +322,7 @@ Upon further inspection, we did some manual tweaks informed by diagnostic marker
 ```{r umap_ctypes}
 smed_cisreg_scrna_ctypes_transfer <- 
   read.delim2(
-    file = "~/projects/smed_cisreg/outputs/smed_cisreg_ctypes_transferlabels.tsv",
+    file = "outputs/celltype_annotation/smed_cisreg_ctypes_transferlabels.tsv",
     sep = "\t",
     header = TRUE
   )
@@ -341,7 +341,7 @@ smed_cisreg_scrna_ctypes$broadtype <- factor(smed_cisreg_scrna_ctypes$broadtype,
 
 write.table(
   smed_cisreg_scrna_ctypes,
-  file = "./outputs/smed_cisreg_ctypes.tsv",
+  file = "./outputs/celltype_annotation/smed_cisreg_ctypes.tsv",
   sep = "\t",
   col.names = TRUE,
   row.names = FALSE,
@@ -449,7 +449,7 @@ saveRDS(
 ```{r}
 smed_ctypes <- 
   read.delim2(
-    file = "outputs/smed_cisreg_ctypes.tsv",
+    file = "outputs/celltype_annotation/smed_cisreg_ctypes.tsv",
     sep = "\t",
     header = TRUE
     )

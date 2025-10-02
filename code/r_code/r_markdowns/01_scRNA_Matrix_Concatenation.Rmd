@@ -13,7 +13,7 @@ editor_options:
 
 ```{r setup, include=FALSE}
 
-dir <- '/mnt/sda/alberto/projects/smed_cisreg/'
+dir <- '~/storage/projects/smed_cisreg_2025_github_repository/regulatory_logic/'
 fcha <- function(){ gsub("-","",Sys.Date()) }
 
 knitr::opts_chunk$set(echo = TRUE)
@@ -68,17 +68,17 @@ We will load each of these matrices as separate Seurat objects. (This will take 
 
 ```{r load_matrices}
 
-L1.data <- read.table(file = "/mnt/sda/alberto/projects/smed_cisreg/outputs/scrna/L1_L2_L3/L1/L1_SmedOnly.txt.gz", header = TRUE, row.names = 1, colClasses =c("character", rep("numeric")))
-L2.data <- read.table(file = "/mnt/sda/alberto/projects/smed_cisreg/outputs/scrna/L1_L2_L3/L2/L2_SmedOnly.txt.gz", header = TRUE, row.names = 1, colClasses =c("character", rep("numeric")))
-L3.data <- read.table(file = "/mnt/sda/alberto/projects/smed_cisreg/outputs/scrna/L1_L2_L3/L3/L3_SmedOnly.txt.gz", header = TRUE, row.names = 1, colClasses =c("character", rep("numeric")))
-L4.data <- read.table(file = "/mnt/sda/alberto/projects/smed_cisreg/outputs/scrna/L8.3/L8.3.txt.gz", header = TRUE, row.names = 1, colClasses =c("character", rep("numeric")))
-L5.data <- read.table(file = "/mnt/sda/alberto/projects/smed_cisreg/outputs/scrna/L8.4/L8.4.txt.gz", header = TRUE, row.names = 1, colClasses =c("character", rep("numeric")))
-L6.data <- read.table(file = "/mnt/sda/alberto/projects/smed_cisreg/outputs/scrna/L11.3/L11.3_GFPiOnly.txt.gz", header = TRUE, row.names = 1, colClasses =c("character", rep("numeric")))
-L7.data <- read.table(file = "/mnt/sda/alberto/projects/smed_cisreg/outputs/scrna/L11.4/L11.4_GFPiOnly.txt.gz", header = TRUE, row.names = 1, colClasses =c("character", rep("numeric")))
-L8.data <- read.table(file = "/mnt/sda/alberto/projects/smed_cisreg/outputs/scrna/L14.3/L14.3.txt.gz", header = TRUE, row.names = 1, colClasses =c("character", rep("numeric")))
-L9.data <- read.table(file = "/mnt/sda/alberto/projects/smed_cisreg/outputs/scrna/L14.4/L14.4.txt.gz", header = TRUE, row.names = 1, colClasses =c("character", rep("numeric")))
-L10.data <- read.table(file = "/mnt/sda/alberto/projects/smed_cisreg/outputs/scrna/L23/sublib1/L23.1.txt.gz", header = TRUE, row.names = 1, colClasses =c("character", rep("numeric")))
-L11.data <- read.table(file = "/mnt/sda/alberto/projects/smed_cisreg/outputs/scrna/L23/sublib2/L23.2.txt.gz", header = TRUE, row.names = 1, colClasses =c("character", rep("numeric")))
+L1.data <- read.table(file = "outputs/scrna/L1_L2_L3/L1/L1_SmedOnly.txt.gz", header = TRUE, row.names = 1, colClasses =c("character", rep("numeric")))
+L2.data <- read.table(file = "outputs/scrna/L1_L2_L3/L2/L2_SmedOnly.txt.gz", header = TRUE, row.names = 1, colClasses =c("character", rep("numeric")))
+L3.data <- read.table(file = "outputs/scrna/L1_L2_L3/L3/L3_SmedOnly.txt.gz", header = TRUE, row.names = 1, colClasses =c("character", rep("numeric")))
+L4.data <- read.table(file = "outputs/scrna/L8.3/L8.3.txt.gz", header = TRUE, row.names = 1, colClasses =c("character", rep("numeric")))
+L5.data <- read.table(file = "outputs/scrna/L8.4/L8.4.txt.gz", header = TRUE, row.names = 1, colClasses =c("character", rep("numeric")))
+L6.data <- read.table(file = "outputs/scrna/L11.3/L11.3_GFPiOnly.txt.gz", header = TRUE, row.names = 1, colClasses =c("character", rep("numeric")))
+L7.data <- read.table(file = "outputs/scrna/L11.4/L11.4_GFPiOnly.txt.gz", header = TRUE, row.names = 1, colClasses =c("character", rep("numeric")))
+L8.data <- read.table(file = "outputs/scrna/L14.3/L14.3.txt.gz", header = TRUE, row.names = 1, colClasses =c("character", rep("numeric")))
+L9.data <- read.table(file = "outputs/scrna/L14.4/L14.4.txt.gz", header = TRUE, row.names = 1, colClasses =c("character", rep("numeric")))
+L10.data <- read.table(file = "outputs/scrna/L23/sublib1/L23.1.txt.gz", header = TRUE, row.names = 1, colClasses =c("character", rep("numeric")))
+L11.data <- read.table(file = "outputs/scrna/L23/sublib2/L23.2.txt.gz", header = TRUE, row.names = 1, colClasses =c("character", rep("numeric")))
 ```
 
 Creation of a Seurat object for each:
@@ -230,7 +230,7 @@ We will finally save this file as an object we can load later on:
 saveRDS(
   smed_cisreg_scrna,
   file = paste0(
-    "outputs/rda/",
+    "outputs/rda/seurat_scrna",
     fcha(),
     "_smed_cisreg_scRNA_concatenated_libraries_min100.RDS"
   )

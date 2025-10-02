@@ -1,5 +1,5 @@
 ---
-title: 'Smed CisReg project 06.b: Count analysis'
+title: 'Smed CisReg project 09: Count analysis'
 author: 'Alberto Perez Posada @apposada'
 date: '1/16/2024'
 output:
@@ -12,7 +12,7 @@ editor_options:
 
 ```{r setup, include=FALSE}
 
-dir <- '/mnt/sda/alberto/projects/smed_cisreg/'
+dir <- '/~/storage/projects/smed_cisreg_2025_github_repository/'
 fcha <- function(){ gsub("-","",Sys.Date()) }
 
 knitr::opts_chunk$set(echo = TRUE)
@@ -47,11 +47,6 @@ sourceFolder(
   "code/r_code/functions/",
   recursive = TRUE
   )
-
-sourceFolder(
-  "/mnt/sda/alberto/projects/dev/comparABle/code/functions/", #change for definitive path once its final
-  recursive = TRUE
-  )
 ```
 
 ## Loading cell type information
@@ -76,13 +71,9 @@ smed_counts <- read.delim2(
 )
 colnames(smed_counts) <- levels(smed_ctypes$ctype)
 smed_counts <- smed_counts[rowSums(smed_counts) > 10,]
-```
 
-And if we check the distribution of counts per cluster:
-
-```{r}
 cisreg_psbulk_ncells <- read.delim2(
-  "~/projects/smed_cisreg/outputs/scrna/smed_cisreg_scrna_pseudobulk_ncells.tsv",
+  "outputs/scrna/smed_cisreg_scrna_pseudobulk_ncells.tsv",
   header = TRUE
   )
 ```
@@ -92,7 +83,7 @@ We will calculate a cell weight matrix to weigh the expression values from the p
 ```{r}
 min_counts <- 30
 min_cells <- 3
-cluster_size = read.delim2("~/projects/smed_cisreg/outputs/scrna/smed_cisreg_scrna_clustersize.tsv")
+cluster_size = read.delim2("outputs/scrna/smed_cisreg_scrna_clustersize.tsv")
 cluster_size = setNames(cluster_size$x,rownames(cluster_size))
 ```
 
@@ -306,6 +297,6 @@ save(
   smed_counts_norm,
   smed_counts_norm_cw,
   smed_genecolor,
-  file = "outputs/rda/smed_counts.rda"
+  file = "outputs/rda/scrna_counts/smed_counts.rda"
 )
 ```

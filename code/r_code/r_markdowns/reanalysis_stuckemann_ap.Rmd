@@ -1,0 +1,535 @@
+---
+title: "Reanalysis of A/P planarian transcriptomics (Stückemann et al., 2017)"
+author: "Alberto Perez-Posada"
+date: "2024-12-11"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+dir <- '/omics-storage/lab-solana/alberto/projects/smed_cisreg/'
+fcha <- function(){ gsub("-","",Sys.Date()) }
+
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_knit$set(root.dir = dir)
+options(scipen=999)
+Sys.setenv(VROOM_CONNECTION_SIZE=5000072)
+pdf.options(family = "Helvetica")
+```
+
+## About
+
+This markdown reanalyses the anteroposterior transcriptome dataset by Stuckemann et al., 2017. For more information please visit: https://www.sciencedirect.com/science/article/pii/S153458071630956X.
+
+Here we followed the same computational methods as provided in the manuscript, with the exception of the quantification of reads (here done with HTSeq but done with a custom script in the original manuscript), and the clustering algorithm of genes (here done with Mfuzz, but originally done with an minimum distance-to-centroid + correlation algorithm).
+
+## Load libraries and functions
+
+We will load the functions as we usually do:
+
+```{r, message = FALSE, warning = FALSE}
+library(countToFPKM)
+library(ComplexHeatmap)
+library(Mfuzz)
+library(dplyr)
+library(RColorBrewer)
+library(colorspace)
+library(viridis)
+
+# load functions
+source("/omics-storage/lab-solana/alberto/projects/smed_cisreg/code/r_code/functions/sourcefolder.R")
+sourceFolder(
+  "/omics-storage/lab-solana/alberto/projects/smed_cisreg/code/r_code/functions/", #change for definitive path once its final
+  recursive = TRUE
+)
+
+```
+
+## Load Data
+
+We load our gene information table:
+
+```{r}
+# Load gene information
+rosetta_ext <- read.delim2(
+  "/omics-storage/lab-solana/standard_references/Smed_Rink/20231127_Rosetta_EXTENDED.tsv",
+  header = TRUE
+)
+
+```
+
+Here we load the sample information (which is basically the SRA metadata table)
+
+```{r}
+# Table of samples
+sampleTable_0 <-
+  read.delim2(
+    "outputs/rna/ap_stuckemann/kallisto_output/sampletable.tsv",
+    header = TRUE
+  )
+sampleTable <- sampleTable_0[, c(2, 1, 25)]
+colnames(sampleTable) <-
+  c("name", "dir", "condition0")
+
+sampleTable$condition <-
+  sub("/","",sub("-","",tolower(sampleTable$condition0)))
+sampleTable$condition<-
+  factor(
+    sampleTable$condition,
+    levels = paste0("ap",1:11)
+  )
+
+sampleTable <-
+  sampleTable[order(sampleTable$condition),]
+
+condition_x <- sampleTable$condition
+
+head(sampleTable)
+```
+
+We load the samples here.
+First we specify the directory where we have stored the counts.
+Then, with a lapply function, we collate together all these files.
+
+```{r}
+# Load the counts
+samplesdir <- "/home/alberto/storage/projects/smed_cisreg/outputs/rna/ap_stuckemann/bowtie2_htseq_counts/"
+
+ap_counts_list <- lapply(
+  list.files(path = samplesdir, pattern=".counts",recursive = TRUE),
+  function(x){
+    y = read.delim2(paste0(samplesdir,x),header = FALSE)
+    y = setNames(y$V2,y$V1)
+    return(y)
+  }
+)
+names(ap_counts_list) <- gsub(".*/","",gsub(".counts","",list.files(path = samplesdir, pattern=".counts",recursive = TRUE)))
+
+ap_bowtie2_counts <- do.call(cbind,ap_counts_list)
+
+ap_bowtie2_counts[1:5,1:5]
+```
+
+## Calculation of FPKMs
+
+For calculating the FPKMs (i.e. the RPKMs as this is a single-end dataset, but we'll keep the fpkm naming for continuity purposes with the original publication), we will load the gene annotation file of the latest version of the genome. We will use the length of the gene features as a normalising factor when quantifying the FPKMs.
+
+```{r}
+# Load the gtf file to extract the gene length information
+smed_gtf <- read.delim2("~/storage/../standard_references/Smed_Rink/Smed_Rink_MASKED.gtf", header = FALSE)
+smed_genes <- smed_gtf[smed_gtf$V3 == "gene",]
+smed_gene_length <- 
+  setNames(
+    abs(smed_genes$V4-smed_genes$V5),
+    gsub("; .*","",sub("ID ","",smed_genes$V9))
+  )
+```
+
+We subset both ways to keep the same genes in the counts table and in the gene length file, and in the same order.
+
+```{r}
+# subset and keep only those genes for which we have the gene lengths
+ap_bowtie2_counts <- ap_bowtie2_counts[rownames(ap_bowtie2_counts) %in% names(smed_gene_length),]
+
+# Reorder counts matrix and gene length info on the same order
+smed_gene_length <- 
+  smed_gene_length[match(rownames(ap_bowtie2_counts),names(smed_gene_length))]
+```
+
+Here we calculate the FPKMs with the `countsToFPKM` package.
+
+```{r}
+# CALCULATE FPKMs
+ap_fpkm <- countToFPKM::fpkm(counts = ap_bowtie2_counts, featureLength = smed_gene_length,meanFragmentLength = rep(70,11))
+colnames(ap_fpkm) <- translate_ids(colnames(ap_fpkm),dict = sampleTable[,c(1,4)])
+
+ap_fpkm <- ap_fpkm[,match(levels(condition_x),colnames(ap_fpkm))]
+```
+
+We filter out the 0-count genes:
+
+```{r}
+ap_fpkm <- ap_fpkm[rowSums(ap_fpkm) > 0,] # filter out the 0-count ones
+```
+
+And we perform quantile normalisation on the dataset:
+
+```{r}
+# quantile normalisation
+ap_fpkm_qnorm <- quantnorm(ap_fpkm)
+```
+
+We will plot here the PCA of the dataset. We tested that this is indeed the same PCA as the one retrieved using the supplementary table of the paper (only mirrored, but that's fine. The loadings are mostly the same, which is reassuring of the way we quantified gene expression and the way we performed the fpkm/rpkm normalisation.)
+
+```{r}
+# Principal component analysis
+ap_fpkm_pc <- prcomp(t(ap_fpkm_qnorm))
+plot(ap_fpkm_pc$x, bty = "n", col = "royalblue", main = "Stuckemann et al;\nremap to h1S3, FPKM")
+text(ap_fpkm_pc$x,labels = colnames(ap_fpkm), col = "royalblue")
+
+```
+
+Below the majority of the genes that appear in Figure 2 of that paper, re-plotted as a sanity-check.
+
+```{r, fig.width = 12, fig.height = 12}
+# Plot candidate genes
+ap_candidates <- read.delim2("outputs/rna/ap_stuckemann/candidate_AP_genes.tsv", header = F)
+ap_candidates$gene_id <- 
+  sapply(
+    ap_candidates$V2,
+    function(x){
+      y = x
+      if(x %in% rosetta_ext$gene_ddv6) {
+        y = rosetta_ext$gene[rosetta_ext$gene_ddv6 == x]
+      } else {
+        j = grep(x,rosetta_ext$ddv6_collapsed)
+        if (length(j) > 0) y = paste(rosetta_ext$gene[j],collapse = ",")
+      }
+      return(y)
+    }
+  )
+
+par(mfrow = c(4,4))
+for (i in ap_candidates$gene_id) {
+  if (!(i %in% rosetta_ext$gene)) next
+  if (!(i %in% rownames(ap_fpkm_qnorm))) next
+  j = setNames(ap_fpkm_qnorm[i,],1:11)
+  z = 
+    paste0(
+      i,"/",
+      ap_candidates$V2[ap_candidates$gene_id == i],"\n",
+      ap_candidates$V1[ap_candidates$gene_id == i]
+      )
+  plot(
+    j,
+    type = "b",
+    col = "#67d474",
+    lwd = 1.5,
+    main  = z,
+    ylab = "FPKM",
+    xlab = "A/P",
+    ylim = c(0,max(j))
+  )
+}
+
+```
+
+## Anteroposterior gene expression profile filtering
+
+This was implemented as reported in the original manuscript.
+
+The gene expression profiles were filtered by three conditions:
+
+Condition 1: at least three successive data points that are non-zero.
+
+```{r}
+check_consecutive_elements = function(l,num_consecutives=3){
+  
+  ll <- which(l>0)
+  
+  l_ <- split(ll, cumsum(c(1, diff(ll) != 1))) # from: https://stackoverflow.com/questions/24837401/find-consecutive-values-in-vector-in-r
+  
+  if( any( sapply(l_,length) >= num_consecutives ) ){
+    y = TRUE
+  } else {
+    y = FALSE
+  }
+  
+  return(y)
+  
+}
+
+f_consec <- apply(ap_fpkm_qnorm,1,check_consecutive_elements)
+
+head(f_consec)
+```
+
+Which we check e.g. by looking at one of the genes returning `TRUE`.
+
+```{r}
+plot(ap_fpkm_qnorm["h1SMcG0000009",], type = "b", main = "h1SMcG0000009")
+```
+
+Condition 2: the ratio between maximum and minimum value is larger than two.
+
+```{r}
+f_2fc <- apply(ap_fpkm_qnorm,1,function(x){y=ifelse(max(x)/min(x)>2,TRUE,FALSE); return(y)})
+
+head(f_2fc)
+```
+
+Again we check this:
+
+```{r}
+plot(ap_fpkm_qnorm["h1SMcG0000010",], type = "b", main = "h1SMcG0000010")
+```
+
+Condition 3: the standard deviation about the smoothed curve is smaller than eight times the difference between minimum and maximum value.
+
+For the latter curve. the Savitzky-Golay filter was applied, with a first order polynomia in a sliding window of 3 data points.
+
+The standard deviation about this smoothed curve was computed after removing one outlier data point with the largest deviation from the trend.
+
+We implemeted this using the `sgolayfilt::` function from the `signal` package. We did not account the removal of one outlier data point, however.
+
+```{r}
+f_smooth <-
+  apply(
+    ap_fpkm_qnorm,
+    1,
+    function(y, use_sgolay = FALSE){
+      
+      x = 1:length(y)
+      
+      if(use_sgolay == TRUE) {
+        
+        s <- signal::sgolayfilt(x=y)  # Stuckemann et al. used Savitzky-Golay filter
+        
+      } else {
+        
+        s <- loess(y~x,data = as.data.frame(x=x,y=y)) # Otherwise use a loess smooth
+        s <- predict(s,x)
+        
+      }
+      
+      sd_s <- sd(s)
+      
+      diff_minmax = abs(min(y)-max(y))
+      
+      res = 
+        ifelse(
+          sd_s < 8*diff_minmax,
+          TRUE,
+          FALSE
+        )
+      
+      return(res)
+    },
+    use_sgolay = TRUE # as we specify sgolay, it will use Savitzky-Golay
+  )
+
+```
+
+Finally, we create a filter with the three criteria together:
+
+```{r}
+# Triple filter
+ap_filt <-
+  log1p(ap_fpkm_qnorm[
+    f_consec & f_2fc & f_smooth,
+  ])
+dim(ap_filt)
+
+```
+
+We do a PCA with the filtered data. Notice PC2 is still, majoritarily, the axis with the loadings responsible for the A/P arrangement of the transcriptomes.:
+
+```{r}
+# PCA with the filtered dataset for clustering
+ap_pc_filt <- prcomp(t(ap_filt))
+plot(main = "PCA qnorm, log1p, all filts from stuckemann", ap_pc_filt$x, pch = 21, bg = colorRampPalette(viridis_pastel)(ncol(ap_filt)), col = colorspace::darken(colorRampPalette(viridis_pastel)(length(levels(condition_x))),.5))
+text(ap_pc_filt$x,colnames(ap_filt),pos=3)
+```
+
+And **in addition** to what was done in the original paper, we apply a coefficient of variation filter to remove genes with low variance across the anteroposterior axis.
+
+```{r}
+# Filter lowly-variable genes
+plot(density(apply(ap_filt,1,function(x){sd(x)/mean(x)})))
+abline(v = quantile(apply(ap_filt,1,function(x){sd(x)/mean(x)})),col = darken(brewer.pal(5,"Spectral")),lwd = 2)
+```
+
+
+
+```{r}
+ap__ <- ap_filt[
+  which(
+    apply(ap_filt, 1, function(x) sd(x)/mean(x)) > 
+    quantile(
+      apply(ap_filt, 1, function(x) sd(x)/mean(x)),
+      .5
+      )
+    ),
+  ]
+
+dim(ap__)
+```
+
+## Soft clustering using the `mfuzz` clustering method
+
+We will subject these 9000 genes (more than those in the original publication) to the mfuzz clustering.
+
+```{r}
+ap_eset <- ExpressionSet(assayData=ap__)
+ap__std <- standardise(ap_eset)
+```
+
+We estimate here the minimum distance
+
+```{r}
+# estimate distance and number of clusters
+m1 <- mestimate(ap__std)
+m1
+```
+
+With this minimum distance, we estimate the optimal number of clusters
+
+```{r}
+ap_dmin <- Dmin(ap__std,m=m1,crange=seq(3,30,3),repeats=3,visu=TRUE)
+```
+
+With this we see that the "elbow" of this plot is between 15 and 20. We will choose 20.
+
+We run the `mfuzz` function. We set a random seed in order to keep the reproducibility of the clustering, as it is a c-/k-means-inspired algorithm that takes random genes as centroids every time it runs.
+
+```{r}
+set.seed(41)
+ap_cl_fuzz <- mfuzz(ap__std, c = 20, m = m1)
+```
+
+We visualise the results:
+
+```{r, fig.width = 12, fig.height = 12}
+mfuzz.plot(ap__std,cl=ap_cl_fuzz,mfrow = c(5,4), time.labels = c(1:11),new.window = FALSE)
+```
+
+We will subset this dataset to keep only those genes that have a high affinity for any given cluster. This is calculated using the `acore()` function of the `mfuzz` package. We chose a minimum alpha-core of 0.45. 
+
+```{r}
+# subset for highly clustering genes
+ap_cl_ac <- bind_rows(acore(ap__std, cl = ap_cl_fuzz, min.acore = 0.45), .id = "cluster")
+colnames(ap_cl_ac) <- c("cluster","id","alpha")
+head(ap_cl_ac)
+```
+
+In this table we have tidy information about which gene belongs to which cluster, and which is their alpha (affinity-like) value to their parent cluster.
+
+```{r}
+ap_fuzz <- exprs(ap__std)[rownames(exprs(ap__std)) %in% ap_cl_ac$id,]
+ap_fuzz <- ap_fuzz[match(ap_cl_ac$id,rownames(ap_fuzz)),]
+dim(ap_fuzz)
+```
+
+What follows is an attempt at reordering the clusters by assigning them a new order based on the maximum average expression point along the planarian body.
+
+Here a heatmap of the average profiles of these twenty clusters:
+
+```{r, fig.width = 3, fig.height = 4}
+ap_fuzz_avg <-
+  data.frame(
+    stats::aggregate(
+      ap_fuzz,
+      by = list(cluster = ap_cl_ac$cluster),
+      FUN = mean
+    )[-1],
+    row.names = sort(unique(ap_cl_ac$cluster))
+  )
+
+Heatmap(
+  name = "avg\nexpr",
+  as.matrix(ap_fuzz_avg[order(as.numeric(rownames(ap_fuzz_avg))),]),
+  cluster_rows = FALSE, cluster_columns = FALSE,
+  col = cividis(10)
+)
+```
+
+Here the same but we reorder the rows based on their maximum value.
+
+```{r, fig.width = 3, fig.height = 4}
+Heatmap(
+  name = "avg\nexpr",
+  as.matrix(ap_fuzz_avg[order(apply(ap_fuzz_avg,1,function(x){which(x == max(x))})),]),
+  cluster_rows = FALSE, cluster_columns = FALSE,
+  col = cividis(10)
+)
+```
+
+Good. We create a little data frame that we can use to convert between the two naming systems.
+
+```{r}
+# reorder and rename mfuzz clusters
+neword =
+  data.frame(
+    cluster = 
+      rownames(
+        ap_fuzz_avg[
+          order(apply(ap_fuzz_avg,1,function(x){which(x == max(x))})),
+        ]
+      ),
+    newcl = 
+      factor(paste("c",1:nrow(ap_fuzz_avg)),levels = paste("c",1:nrow(ap_fuzz_avg)))
+  )
+
+neword
+```
+
+We bring this new naming over to the table where we assigned the mfuzz clustering, and we use this to reorganise the matrix based on their clustering.
+
+```{r}
+ap_cl_ac$newcl_diag <- translate_ids(ap_cl_ac$cluster, dict = neword)
+ap_cl_ac <- ap_cl_ac[order(ap_cl_ac$newcl_diag),]
+
+ap_fuzz <- ap_fuzz[match(ap_cl_ac$id, rownames(ap_fuzz)),]
+```
+
+Here we make the whole heatmap
+
+```{r, warning = FALSE, message = FALSE}
+# heatmap
+h_ap_mfuzz <-
+  Heatmap(
+    name = "scaled expression",
+    ap_fuzz,
+    row_split = ap_cl_ac$newcl_diag,
+    row_title_gp = gpar(fontsize = 8),
+    row_title = NA,
+    cluster_columns = FALSE,
+    cluster_rows = FALSE,
+    show_row_names = FALSE,
+    column_names_side = "top",
+    col = colorRamp2(breaks = c(-2,0,3),colors = c("#6ac4e7","#0c0c0c","#f3b700")),
+    clustering_method_rows = "ward.D2"
+  )
+```
+
+Here we plot the whole heatmap
+
+```{r, fig.width = 3.5, fig.height = 8}
+draw(h_ap_mfuzz)
+```
+
+We make this a png too.
+
+```{r}
+png("~/h_ap_fuzz.png", height = 1000, width = 600)
+draw(h_ap_mfuzz)
+dev.off()
+```
+
+And we save this data, which we will use in other markdowns.
+
+```{r}
+save(
+  ap_fpkm,
+  ap_filt,
+  ap_fuzz,
+  ap_cl_ac,
+  file = "outputs/rda/stuckemann_AP_remapped.rda"
+)
+
+save_to_excel(
+  list_of_objects =
+    list(
+      AP_fpkm = ap_fpkm %>% as.data.frame() %>% rownames_to_column(var = "id") %>% relocate(id, .before = "ap1") ,
+      AP_fpkm_filtered = ap_filt %>% as.data.frame() %>% rownames_to_column(var = "id") %>% relocate(id, .before = "ap1") ,
+      AP_scaled_mfuzz = ap_fuzz %>% as.data.frame() %>% rownames_to_column(var = "id") %>% relocate(id, .before = "ap1") ,
+      AP_clustering = ap_cl_ac
+      ),
+  output_file_name = paste0("./outputs/",fcha(),"_smed_stuckemann_ap_reanalysis.xlsx")
+)
+```
+
+## The End!
+
+```{r}
+sessionInfo()
+```

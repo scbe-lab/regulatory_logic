@@ -1,0 +1,453 @@
+--
+title: 'Smed CisReg project 17.A: OCR co-accesibility analysis using WGCNA'
+author: "Alberto Perez-Posada @apposada"
+date: "20/3/2025"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+dir <- '~/storage/projects/smed_cisreg/'
+fcha <- function(){ gsub("-","",Sys.Date()) }
+
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_knit$set(root.dir = dir)
+options(scipen=999)
+options(family="ArialMT")
+Sys.setenv(VROOM_CONNECTION_SIZE=5000072)
+```
+
+## About
+
+In this markdown we will run WGCNA on the pseudobulk of the single-cell ATAC-seq (see previous markdown). We will use the vast majority of OCRs detected in our dataset. An alternative run using OCRs detected as open in differentiated cells (vs neoblasts or vs all the rest) also exists (see Markdowns).
+
+This markdown is split into three different smaller markdowns to make it easier to navigate. Markdown A is just the WGCNA Run, markdown B is the agreement between accessibility and gene expression, markdown C is about motif enrichment in the ATAC OCRs plus agreement with TF expression.
+
+In markdown A, we will run WGCNA step by step as done in the RNA WGCNA markdown.
+
+## Load libraries
+
+```{r libraries, message=FALSE, warning=FALSE}
+# Libraries
+library(circlize)
+library(cola)
+library(colorspace)
+library(ComplexHeatmap)
+library(dplyr)
+library(ggplot2)
+library(igraph)
+library(plyr)
+library(rtracklayer)
+library(viridis)
+library(WGCNA)
+library(openxlsx)
+```
+
+## Load functions
+
+```{r load_functions}
+source("code/r_code/functions/sourcefolder.R")
+
+sourceFolder(
+  "code/r_code/functions/", #change for definitive path once its final
+  recursive = TRUE
+  )
+```
+
+## Load Data
+
+We load previous data including the pseudobulk of the previous markdown.
+
+```{r}
+load("outputs/rda/scatac_psbulk_counts_clustering_allpeaks_revision.rda")
+
+load("outputs/rda/scatac_celltype_utils.rda")
+
+broadcols <-
+  c(
+    "#969696", # neoblast
+    "#9ECAE1", # EEP
+    "#56A0CE", # EEP
+    "#2171B5", # epidermis
+    "#228B22", # phagocytes
+    "#869E42", # basal/goblet
+    "#B22222", # muscle
+    "#FEC44F", # neurons
+    "#FF69B4", # parenchyma
+    "#FFB0AB", # protonephridia
+    "#6428C8"  # secretory
+  )
+
+names(broadcols) <-   c(
+    "neoblast","eep","lep","epidermis",
+    "phagocytes","basalgoblet","muscle","neuron",
+    "parenchyma","protonephridia","secretory"
+    )
+```
+
+## WGCNA
+
+We start by keeping all the OCRs with at least 3 normalised counts across the dataset.
+
+```{r}
+# wgcna
+datExpr = as.data.frame(t(scatac_cw[rowSums(scatac_cw) > 3,]))
+rownames(datExpr) <- colnames(scatac_cw)
+```
+
+softPower:
+
+```{r}
+#softpower
+powers <- c(c(1:10), seq(from = 12, to = 20, by = 2))
+sft <- pickSoftThreshold(datExpr, powerVector = powers, verbose = 5)
+pdf("graphics/scatac_wgcna_sft_allpeaks_revision.pdf", he = 3.5, wi = 6)
+plot_scalefreetopology(sft)
+dev.off()
+
+plot_scalefreetopology(sft)
+```
+
+We set the power on 7 as it is high enough and is located more in the turning point of the "mean connectivity" graph.
+
+```{r}
+softPower  <-  7
+```
+
+Calculating the adjacency and TOM matrices
+
+```{r}
+#matrix
+adjacency  <-  adjacency(datExpr, power = softPower)
+TOM <- TOMsimilarity(adjacency)
+dimnames(TOM) <- dimnames(adjacency)
+dissTOM <- 1 - TOM
+```
+
+Clustering and module retrieval. We set minimum module size of 100 and split the hierarchical clustering tree with depth = 3.
+
+```{r}
+#clustering
+geneTree = hclust(as.dist(dissTOM), method = "ward.D2")
+minModuleSize <- 100
+dynamicMods <- cutreeDynamic(
+  dendro = geneTree,
+  distM = dissTOM,
+  deepSplit = 3,
+  pamRespectsDendro = FALSE,
+  minClusterSize = minModuleSize
+)
+
+#module retrieval
+moduleColors <- labels2colors(dynamicMods)
+names(moduleColors) <- colnames(datExpr)
+
+coacc_id_module_wgcna <- data.frame(
+  id = colnames(datExpr),
+  module = moduleColors
+)
+```
+
+The dendrogram:
+
+```{r, figure.width = 6, figure.height = 3.5}
+pdf("graphics/scatac_wgcna_modulecolors_allpeaks_revision.pdf", wi = 6, he = 3.5)
+plotDendroAndColors(
+  geneTree, moduleColors,
+  c("Dynamic Tree Cut"), dendroLabels = FALSE,
+  hang = 0.03, addGuide = TRUE, guideHang = 0.05
+)
+dev.off()
+
+png("graphics/scatac_wgcna_modulecolors_allpeaks_revision.png", wi = 580, he = 340)
+plotDendroAndColors(
+  geneTree, moduleColors,
+  c("Dynamic Tree Cut"), dendroLabels = FALSE,
+  hang = 0.03, addGuide = TRUE, guideHang = 0.05
+)
+dev.off()
+
+plotDendroAndColors(
+  geneTree, moduleColors,
+  c("Dynamic Tree Cut"), dendroLabels = FALSE,
+  hang = 0.03, addGuide = TRUE, guideHang = 0.05
+)
+```
+
+Number of modules detected:
+
+```{r}
+length(unique(moduleColors))
+```
+
+Tidying up modules:
+
+```{r}
+#module tidying
+coacc_wg_module <- 
+  merge(
+    t(datExpr),
+    coacc_id_module_wgcna,
+    by.x = 0, by.y = 1,
+    all.X = TRUE
+  )
+
+rownames(coacc_wg_module) <- coacc_wg_module[,1]
+coacc_wg_module[,1] <- NULL
+
+coacc_modules_table <- 
+  reorder_modules(
+    coacc_wg_module,
+    order_criterion = smed_broadtypes$ctype,
+    ordering_function = "median",
+    thresh_sd = 1,
+    acronym = "O"
+    )
+
+coacc_modules_table$newname <- 
+  factor(
+    coacc_modules_table$newname,
+    levels=unique(coacc_modules_table$newname)
+    )
+
+coacc_modules_table$col <- 
+  smed_broadtypes$col[match(coacc_modules_table$celltypes, smed_broadtypes$ctype)]
+
+coacc_modules_table$col[grep(",",coacc_modules_table$celltypes)] <- 
+  sapply(
+    coacc_modules_table$celltypes[grep(",",coacc_modules_table$celltypes)],
+    function(x){
+      y = average_cols(broad_cols[unlist(strsplit(x,split=","))])
+      return(y)
+    }
+  )
+if(length(coacc_modules_table$col[is.na(coacc_modules_table$col)]) !=0){
+  coacc_modules_table$col[is.na(coacc_modules_table$col)] <- 
+    sapply(
+      seq(.1,.6, length = length(coacc_modules_table$col[is.na(coacc_modules_table$col)])),
+      function(x){y=rgb(x,x,x);return(y)}
+    )
+}
+
+coacc_modules_table$newcolor <- 
+  translate_ids(
+    x = coacc_modules_table$module_wgcna,
+    dict = 
+      unique(data.frame(
+        module_wgcna = coacc_modules_table$module_wgcna,
+        colour = sapply(
+          as.data.frame(rgb2hsv(col2rgb(coacc_modules_table$module_wgcna))),
+          pastelise_hsv,
+          n=0.6
+          )
+      ))
+  )
+```
+
+Renaming the modules in the tables, following the table of reordered/tidied up modules
+
+```{r}
+coacc_id_module <-
+  data.frame(
+    id = coacc_id_module_wgcna$id,
+    module = 
+      translate_ids(
+        x = coacc_id_module_wgcna$module,
+        dict = coacc_modules_table[,c(2,4)])
+  )
+
+coacc_wg_module$module <- 
+  factor(
+    translate_ids(coacc_wg_module$module, dict = coacc_modules_table[,c(2,4)]),
+    levels = coacc_modules_table$newname
+  )
+
+coacc_wg_module  <- coacc_wg_module[order(coacc_wg_module$module),]
+```
+
+Some material for the heatmap annotations:
+
+```{r, fig.width = 10, fig.height = 3}
+# stacked barplot
+hm_bp <-
+  t(apply(
+    aggregate(scatac_cw[coacc_id_module$id,],by = list(coacc_id_module$module),FUN = mean)[,-1],
+    1,
+    function(x)x/sum(x)
+  ))
+rownames(hm_bp) <- levels(coacc_modules_table$newname)
+
+coacc_modules_table$cell_color <-
+  translate_ids(
+    x = as.character(coacc_modules_table$newname),
+    dict = data.frame(
+      module = rownames(hm_bp),
+      color = 
+        translate_ids(
+          apply(hm_bp,1,function(x){y=names(x[x==max(x)]);
+          return(y)}), smed_broadtypes[,c(1,2)]
+          )
+      )
+    )
+
+moduleSizes <-
+  setNames(coacc_modules_table$num_genes,levels(coacc_modules_table$newname))
+
+barplot(t(hm_bp), col = broadcols, border = darken(broadcols, 0.5), las = 2, cex.names = 0.5)
+```
+
+Creating the heatmap matrix (a subset of the total wgcna table) and annotations
+
+```{r}
+nOCRs_per_module <- 20
+set.seed(4343)
+coacc_wg_module_viz <- 
+  coacc_wg_module %>% rownames_to_column("id") %>% group_by(module) %>% slice_sample(n=nOCRs_per_module) %>% column_to_rownames("id")
+
+modulecolumn <- which(!sapply(coacc_wg_module,is.numeric))
+
+wg_ha = HeatmapAnnotation(
+  name = "cell types",
+  cluster = factor(colnames(coacc_wg_module)[-modulecolumn], levels=broads),
+  col = list(
+    cluster = setNames(
+      smed_broadtypes$col, # this was here before just in case needed again [match(colnames(coacc_wg_module),smed_ctypes$ctype)]
+      smed_broadtypes$ctype) # same
+  ),
+  show_legend = FALSE
+)
+
+wg_mod <-
+  HeatmapAnnotation(
+    stack = 
+      anno_barplot(
+        hm_bp[rep(1:length(levels(coacc_modules_table$newname)),each=nOCRs_per_module),],
+        gp = gpar(col = smed_broadtypes$col),
+        border = FALSE
+      ),
+    npeaks = 
+      anno_barplot(
+        rep(moduleSizes,each=nOCRs_per_module),
+        gp = gpar(col = "#444444"),#rep(coacc_modules_table$general_color,each=30),xlim = c(50,1000)),
+        border = FALSE
+      ),
+    gap = unit(10, "points"),
+    which = "row"
+  )
+
+wg_ha@anno_list$cluster@label <- NULL
+```
+
+The Heatmap, again where we only show a subset of all the OCRs. :
+
+```{r}
+coacc_wgcna_hm <-
+  Heatmap(
+    t(apply(coacc_wg_module_viz[,-modulecolumn],1,relativise)),
+    name = "accessibility",
+    cluster_rows= F,
+    show_row_names = F,
+    show_row_dend = F,
+    cluster_columns = as.hclust(cooc$tree),
+    show_column_names = TRUE,
+    column_names_side = "bottom",
+    row_split = coacc_wg_module_viz$module,
+    row_title_gp = gpar(fontsize = 6),
+    column_names_gp = gpar(fontsize = 6),
+    row_title_side = "left",
+    row_title_rot = 0,
+    column_split = 4,
+    col = c("#fcfdff", "#174fbc"),
+    # col = colorRampPalette(c("#f1f5ff","#b1b8c4","#2c2b46"))(10),
+    top_annotation=wg_ha,
+    bottom_annotation = wg_ha,
+    right_annotation = wg_mod,
+    heatmap_legend_param = gpar(nrow = 2)
+  )
+```
+
+```{r fig.width = 3.5, fig.height = 8}
+draw(coacc_wgcna_hm)
+```
+
+```{r, eval = FALSE}
+pdf("graphics/coacc_wgcna_hm_allpeaks_revision.pdf", height = 8, width = 3.5)
+draw(coacc_wgcna_hm)
+dev.off()
+```
+
+## Graph visualisation
+
+```{r, fig.width = 8, fig.height = 8}
+g <- graph_from_adjacency_matrix(
+  TOM,mode = "upper",diag = FALSE, weighted = TRUE
+)
+
+g <- subgraph.edges(g, eids = E(g)[E(g)$weight > .4])
+V(g)$module <- coacc_id_module$module[match(V(g)$name, coacc_id_module$id)]
+V(g)$col <- coacc_modules_table$col[match(V(g)$module,coacc_modules_table$newname)]
+V(g)$newcol <- coacc_modules_table$newcolor[match(V(g)$module,coacc_modules_table$newname)]
+V(g)$cellcol <- coacc_modules_table$cell_color[match(V(g)$module,coacc_modules_table$newname)]
+ran <- .25+relativise(E(g)$weight)
+ran[ran>1] <- 1
+E(g)$color <- rgb(0.1,0.1,0.1,ran)
+
+set.seed(4343)
+l = layout_with_kk(g,weights = E(g)$weight, epsilon = 0, kkconst = 250)#100
+
+png("graphics/scatac_coacc_graph_allpeaks.png", wi = 1024, he = 1024)
+plot(
+  g,
+  layout = l,
+  vertex.size = 3,
+  vertex.label = NA,
+  vertex.color = V(g)$newcol,
+  vertex.frame.color = darken(V(g)$cellcol, .4),
+  main = "Groups of co-accessible OCRs"
+)
+dev.off()
+
+plot(
+  g,
+  layout = l,
+  vertex.size = 3,
+  vertex.label = NA,
+  vertex.color = V(g)$newcol,
+  vertex.frame.color = darken(V(g)$cellcol, .4),
+  main = "Groups of co-accessible OCRs"
+)
+```
+
+## Saving
+
+We will save what we have here so far:
+
+```{r}
+save(
+  coacc_modules_table,
+  coacc_id_module,
+  coacc_wg_module,
+  coacc_wg_module_viz,
+  hm_bp,
+  wg_ha,
+  wg_mod,
+  file = "outputs/rda/scatac_wgcna/smed_cisreg_scatac_wgcna_revision.rda"
+)
+```
+
+```{r saving}
+save_to_excel(
+  list_of_objects =
+    list(
+      `scatac_modules_table` = coacc_modules_table,
+      `OCR_module_association` = coacc_id_module,
+      `OCR_accessibility_and_module` = coacc_wg_module,
+      `OCR_data_for_heatmap` = coacc_wg_module_viz
+    )
+    ,
+  output_file_name = paste0("./outputs/tables_for_supp/",fcha(),"_smed_cisreg_scatac_modules_information.xlsx")
+)
+```
+
+```{r}
+sessionInfo()
+```

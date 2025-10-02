@@ -1,0 +1,22 @@
+{
+    "read_files": "[ /omics-storage/lab-solana/alberto/DATA/static/reads/alx3_akheralie/intact/SRR25740102/SRR25740102_1.fastq.gz, /omics-storage/lab-solana/alberto/DATA/static/reads/alx3_akheralie/intact/SRR25740102/SRR25740102_2.fastq.gz]",
+    "expected_format": "ISR",
+    "compatible_fragment_ratio": 1.0,
+    "num_compatible_fragments": 59176061,
+    "num_assigned_fragments": 59176061,
+    "num_frags_with_concordant_consistent_mappings": 49070429,
+    "num_frags_with_inconsistent_or_orphan_mappings": 10163409,
+    "strand_mapping_bias": 0.00004216210880481364,
+    "MSF": 0,
+    "OSF": 0,
+    "ISF": 2069,
+    "MSR": 0,
+    "OSR": 0,
+    "ISR": 49070429,
+    "SF": 5653002,
+    "SR": 4508338,
+    "MU": 0,
+    "OU": 0,
+    "IU": 0,
+    "U": 0
+}

@@ -35,7 +35,7 @@ do_pf_q <- function(mtx, q = 0.5, sf = NULL) {
   return(res)
 }
 
-#' "Cell weight" Matrix (we need a better name). Developed in collaboration with Isabel Liao from Yi-Jyun's Lab
+#' "Cell weight" Matrix (we need a better name). Developed in collaboration with Isabel Liao from Yi-Jyun Luo's Lab
 #' @params x: a gene per cell cluster matrix with number of counts per gene
 #' @params y: a gene per cell cluster matrix with how many cells are expressing a given gene per cluster
 #' @params C: a named vector with the size of all clusters

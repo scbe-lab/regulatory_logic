@@ -1,0 +1,25 @@
+gene	keep	TF	cell type	belongs_connects_module	class	homer_peakset	homer_motif	box_homer_output	box
+h1SMcG0006253	y	soxP-1	neoblasts,commited neoblasts,pharynx cell type	s01	HMG	m01	Sox3(HMG);Sox4(HMG);Sox10(HMG);Sox15(HMG)	TTGT	CATTGT
+h1SMcG0009867	y	soxP-3	early epidermal progenitors	m02	HMG	s03	Sox6(HMG);Sox21(HMG);Sox3(HMG)	TTGT	CATTGT
+h1SMcG0017428	?	post-2a	epidermis DVb	m07	Homeodomain	m07	Cdx2(Homeobox)	MATAAAA	MATAAAA
+h1SMcG0005320	?	soxB1-2	neoblasts, neurons	m12	HMG	s01	Sox7(HMG);Sox21(HMG)	CATTGT	CATTGT
+h1SMcG0002500	y	dll-1	otf cells	m14	Homeodomain	s08	DLX5(Homeobox);DLX1(Homeobox);DLX2(Homeobox)	NSNNTAATTA	TAATTA
+h1SMcG0008833	?	pou2/3-1	protonephridia	m17	Pou	m18	Brn1(POU,Homeobox);Oct2(POU,Homeobox);Oct4(POU,Homeobox);Oct6(POU,Homeobox);Oct11(POU,Homeobox)	TATGCWAATBAV	ATGCAAAT
+h1SMcG0014295	?	six1/2-3	protonephridia	m17	Homeodomain	m18	Cux2(Homeobox)	GWAAYHTGAKMC	AACCTGA
+h1SMcG0000282	y	foxa1	psd positive	m19	Forkhead	m19	FOXA1(Forkhead);FOXM1(Forkhead);Foxa3(Forkhead);NF1:FOXA1(CTF,Forkhead)	WAAGTAAACA	GTAAACA
+h1SMcG0001060	y	atoh8-2	secretory, muscle	s23, m20	BHLH	s23,m20	Atoh1(bHLH);NeuroG2(bHLH);NeuroD1(HMG)	GCCATCTGTT	CASMTG
+h1SMcG0008441	y	pax2/5/8-1	early epidermal progs,epidermis	m22	Paired	m05,m07,s02,s03	PAX5(Paired,Homeobox);PAX6(Paired,Homeobox);PAX8(Paired,Homeobox)	NGTGTTCAVTSAAGCGKAAA	GCAGCCAAGC
+h1SMcG0017306	y	egr-1	early epidermal progs,epidermis,neoblasts	m22	Zf	m05	Egr1(Zf)	NGCGTGGGCGGR	GTGGGC
+h1SMcG0009317	y	nkx2-2	phagocytes,phag prog,commited neoblasts	m23	NKX	m23	Nkx2.1(Homeobox);Nkx2.2(Homeobox)	RSCACTY	RSCACTY
+h1SMcG0007041	y	hox4b	muscle, neurons, epidermis (pharynx opening)	m24	Homeodomain	m07,m24,m52	Hoxd10(Homeobox);Hoxd11(Homeobox);Hoxd13(Homeobox)	GGCMATGAAA	GGCMATGAAA
+h1SMcG0016730	y	nf-yc	neurons, secretory	m32*	NF	m12,m14,m24,m29,m30,m31,m40,m47,m51,m52,s07,s22	NFY(CCAAT)	RGCCAATSRG	GCCAAT
+h1SMcG0016896	y	foxF2	parenchyma	m41	Forkhead	m41	FOXA1(Forkhead);Foxf1(Forkhead);FoxL2(Forkhead);FOXA1(Forkhead);FOXK1(Forkhead);Foxo3(Forkhead);Foxo1(Forkhead);Foxa2(Forkhead);FOXP1(Forkhead);FOXK2(Forkhead)	WWATRTWWWCA	GTAAACA
+h1SMcG0008388	y	gata456-1	commited neoblasts,phagocytes prog & phagocytes,basal cells	m46	Zf	m46	Gata4(Zf)	TTATCT	TTATCT
+h1SMcG0015572	y	nkx1	neurons	m47	NKX	m40	Bapx1(Homeobox)	TTRAGTGSYK	RAGTGS
+h1SMcG0019688	y	hnf4	neoblasts,phagocyte lineage,parenchymal lineage	m49	NR	m49	HNF4a(NR),DR1;PPARa(NR),DR1;RXR(NR),DR1;TR4(NR),DR1	CAAAGT()CA	CAAAGT
+h1SMcG0009686	y	mitfl-1	pgrn positive cells	m49*	bHLH	m49	MITF(bHLH)	RTCATGTGAC	CATGTG
+h1SMcG0003132	y	cux-2	secretory, germ cell progenitors, neurons	m51	CUT	m51	Cux2(Homeobox)	HNRAATCAAT	AACCTGA
+h1SMcG0020741	y	rfx3	ciliated cells	m53*	RFX	m59	Rfx2(HTH);Rfx1(HTH);Rfx5(HTH);Rfx6(HTH)	GTTGCCATGGCAAC	GTTGCCA
+h1SMcG0000267	y	ets-1	parenchyma	m41	ETS	m42	Ets1-distal(ETS);EHF(ETS);ELF1(ETS);ELF3(ETS);Elf4(ETS);ELF5(ETS);ERG(ETS);ETS(ETS);Ets1-distal(ETS);ETS1(ETS);ETV1(ETS);EWS:ERG-fusion(ETS);EWS:FLI1-fusion(ETS);GABPA(ETS);SPDEF(ETS)	MACAGGAAGT	CAGGAAGT
+h1SMcG0016534	y	ascl-2	secretory	s24	bHLH	s24	Ascl1(bHLH);HEB(bHLH);Pitx1:Ebox(Homeobox,bHLH);SCL(bHLH);Twist(bHLH)	SSRGCAGCTGCH	CAGCTG
+h1SMcG0016003	y	coe	neurons	m12,m52	EBF	m12	EBF(EBF);EBF1(EBF);EBF2(EBF)	TCCCCWGGGGA	TCCCCWGGGGA

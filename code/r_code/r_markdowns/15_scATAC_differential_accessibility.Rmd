@@ -1,12 +1,12 @@
 --
-title: 'Smed CisReg project 08: Differential chromatin accessibility analysis'
+title: 'Smed CisReg project 15: Differential chromatin accessibility analysis'
 author: "Alberto Perez-Posada @apposada"
 date: "17/4/2024"
 output: html_document
 ---
 
 ```{r setup, include=FALSE}
-dir <- '~/projects/smed_cisreg/'
+dir <- '~/storage/projects/smed_cisreg/'
 fcha <- function(){ gsub("-","",Sys.Date()) }
 
 knitr::opts_chunk$set(echo = TRUE)
@@ -17,7 +17,7 @@ Sys.setenv(VROOM_CONNECTION_SIZE=5000072)
 
 ## About
 
-In this markdown we will integrate the scATAC-seq data and the scRNA-seq data.
+In this markdown we will start running downstream analyses in the pseudobulk of the single-cell ATAC-seq. Here we will perform a differential accessibility analysis that will allow us to detect OCRs that are open at any given cell type (in relation to other cell types, or in relation to neoblasts). We will generate a pseudobulk dataset that will be the basis for WGCNA further down the line.
 
 ## Load libraries
 
@@ -53,39 +53,44 @@ sourceFolder(
 ```
 
 ## Load Data
+
+We load the single cell ATAC-Seq data and some useful color/labelling data.
+
 ```{r}
 smed_cisreg_scatac <- readRDS("outputs/rda/seurat_scatac/smed_cisreg_scATAC_consensus_identities.RDS")
 scatac_idents <- smed_cisreg_scatac$broadtype
 broads <- levels(scatac_idents)
 
 broad_cols <-
-  c(
-    "#969696", # neoblast
-    "#9ECAE1", # EEP
-    "#56A0CE", # EEP
-    "#2171B5", # epidermis
-    "#228B22", # phagocytes
-    "#869E42", # basal/goblet
-    "#B22222", # muscle
-    "#FEC44F", # neurons
-    "#FF69B4", # parenchyma
-    "#FFB0AB", # protonephridia
-    "#6428C8"  # secretory
-  )
+  c("#969696", "#9ECAE1", "#56A0CE", "#2171B5", "#228B22", "#869E42", 
+    "#B22222", "#FEC44F", "#FF69B4", "#FFB0AB", "#6428C8" )
 smed_broadtypes <-
   data.frame(
     ctype = broads,
     col = broad_cols
   )
 broad_cols <- setNames(broad_cols,broads)
+
 ```
 
 ## Finding differentially accesible peaks: pseudobulk
+
+Below we will retrieve a gene x sample matrix to perform differential chromatin accessibility analysis.
+
+We will do this, for each gene, by aggregating counts from cells belonging to the same combination of cell type, condition, and replicate.
+
+The resulting matrix will be many columns wide, and it is accompanied by a "sample table" data frame with information for what each column is/means.
+
+This function is adjacent to the pseudobulk function we have discussed in previous markdowns.
 
 ```{r}
 # identity
 scatac_idents <- smed_cisreg_scatac$broadtype
 broads <- levels(scatac_idents)
+
+# btw we save this because it will be useful in other markdowns:
+save(smed_broadtypes, scatac_idents, broads, broad_cols,
+     file = "outputs/rda/scatac_celltype_utils.rda")
 
 # replicates:
 set.seed(1234)
@@ -105,8 +110,6 @@ psbulk_psrep_scatac <-
   )
 ```
 
-
-
 We tidy up the sampletable and the matrix
 
 ```{r}
@@ -119,9 +122,9 @@ sampletable$replicate <- factor(sampletable$replicate, levels = levels(scatac_ps
 dac_mat <- psbulk_psrep_scatac$matrix
 ```
 
-# Differential gene expression
+# Differential gene expression between a given cell type and neoblasts (one-vs-neoblast / X-vs-neo)
 
-
+To find OCRs that are open in any cell type respect to neoblasts, we will create a list of contrasts to later pass down to a DESeq2 wrapper.
 
 ```{r}
 list_contrasts <-
@@ -184,7 +187,7 @@ for(celltype in names(list_DCA_vs_neo)){
     ggtitle(label = gsub("_neoblast","",celltype))
 }
 
-pdf("~/projects/smed_cisreg/graphics/scatac_diff_ocrs_volcano.pdf", width = 12, height = 2)
+pdf("graphics/scatac_diff_ocrs_volcano.pdf", width = 12, height = 2)
 grid.arrange(grobs = list_volcanos, nrow = 1)
 dev.off()
 
@@ -193,6 +196,8 @@ grid.arrange(grobs = list_volcanos, nrow = 1)
 
 
 ## Chromatin profile of these diff. accessible OCRs
+
+For this we will use the package "EnrichedHeatmap", and our chromatin data (from the bam files).
 
 ```{r, fig.width = 18, fig.height = 3}
 cellranger_peaks <-
@@ -227,111 +232,20 @@ for(i in names(list_DCA_vs_neo)){
 }
 
 EH_list_grid <- lapply(EH_list, function(x){grid.grabExpr(draw(x))})
-pdf("~/projects/smed_cisreg/graphics/chromatin_heatmap_DCA_OCRs.pdf", width = 18, height = 3)
+pdf("graphics/chromatin_heatmap_DCA_OCRs.pdf", width = 18, height = 3)
 grid.arrange(grobs = EH_list_grid, nrow = 1)
 dev.off()
 ```
 
-## Motif enrichment analysis
-
-```{r}
-load("~/projects/smed_cisreg/outputs/rda/scatac_peaks.rda")
-
-for (i in names(list_DCA_vs_neo)){
-  message(i)
-  d <- list_DCA_vs_neo[[i]]$res
-  d <- d[d$log2FoldChange > 0 & d$padj < .05,]
-  d <- d[complete.cases(d),]
-  d <- d[order(d$padj),]
-  pks <- rownames(d)
-  peaks_bed <- smed_peaks[smed_peaks$id %in% pks,]
-  j <- i
-  j <- gsub(" ","_",gsub("/","_",i))
-  filename <- paste0("~/projects/smed_cisreg/outputs/scatac/seurat_outputs/homer/DACs_vs_neo/smed_cisreg_scatac_DACs_vsneo_",j,".bed")
-  write.table(
-    peaks_bed, file = filename, sep = "\t", quote = F, row.names = F, col.names = F
-  )
-  rm(pks,peaks_bed,filename,j)
-}
-```
-
-```{r}
-#consider using -h option in homer as well as -mis 3 instead of -mis 2
-# Load table
-motifs_dacs_0 <- 
-  read_tsv("/mnt/sda/alberto/projects/smed_cisreg/outputs/scatac/seurat_outputs/homer/results_DACs_vs_neo_cellrangerpeaks/motifs_all.tsv")
-
-# tidyr wrapper to present a tidy table
-motifs_dacs <- parse_homer_output_table(
-  tsv_motifs = motifs_dacs_0,
-  categ_regex1 = "",
-  categ_regex2 = "",
-  qval_thresh = 0.1,
-  max_logqval = 10
-)
-colnames(motifs_dacs)[1] <- "module"
-
-motifs_dacs$module[motifs_dacs$module == "early"] <- "early epidermal progenitors"
-motifs_dacs$module[motifs_dacs$module == "late"] <- "late epidermal progenitors"
-motifs_dacs$module[motifs_dacs$module == "basal"] <- "basal/goblet cells"
-
-# Transform module names column into ordered factor much like other plots from the WGCNA analysis
-motifs_dacs$module <- 
-  factor(
-    motifs_dacs$module,
-    levels = c(
-      "neoblasts","early epidermal progenitors","late epidermal progenitors",
-      "epidermis", "phagocytes", "basal/goblet cells", "muscle", "neurons",
-      "parenchyma", "protonephridia", "secretory"
-    )
-  )
-
-# Arrange by module name and decreasing values of % peaks with motif found, to facilitate readability
-motifs_dacs <- 
-  motifs_dacs[
-    with(motifs_dacs,order(module,-as.numeric(pct_target_seqs_with_motif))),
-    ] #https://stackoverflow.com/questions/16205232/order-data-frame-by-columns-in-increasing-and-decreasing-order
-
-# Transform motifs names column into ordered factor so that ggplot respects the ordering we did in the step immediately above
-motifs_dacs$motif <- 
-  factor(motifs_dacs$motif, levels = rev(unique(motifs_dacs$motif)))
-```
-
-```{r, fig.width = 6, fig.height = 8}
-motifs_dacs_vs_neo_plot <- 
-  ggplot(
-    data = motifs_dacs, 
-    aes(x = module, y = motif,
-        color = `logqval`, size = as.factor(size_pct))) +
-  geom_point() +
-  scale_color_gradient(
-    low = alpha("#401af0",0.6), high = alpha("#be0143",0.6)
-  ) +
-  theme_bw() +
-  xlab("") + ylab("") +
-  ggtitle("Motif enrichment analysis (qvalue <0.1)") +
-  theme(
-    text = element_text(size=10), legend.text = element_text(size=10), 
-    axis.text.x = element_text(angle = 90, vjust = 0.5)
-  ) +
-  scale_size_manual(values = c(1, 2, 3, 4,5), labels = c("1-10", "10-20", "20-50", "50+")) +
-  guides(size=guide_legend(title="% peaks with motif"))
-
-print(motifs_dacs_vs_neo_plot)
-
-pdf("graphics/scatac_DACs_vs_neo_motifs.pdf", width = 6, height = 8)
-print(motifs_all_plot)
-dev.off()
-
-```
-
 ## Check with markers
+
+Presumably, these cell type-specific OCRs should overlap well with scATAC markers, and should have a clearly delimited expression in our scATAC-seq dataset. We will check that now.
 
 ```{r}
 # check with markers
 scatac_markers <- 
   read.delim2(
-    "~/projects/smed_cisreg/outputs/scatac/seurat_outputs/smed_cisreg_scatac_markers.tsv",
+    "outputs/scatac/seurat_outputs/smed_cisreg_scatac_markers.tsv",
     header = TRUE
   )
 
@@ -369,7 +283,7 @@ pha_dacs_p <-
 ppp <- CombinePlots(plots = pha_dacs_p)
 
 pdf(
-  file = "~/projects/smed_cisreg/graphics/pha_DACs_plots.pdf",
+  file = "graphics/pha_DACs_plots.pdf",
   width= 25,
   height = 20
 )
@@ -385,49 +299,9 @@ gridExtra::grid.arrange(
 )
 ```
 
+## Differential chromatin accessibility in NEOBLASTS versus all differentiated cells ( OCRs NEO-vs-ALL )
 
-## Save
-
-```{r}
-hq_peaks <- 
-  unique(unlist(sapply(
-    list_DCA_vs_neo,
-    function(x){
-      df = x$res
-      df = df[complete.cases(df),]
-      df = df[df$padj < .05 & df$log2FoldChange > 0,]
-      y = rownames(df)
-      return(y)
-    }
-    )))
-```
-
-```{r}
-save(
-  list_DCA_vs_neo,
-  psbulk_psrep_scatac,
-  sampletable,
-  dac_mat,
-  file = "outputs/rda/scatac_deseq2_vs_neo.rda"
-)
-
-save(
-  hq_peaks,
-  file = "outputs/rda/scatac_hq_peaks.rda"
-)
-
-save(
-  smed_broadtypes,
-  scatac_idents,
-  broads,
-  broad_cols,
-  file = "outputs/rda/scatac_celltype_utils.rda"
-)
-```
-
-## Differential chromatin accessibility in neoblasts versus all differentiated cells
-
-Pseudobulk labelling all non-neoblast cells as "diffcells" to aggregate their counts together:
+To check whether neoblasts have any particular chromatin signature, we can try and find differential OCRs only in them and not the rest. For that, we now do pseudobulk but labelling all non-neoblast cells as "diffcells" to aggregate their counts together:
 
 ```{r}
 # identity
@@ -486,10 +360,12 @@ volcano_neob <- df %>%
   theme(panel.border = element_rect(colour = "black", fill=NA, linewidth = 0.75), axis.title.x=element_blank(), axis.title.y=element_blank())+
     ggtitle(label = "neoblast vs diffcells")
     
-pdf("~/projects/smed_cisreg/graphics/volcano_neoblast_vs_diffcells.pdf", width = 2.5, height = 3)
+pdf("graphics/volcano_neoblast_vs_diffcells.pdf", width = 2.5, height = 3)
 print(volcano_neob)
 dev.off()
 ```
+
+## Differential chromatin accessibility in a given cell type versus the rest (one-vs-all / one-vs-else)
 
 We will do the same but for ALL the cell types vs the rest.
 
@@ -536,9 +412,11 @@ for (i in levels(scatac_idents)){
 
 save(
   list_DAC_vs_else,
-  file = "outputs/rda/scatac_deseq2_vs_all.rda"
+  file = "outputs/rda/scatac_dge/scatac_deseq2_vs_all.rda"
 )
 ```
+
+Here the volcano plots:
 
 ```{r}
 y_max <- 40
@@ -562,10 +440,13 @@ for(celltype in names(list_DAC_vs_else)){
     ggtitle(label = gsub("_neoblast","",celltype))
 }
 
-pdf("~/projects/smed_cisreg/graphics/scatac_diff_ocrs_vsElse_volcano.pdf", width = 13.2, height = 2)
+pdf("graphics/scatac_diff_ocrs_vsElse_volcano.pdf", width = 13.2, height = 2)
 grid.arrange(grobs = list_volcanos, nrow = 1)
 dev.off()
 ```
+
+And the chromatin plots:
+
 ```{r}
 EH_list <- list()
 for(i in names(list_DAC_vs_else)){
@@ -588,225 +469,12 @@ for(i in names(list_DAC_vs_else)){
 }
 
 EH_list_grid <- lapply(EH_list, function(x){grid.grabExpr(draw(x))})
-pdf("~/projects/smed_cisreg/graphics/chromatin_heatmap_DCA_OCRs_vsElse.pdf", width = 18, height = 3)
+pdf("graphics/chromatin_heatmap_DCA_OCRs_vsElse.pdf", width = 18, height = 3)
 grid.arrange(grobs = EH_list_grid, nrow = 1)
 dev.off()
 ```
 
-## List of example featureplots of OCRs
-
-```{r eval= FALSE}
-list_res <- list_DCA_vs_neo # list_DAC_vs_else or list_DCA_vs_neo
-what <- "neo"
-
-for (i in names(list_res)){
-  message(i)
-  
-  r <- list_res[[i]]$res[complete.cases(list_res[[i]]$res),]
-  r <- r[r$padj < .05,]
-  r <- r[order(r$padj),]
-  pks <- rownames(r[r$log2FoldChange > 0,])
-  if(length(pks) == 0 ) next
-  
-  for (j in 1:20){
-    if( j > length(pks)) next
-    
-    p <- 
-      FeaturePlot(
-        smed_cisreg_scatac,
-        features = pks[j],
-        cols = c("#DAE7F2","#174fbc"),
-        order = TRUE
-      )
-    
-    p <- p + NoAxes() + NoLegend()
-    
-    filename <- paste0("~/projects/smed_cisreg/graphics/DACs_vsneo_vselse/DACs_vs_",what,"_",gsub("/","_",i),"_",j,".png")
-    png(file = filename, width= 256, height = 256)
-    print(p)
-    dev.off()
-  }
-  
-  message("done ", i)
-}
-```
-
-## Saving DCA analysis results
-
-```{r eval = FALSE}
-list_res <- list_DCA_vs_neo # list_DAC_vs_else or list_DCA_vs_neo
-what <- "neo"
-
-for (i in names(list_res)){
-  message(i)
-  
-  r <- list_res[[i]]$res[complete.cases(list_res[[i]]$res),]
-  r <- r[r$padj < .05,]
-  r <- r[order(r$padj),]
-  if(nrow(r) == 0) next
-  
-  write.xlsx(
-    r,
-    file = paste0("./outputs/smed_cisreg_scATAC_DCA_vs_",what,"_",gsub("/","_",i),".xlsx"),
-    sheetName = gsub("/","_",i),
-    col.names = TRUE, row.names = TRUE, showNA = TRUE
-  )
-  
-  message("done ", i)
-}
-```
-
-
-## Motif enrichment analysis
-
-```{r}
-load("~/projects/smed_cisreg/outputs/rda/scatac_peaks.rda")
-
-for (i in names(list_DAC_vs_else)){
-  message(i)
-  d <- list_DAC_vs_else[[i]]$res
-  d <- d[d$log2FoldChange > 0 & d$padj < .05,]
-  d <- d[complete.cases(d),]
-  if(nrow(d) == 0) next # take into account neoblasts
-  d <- d[order(d$padj),]
-  pks <- rownames(d)
-  peaks_bed <- smed_peaks[smed_peaks$id %in% pks,]
-  j <- i
-  j <- gsub(" ","_",gsub("/","_",i))
-  filename <- paste0("~/projects/smed_cisreg/outputs/scatac/seurat_outputs/homer/DACs_vs_else/smed_cisreg_scatac_DACs_vselse_",j,".bed")
-  write.table(
-    peaks_bed, file = filename, sep = "\t", quote = F, row.names = F, col.names = F
-  )
-  rm(pks,peaks_bed,filename,j)
-}
-```
-
-```{r}
-#consider using -h option in homer as well as -mis 3 instead of -mis 2
-# Load table
-motifs_dacs_vs_else_0 <- 
-  read_tsv("/mnt/sda/alberto/projects/smed_cisreg/outputs/scatac/seurat_outputs/homer/results_DACs_vs_else_cellrangerpeaks/motifs_all.tsv")
-
-# tidyr wrapper to present a tidy table
-motifs_dacs_vs_else <- parse_homer_output_table(
-  tsv_motifs = motifs_dacs_vs_else_0,
-  categ_regex1 = "",
-  categ_regex2 = "",
-  qval_thresh = 0.1,
-  max_logqval = 10
-)
-colnames(motifs_dacs_vs_else)[1] <- "module"
-
-motifs_dacs_vs_else$module[motifs_dacs_vs_else$module == "early"] <- "early epidermal progenitors"
-motifs_dacs_vs_else$module[motifs_dacs_vs_else$module == "late"] <- "late epidermal progenitors"
-motifs_dacs_vs_else$module[motifs_dacs_vs_else$module == "basal"] <- "basal/goblet cells"
-
-# Transform module names column into ordered factor much like other plots from the WGCNA analysis
-motifs_dacs_vs_else$module <- 
-  factor(
-    motifs_dacs_vs_else$module,
-    levels = c(
-      "neoblasts","early epidermal progenitors","late epidermal progenitors",
-      "epidermis", "phagocytes", "basal/goblet cells", "muscle", "neurons",
-      "parenchyma", "protonephridia", "secretory"
-    )
-  )
-
-# Arrange by module name and decreasing values of % peaks with motif found, to facilitate readability
-motifs_dacs_vs_else <- 
-  motifs_dacs_vs_else[
-    with(motifs_dacs_vs_else,order(module,-as.numeric(pct_target_seqs_with_motif))),
-    ] #https://stackoverflow.com/questions/16205232/order-data-frame-by-columns-in-increasing-and-decreasing-order
-
-# Transform motifs names column into ordered factor so that ggplot respects the ordering we did in the step immediately above
-motifs_dacs_vs_else$motif <- 
-  factor(motifs_dacs_vs_else$motif, levels = rev(unique(motifs_dacs_vs_else$motif)))
-```
-
-```{r, fig.width = 8, fig.height = 12}
-motifs_dacs_vs_else_plot <- 
-  ggplot(
-    data = motifs_dacs_vs_else, 
-    aes(x = module, y = motif,
-        color = `logqval`, size = as.factor(size_pct))) +
-  geom_point() +
-  scale_color_gradient(
-    low = alpha("#401af0",0.6), high = alpha("#be0143",0.6)
-  ) +
-  theme_bw() +
-  xlab("") + ylab("") +
-  ggtitle("Motif enrichment analysis (qvalue <0.1)") +
-  theme(
-    text = element_text(size=10), legend.text = element_text(size=10), 
-    axis.text.x = element_text(angle = 90, vjust = 0.5)
-  ) +
-  scale_size_manual(values = c(1, 2, 3, 4,5), labels = c("1-10", "10-20", "20-50", "50+")) +
-  guides(size=guide_legend(title="% peaks with motif"))
-
-print(motifs_dacs_vs_else_plot)
-
-pdf("graphics/scatac_DACs_vs_else_motifs.pdf", width = 6, height = 12)
-print(motifs_dacs_vs_else_plot)
-dev.off()
-
-```
-
-An aggregated plot at the synonym motif level (this was checked by hand, trying not to over-aggregate the motifs based on the enrichment in different cell types. Just for visualisation purposes)
-
-```{r}
-motif_dacs_else_dict <- read.delim2("outputs/functional_annotation/motifs_DACs_vs_else_dictionary.tsv", header = T)
-m_dacs_else <- merge(
-  motifs_dacs_vs_else,
-  motif_dacs_else_dict,
-  by.x = 2,
-  by.y = 1
-)
-
-m_dacs_else <-
-  aggregate(
-    m_dacs_else[,c(8,11,15)],
-    by = list(
-      motif = m_dacs_else$Core.Synonym,
-      cluster = m_dacs_else$module
-      ),
-    FUN = max
-  )
-
-m_dacs_else <- 
-  m_dacs_else[
-    with(m_dacs_else,order(cluster,-as.numeric(pct_target_seqs_with_motif))),
-  ] #https://stackoverflow.com/questions/16205232/order-data-frame-by-columns-in-increasing-and-decreasing-order
-
-# Transform motifs names column into ordered factor so that ggplot respects the ordering we did in the step immediately above
-m_dacs_else$motif <- 
-  factor(m_dacs_else$motif, levels = rev(unique(m_dacs_else$motif)))
-
-p_m <- 
-  ggplot(
-    data = m_dacs_else, 
-    aes(x = cluster, y = motif,
-        color = `logqval`, size = as.factor(size_pct))) +
-  geom_point() +
-  scale_color_gradient(
-    low = alpha("#401af0",0.6), high = alpha("#be0143",0.6)
-  ) +
-  theme_bw() +
-  xlab("") + ylab("") +
-  ggtitle("Motif enrichment analysis (qvalue <0.1)") +
-  theme(
-    text = element_text(size=10), legend.text = element_text(size=10), 
-    axis.text.x = element_text(angle = 90, vjust = 0.5)
-  ) +
-  scale_size_manual(values = c(1, 2, 3, 4,5), labels = c("1-10", "10-20", "20-50", "50+")) +
-  guides(size=guide_legend(title="% peaks with motif"))
-
-print(p_m)
-
-pdf("graphics/scatac_DACs_vs_else_motifs_summarised.pdf", width = 4, height = 6.5)
-print(p_m)
-dev.off()
-```
-
+## Overlap between one-vs-neoblast and one-vs-all OCRs
 
 ```{r}
 library(eulerr)
@@ -924,3 +592,105 @@ plot(
 )
 dev.off()
 ```
+
+## List of example featureplots of OCRs
+
+```{r eval= FALSE}
+list_res <- list_DCA_vs_neo # list_DAC_vs_else or list_DCA_vs_neo
+what <- "neo"
+
+for (i in names(list_res)){
+  message(i)
+  
+  r <- list_res[[i]]$res[complete.cases(list_res[[i]]$res),]
+  r <- r[r$padj < .05,]
+  r <- r[order(r$padj),]
+  pks <- rownames(r[r$log2FoldChange > 0,])
+  if(length(pks) == 0 ) next
+  
+  for (j in 1:20){
+    if( j > length(pks)) next
+    
+    p <- 
+      FeaturePlot(
+        smed_cisreg_scatac,
+        features = pks[j],
+        cols = c("#DAE7F2","#174fbc"),
+        order = TRUE
+      )
+    
+    p <- p + NoAxes() + NoLegend()
+    
+    filename <- paste0("graphics/DACs_vsneo_vselse/DACs_vs_",what,"_",gsub("/","_",i),"_",j,".png")
+    png(file = filename, width= 256, height = 256)
+    print(p)
+    dev.off()
+  }
+  
+  message("done ", i)
+}
+```
+
+## Saving DCA analysis results
+
+Save one-vs-neo OCRs results:
+
+```{r}
+save(
+  list_DCA_vs_neo,
+  psbulk_psrep_scatac,
+  sampletable,
+  dac_mat,
+  file = "outputs/rda/scatac_dge/scatac_deseq2_vs_neo.rda"
+)
+```
+
+Save one-vs-all OCRs results:
+
+```{r eval = FALSE}
+list_res <- list_DCA_vs_neo # list_DAC_vs_else or list_DCA_vs_neo
+what <- "neo"
+
+for (i in names(list_res)){
+  message(i)
+  
+  r <- list_res[[i]]$res[complete.cases(list_res[[i]]$res),]
+  r <- r[r$padj < .05,]
+  r <- r[order(r$padj),]
+  if(nrow(r) == 0) next
+  
+  write.xlsx(
+    r,
+    file = paste0("./outputs/tables_for_supp/smed_cisreg_scATAC_DCA_vs_",what,"_",gsub("/","_",i),".xlsx"),
+    sheetName = gsub("/","_",i),
+    col.names = TRUE, row.names = TRUE, showNA = TRUE
+  )
+  
+  message("done ", i)
+}
+```
+
+## Save OCRs of one-vs-neo for WGCNA
+
+We will keep this set of one-vs-neo OCRs as a set to perform WGCNA later down the line.
+
+```{r}
+hq_peaks <- 
+  unique(unlist(sapply(
+    list_DCA_vs_neo,
+    function(x){
+      df = x$res
+      df = df[complete.cases(df),]
+      df = df[df$padj < .05 & df$log2FoldChange > 0,]
+      y = rownames(df)
+      return(y)
+    }
+    )))
+
+save(
+  hq_peaks,
+  file = "outputs/rda/scatac_counts/scatac_hq_peaks.rda"
+)
+```
+
+## The End!

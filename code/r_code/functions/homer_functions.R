@@ -13,16 +13,19 @@ lookup_table <- list(
   "Oct4..*" = "Oct"
 )
 
-parse_homer_output_table <- function(tsv_motifs,categ_regex1 = "", categ_regex2 = "", qval_thresh = 0.1, max_logqval = 10){
+parse_homer_output_table <- function(tsv_motifs,categ_regex1 = "", categ_regex2 = "", qval_thresh = 0.1, max_logqval = 10, qval_filt_by = '<'){
   library(tidyverse)
   library(stringr)
+  library(dplyr)
+  
+  if( !( qval_filt_by %in% c("<", "<=") ) ) stop("E: qval_filt_by not recognised. Only '<' and '<=' accepted")
   
   # Read the file and filter out rows with "Consensus" in the "Consensus" column
   tsv_motifs <- tsv_motifs %>%
-    filter(!str_detect(Consensus, "Consensus"))
+    dplyr::filter(!str_detect(Consensus, "Consensus"))
   
   # Rename columns and clean up the names of the clusters
-  colnames(tsv_motifs) <- 
+  col_names <- 
     c(
       "target_peakset_name",
       "motif",
@@ -36,13 +39,21 @@ parse_homer_output_table <- function(tsv_motifs,categ_regex1 = "", categ_regex2 
       "pct_bg_seqs_with_motif"
     )
   
+  if("mclu" %in% colnames(tsv_motifs) ) col_names = c(col_names,"mclu")
+  
+  colnames(tsv_motifs) <- col_names
+  
   ## Filter rows based on a threshold value and calculate new columns from existing columns
   tsv_motifs$pct_target_seqs_with_motif <- gsub("%","",tsv_motifs$pct_target_seqs_with_motif) #i had these using a smartsy of mutate+across+str_replace_all but it was not working so I reverted back to base.
   tsv_motifs$pct_bg_seqs_with_motif <- gsub("%","",tsv_motifs$pct_bg_seqs_with_motif)
   
+  ## Filtering event by qvalue value and by 'less than' or 'less than or equal to' .
+  f2 <- function(a,b,operator) getFunction(operator)(a,b)
+  qval_filter <- function() f2(a = tsv_motifs$qval, b = qval_thresh, operator = qval_filt_by )
+  
   tsv_motifs <- tsv_motifs %>%
     mutate_at(vars(pvalue:pct_bg_seqs_with_motif), as.numeric) %>%
-    filter(qval < qval_thresh ) %>%
+    dplyr::filter(qval_filter()) %>%
     mutate(
       logpval = -1 * logpval,
       logqval = ifelse(qval == 0, max_logqval, -log(qval)),

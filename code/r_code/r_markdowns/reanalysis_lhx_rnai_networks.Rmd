@@ -1,0 +1,724 @@
+---
+title: "Reanalysis of lhx1/5-1 RNAi single cell DGE"
+author: "Alberto Perez-Posada"
+date: "2024-12-11"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+dir <- '/omics-storage/lab-solana/alberto/projects/smed_cisreg/'
+fcha <- function(){ gsub("-","",Sys.Date()) }
+
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_knit$set(root.dir = dir)
+options(scipen=999)
+Sys.setenv(VROOM_CONNECTION_SIZE=5000072)
+pdf.options(family = "Helvetica")
+```
+
+## About
+
+This markdown reanalyses the knock-down RNAi of lhx1/5-1 in planaria, from Emili et al 2024 ().
+
+We will detect the genes differentially expressed in each cell type and test whether they tend to have a highger predicted activity from the lhx transcription factor.
+
+Part of this code has been adapted from the original publication.
+
+## Load functions
+
+```{r, message = FALSE, warning = FALSE}
+library(Matrix)
+library(topGO)
+library(readr)
+library(ggplot2)
+library(ggrepel)
+library(ggrastr)
+```
+
+```{r, message = FALSE, warning = FALSE}
+# load functions
+source("/omics-storage/lab-solana/alberto/projects/smed_cisreg/code/r_code/functions/sourcefolder.R")
+sourceFolder(
+  "/omics-storage/lab-solana/alberto/projects/smed_cisreg/code/r_code/functions/", #change for definitive path once its final
+  recursive = TRUE
+)
+```
+
+# Load Data
+
+Important as we will using this gene id quite often here:
+
+```{r}
+lhx = "h1SMcG0003793"
+```
+
+
+
+```{r load_idents}
+# Load necessary data
+sero_Idents <- read.delim2("/home/alberto/colabos/sero_2024/github_code_orig_upload/planarian-serotonergic-rnai/3_DGE/input/06092023_smed_sero_identities.csv", sep = "," , header = TRUE)
+sero_genes <- read.delim2("/home/alberto/colabos/sero_2024/github_code_orig_upload/planarian-serotonergic-rnai/3_DGE/input/06092023_smed_sero_genes.csv", sep = "," , header = TRUE)
+
+sero_Idents[1:5,1:5]
+```
+
+Below a table of cell type names, colors etc.
+
+```{r ctypes}
+sero_ctypes <- data.frame(
+  broad_names = factor(unique(sero_Idents[,c("broad_names")])[c(3,4,11,8,5,2,1,9,6,10,7,12)],levels = unique(sero_Idents[,c("broad_names")])[c(3,4,11,8,5,2,1,9,6,10,7,12)]),
+  color = c("#bcbcbc","#0059A9",lighten("royalblue",.3),"limegreen","red3","#ebc054","magenta2","pink","royalblue","#8FCE00","purple","darkgray")
+)
+
+sero_ctypes <- merge(
+  sero_ctypes,
+  as.data.frame(table(sero_Idents$broad_names)),
+  by.x = 1,
+  by.y = 1,
+  all.x = TRUE
+)
+
+sero_ctypes<-
+  sero_ctypes[order(sero_ctypes$broad_names),]
+
+sero_ctypes
+```
+
+We load gene information just in case
+
+```{r rosetta}
+rosetta_ext <- read.delim2(
+  "/omics-storage/lab-solana/standard_references/Smed_Rink/20231127_Rosetta_EXTENDED.tsv",
+  header = TRUE
+)
+```
+
+## Loading the matrix of gene expression
+
+```{r matrix}
+# Load the matrix
+sero_X <- readMM(file = "/home/alberto/colabos/sero_2024/github_code_orig_upload/planarian-serotonergic-rnai/3_DGE/input/matrix.mtx.gz")
+```
+
+We assign the right gene names and cell names to this matrix
+
+```{r dimnames}
+colnames(sero_X) <-  read.table("/home/alberto/colabos/sero_2024/github_code_orig_upload/planarian-serotonergic-rnai/3_DGE/input/barcodes.tsv")[,1]
+rownames(sero_X) <-  read.table("/home/alberto/colabos/sero_2024/github_code_orig_upload/planarian-serotonergic-rnai/3_DGE/input/features.tsv")[,1]
+```
+
+We subset the matrix to keep the same cells as we had in the original single cell analysis (i.e. those assigned to a cell type.)
+
+```{r subset}
+sero_X <- sero_X[,colnames(sero_X) %in% sero_Idents$X]
+```
+
+Lastly, because this dataset has multiple interacting terms (biological and technical replicates), we will create what we call "groups". Please see: https://bioconductor.org/packages/devel/bioc/vignettes/DESeq2/inst/doc/DESeq2.html#interactions
+
+```{r rep_group}
+rep_group <- data.frame(
+  rep = c("B1_T1", "B1_T2", "B2_T1", "B2_T2"),
+  group = c("A","B","C","D")
+)
+```
+
+We bring this information over to the identities metadata table
+
+```{r repgroup_metadata}
+sero_Idents$group <- 
+  translate_ids(
+    x = paste(sero_Idents$biological_rep,sero_Idents$technical_rep, sep = "_"),
+    dict = rep_group
+  )
+```
+
+## Pseudobulk computational dissection/reconstruction of the data
+
+Just like we did with HNF4, we run a special version of our pseudobulk function. We will do this at the broad cell type level as this is the level of resolution of our ANANSE networks.
+
+```{r pseudobulk, message=FALSE}
+sero_pseudobulk_cond_reps <- pseudobulk_cond_rep(
+  x = sero_X,
+  identities = sero_Idents$broad_names,
+  conditions = sero_Idents$sample,
+  replicates = sero_Idents$group
+)
+```
+
+We tidy up the table of samples that emerges from this:
+
+```{r cleansampletable}
+# Clean sampletable
+
+sero_sampletable <- sero_pseudobulk_cond_reps$sampletable
+
+sero_sampletable_lhx = sero_sampletable[sero_sampletable$condition %in% c("gfp(RNAi)", "lhx1/5-1(RNAi)"), ] # Change based on your conditions
+sero_sampletable_lhx <- clean_sampletable(sero_sampletable_lhx)
+
+sero_matrix_lhx <- 
+  sero_pseudobulk_cond_reps$matrix[
+    ,
+    colnames(sero_pseudobulk_cond_reps$matrix) %in% sero_sampletable_lhx$sample
+  ]
+```
+
+## Differential gene expression analysis over each broad cell type
+
+We will do this at the broad cell type level as this is the level of resolution of our ANANSE networks.
+
+```{r deseq_sc, warning = FALSE, message = FALSE}
+sero_DGE_all_lhx <- list()
+
+for(i in unique(sero_sampletable_lhx$ctype)){
+  
+  print(paste0("starting with cell type ",i))
+  
+  sero_DGE_all_lhx[[i]] <-
+    deseq_pseudobulk(
+      count_matrix = sero_matrix_lhx,
+      samples_info = sero_sampletable_lhx[,-2],
+      celltype = i,
+      filter_by = "pvalue", p_threshold = 0.05,
+      contrast_info = c("condition","lhx1/5-1(RNAi)","gfp(RNAi)"),
+      plot_results = FALSE, min_passing_samples = 2,
+      min_counts_per_sample = 1,
+      keep_dubious = FALSE
+    )
+  
+  print(paste0("done cell type ",i))
+
+  }
+```
+
+A quick look at the differential gene expression results:
+
+```{r volcanoes,fig.width = 12, fig.height = 2.5}
+y_max <- 15
+library(gridExtra)
+list_volcanos <- list()
+for(celltype in names(sero_DGE_all_lhx)){
+  list_volcanos[[celltype]] <- sero_DGE_all_lhx[[celltype]]$res %>%
+    ggplot(aes(x = log2FoldChange, y = -log(pvalue), color = factor(pvalue < 0.05))) +
+    geom_point_rast(size = .75) +
+    scale_color_manual(values = c("FALSE" = unname(gb_col["black1"]), "TRUE" = "#e66056")) +
+    ylim(c(0,y_max))+
+    guides(color = "none") + 
+    theme_classic() +
+    theme(panel.border = element_rect(colour = "black", fill=NA, linewidth = 0.75), axis.title.x=element_blank(), axis.title.y=element_blank())+
+    ggtitle(label = celltype)
+}
+
+do.call("grid.arrange", c(list_volcanos, ncol=length(list_volcanos)))
+```
+
+```{r}
+pdf("graphics/RNAi_lhx_volcanoes.pdf", wi = 12, he = 2.5)
+do.call("grid.arrange", c(list_volcanos, ncol=length(list_volcanos)))
+dev.off()
+```
+
+Below a meta-plot of which genes have the highest amount of differentially expressed genes detected.
+
+```{r metaplot}
+# METAPLOT DATA FRAME
+sero_diffreg_lhx <- data.frame(
+  num_diff = sapply(
+    sero_DGE_all_lhx,
+    function(x){
+      a = x$diffgenes
+      if(is.na(a[1])){
+        b = 0
+      } else{
+        b = length(a)
+      }
+      return(b)
+    }
+  )
+)
+
+sero_diffreg_lhx <- 
+  merge(
+    sero_diffreg_lhx,
+    sero_ctypes,
+    by.x = 0,
+    by.y = "broad_names",
+    all.x = TRUE
+  )
+colnames(sero_diffreg_lhx)[1] <- "ctype"
+sero_diffreg_lhx <- sero_diffreg_lhx[-c(grep("unannotated",sero_diffreg_lhx$ctype)),]
+```
+
+
+
+```{r metaplot_plot, fig.width = 4, fig.height = 4}
+##META PLOT NUM DIFF GENES AND CLUSTER SIZE
+lhx_metaplot <- ggplot(sero_diffreg_lhx, aes(x = log(Freq), y = num_diff, label = ctype, color = color)) +
+  geom_point() +
+  labs(
+    title = "Sero cluster size vs # DiffReg lhx1/5-1(RNAi)",
+    x = "cluster size (log n cells)",
+    y = "no. diffreg genes"
+  ) +
+  scale_color_identity()+
+  theme_minimal()+
+  theme(panel.border = element_rect(colour = "black", fill=NA, linewidth = 0.75))+
+  geom_text_repel(cex=3) + labs(title = "Cluster size vs # DiffReg lhx1/5-1(RNAi)")
+
+lhx_metaplot
+```
+
+```{r}
+pdf("graphics/RNAi_lhx_metaplot.pdf", he = 4, wi = 4)
+lhx_metaplot
+dev.off()
+```
+
+
+Below the list of differentially expressed genes. considering all of the possible events (in epidermis only, in neurons only, in parenchyma only, or any combination of the three)
+
+```{r diffgenes}
+a = sero_DGE_all_lhx$epidermal$diffgenes
+b = sero_DGE_all_lhx$neurons$diffgenes
+c = sero_DGE_all_lhx$parenchymal$diffgenes
+
+lhx_diffs <-
+  list(
+    a = a[!(a %in% b) & !(a %in% c)],
+    b = b[!(b %in% a) & !(b %in% c)],
+    c = c[!(c %in% a) & !(c %in% b)],
+    a_b = a[(a %in% b) & !(a %in% c)],
+    a_c = a[(a %in% c) & !(a %in% b)],
+    b_c = b[(b %in% c) & !(b %in% a)],
+    a_b_c = a[(a %in% b) & (a %in% c)]
+  )
+
+sapply(lhx_diffs, length)
+```
+
+There are barely any overlaps between these networks, for which we will just keep the genes only differentially regulated in each separate cell type.
+
+```{r diffgenes_2}
+lhx_diffs <-
+  list(
+    epi = a[!(a %in% b) & !(a %in% c)],
+    neu = b[!(b %in% a) & !(b %in% c)],
+    par = c[!(c %in% a) & !(c %in% b)]
+  )
+
+# some colors for some later plots
+deg_cols <- setNames(c("#c4c4c4", "#FEC44F", "#2171B5", "#D675AD"),c("none", "neu", "epi", "par"))
+deg_outl_col <- darken(deg_cols,.7)
+deg_outl_col[1] <- alpha(deg_outl_col[1],.2)
+deg_outl_col[c(2,3,4)] <- alpha(deg_outl_col[c(2,3,4)],.25)
+```
+
+## Assessing interaction in each network
+
+### epidermis
+
+We will load the epidermis network, parse it accordingly (e.g. subsetting only for interactions stemming from lhx), and add the info of the different DEGs.
+
+```{r nw_epidermis}
+# epidermis
+epi_nw <- data.table::fread("outputs/ananse/outs/network/epidermis.network", header = TRUE)
+epi_nw <- as.data.frame(epi_nw)
+epi_nw$tf <- sub("—.*","",epi_nw$tf_target)
+epi_nw$tg <- sub(".*—","",epi_nw$tf_target)
+epi_nw <- epi_nw[,c(7,8,2,4,5,6)]
+df_epi_lhx <- epi_nw[epi_nw$tf == lhx, -1]
+
+# DEGs
+df_epi_lhx$deg <- "none"
+# DEGs epi
+df_epi_lhx$deg[df_epi_lhx$tg %in% lhx_diffs$epi] <- "epi"
+# DEGs neu
+df_epi_lhx$deg[df_epi_lhx$tg %in% lhx_diffs$neu] <- "neu"
+# DEGs par
+df_epi_lhx$deg[df_epi_lhx$tg %in% lhx_diffs$par] <- "par"
+
+df_epi_lhx$deg <- factor(df_epi_lhx$deg, levels = c("none","neu","epi","par"))
+
+# Re-normalise the prob and weighted binding scores
+df_epi_lhx$rank_prob <- relativise(rank(df_epi_lhx$prob, ties.method = "min"))
+df_epi_lhx$rank_wb <- relativise(rank(df_epi_lhx$weighted_binding, ties.method = "min"))
+```
+
+For the plot, we will use a stripchart of a subsample of 500 random non-DEG genes plus ALL of the D.E.G.s of each cell type. But the medians and quartiles of the boxes are calculated with all.
+
+```{r boxplot_epi, fig.width = 8, fig.height = 5}
+set.seed(123)
+non_deg_subsample_epi <- sample(df_epi_lhx$tg[df_epi_lhx$deg == "none"], 500)
+f_epi <- which(df_epi_lhx$tg %in% c(non_deg_subsample_epi, df_epi_lhx$tg[df_epi_lhx$deg != "none"]))
+par(mfrow = c(1,2))
+set.seed(1234)
+boxplot(
+  df_epi_lhx$prob~df_epi_lhx$deg,
+  col = deg_cols, border = darken(deg_cols,.7),
+  main = "Interaction score\nof lhx predicted targets\n(epidermis)",
+  xlab = "DEGs in lhx K.D.",
+  ylab = "Interaction score",
+  las = 2,
+  cex.main = .8,
+  frame.plot = FALSE,
+  outline = FALSE
+)
+stripchart(
+  df_epi_lhx$prob[f_epi]~df_epi_lhx$deg[f_epi],
+  col = deg_outl_col,
+  method = "jitter",
+  jitter=0.15,
+  vertical = TRUE,
+  pch = 20,
+  cex=0.7,
+  add = TRUE
+)
+set.seed(1234)
+boxplot(
+  df_epi_lhx$weighted_binding~df_epi_lhx$deg,
+  col = deg_cols, border = darken(deg_cols,.7),
+  main = "Weighted binding\nof lhx predicted targets\n(epidermis)",
+  xlab = "DEGs in lhx K.D.",
+  ylab = "Weighted binding",
+  las = 2,
+  cex.main = .8,
+  frame.plot = FALSE,
+  outline = FALSE
+)
+stripchart(
+  df_epi_lhx$weighted_binding[f_epi]~df_epi_lhx$deg[f_epi],
+  col = deg_outl_col,
+  method = "jitter",
+  jitter=0.15,
+  vertical = TRUE,
+  pch = 20,
+  cex=0.7,
+  add = TRUE
+)
+par(mfrow = c(1,1))
+```
+
+```{r, echo = FALSE, message = FALSE, warning = FALSE}
+pdf("graphics/lhx_rnai_boxplot_ananse_epidermis.pdf",wi = 8, he = 5)
+par(mfrow = c(1,2))
+set.seed(1234)
+boxplot(
+  df_epi_lhx$prob~df_epi_lhx$deg,
+  col = deg_cols, border = darken(deg_cols,.7),
+  main = "Interaction score\nof lhx predicted targets\n(epidermis)",
+  xlab = "DEGs in lhx K.D.",
+  ylab = "Interaction score",
+  las = 2,
+  cex.main = .8,
+  frame.plot = FALSE,
+  outline = FALSE
+)
+stripchart(
+  df_epi_lhx$prob[f_epi]~df_epi_lhx$deg[f_epi],
+  col = deg_outl_col,
+  method = "jitter",
+  jitter=0.15,
+  vertical = TRUE,
+  pch = 20,
+  cex=0.7,
+  add = TRUE
+)
+set.seed(1234)
+boxplot(
+  df_epi_lhx$weighted_binding~df_epi_lhx$deg,
+  col = deg_cols, border = darken(deg_cols,.7),
+  main = "Weighted binding\nof lhx predicted targets\n(epidermis)",
+  xlab = "DEGs in lhx K.D.",
+  ylab = "Weighted binding",
+  las = 2,
+  cex.main = .8,
+  frame.plot = FALSE,
+  outline = FALSE
+)
+stripchart(
+  df_epi_lhx$weighted_binding[f_epi]~df_epi_lhx$deg[f_epi],
+  col = deg_outl_col,
+  method = "jitter",
+  jitter=0.15,
+  vertical = TRUE,
+  pch = 20,
+  cex=0.7,
+  add = TRUE
+)
+par(mfrow = c(1,1))
+dev.off()
+```
+
+### neurons
+
+Loading, parsing and DEG assigning as above.
+
+```{r nw_neurons}
+# neuron
+neu_nw <- data.table::fread("outputs/ananse/outs/network/neuron.network", header = TRUE)
+neu_nw <- as.data.frame(neu_nw)
+neu_nw$tf <- sub("—.*","",neu_nw$tf_target)
+neu_nw$tg <- sub(".*—","",neu_nw$tf_target)
+neu_nw <- neu_nw[,c(7,8,2,4,5,6)]
+df_neu_lhx <- neu_nw[neu_nw$tf == lhx, -1]
+
+# neu
+df_neu_lhx$deg <- "none"
+# DEGs epi
+df_neu_lhx$deg[df_neu_lhx$tg %in% lhx_diffs$epi] <- "epi"
+# DEGs neu
+df_neu_lhx$deg[df_neu_lhx$tg %in% lhx_diffs$neu] <- "neu"
+# DEGs par
+df_neu_lhx$deg[df_neu_lhx$tg %in% lhx_diffs$par] <- "par"
+df_neu_lhx$deg <- factor(df_neu_lhx$deg, levels = c("none","neu","epi","par"))
+df_neu_lhx$rank_prob <- relativise(rank(df_neu_lhx$prob, ties.method = "min"))
+df_neu_lhx$rank_wb <- relativise(rank(df_neu_lhx$weighted_binding, ties.method = "min"))
+```
+
+The plot. The same about the stripchart of the epidermis boxplot above applies here.
+
+```{r boxplot_neu, fig.width = 8, fig.height = 5}
+set.seed(123)
+non_deg_subsample_neu <- sample(df_neu_lhx$tg[df_neu_lhx$deg == "none"], 500)
+f_neu <- which(df_neu_lhx$tg %in% c(non_deg_subsample_neu, df_neu_lhx$tg[df_neu_lhx$deg != "none"]))
+par(mfrow = c(1,2))
+set.seed(1234)
+boxplot(
+  df_neu_lhx$prob~df_neu_lhx$deg,
+  col = deg_cols, border = darken(deg_cols,.7),
+  main = "Interaction score\nof lhx predicted targets\n(neurons)",
+  xlab = "DEGs in lhx K.D.",
+  ylab = "Interaction score",
+  las = 2,
+  cex.main = .8,
+  frame.plot = FALSE,
+  outline = FALSE
+)
+stripchart(
+  df_neu_lhx$prob[f_neu]~df_neu_lhx$deg[f_neu],
+  col = deg_outl_col,
+  method = "jitter",
+  jitter=0.15,
+  vertical = TRUE,
+  pch = 20,
+  cex=0.7,
+  add = TRUE
+)
+set.seed(1234)
+boxplot(
+  df_neu_lhx$weighted_binding~df_neu_lhx$deg,
+  col = deg_cols, border = darken(deg_cols,.7),
+  main = "Weighted binding\nof lhx predicted targets\n(neurons)",
+  xlab = "DEGs in lhx K.D.",
+  ylab = "Weighted binding",
+  las = 2,
+  cex.main = .8,
+  frame.plot = FALSE,
+  outline = FALSE
+)
+stripchart(
+  df_neu_lhx$weighted_binding[f_neu]~df_neu_lhx$deg[f_neu],
+  col = deg_outl_col,
+  method = "jitter",
+  jitter=0.15,
+  vertical = TRUE,
+  pch = 20,
+  cex=0.7,
+  add = TRUE
+)
+par(mfrow = c(1,1))
+```
+
+```{r}
+pdf("graphics/lhx_rnai_boxplot_ananse_neurons.pdf",wi = 8, he = 5)
+set.seed(123)
+non_deg_subsample_neu <- sample(df_neu_lhx$tg[df_neu_lhx$deg == "none"], 500)
+f_neu <- which(df_neu_lhx$tg %in% c(non_deg_subsample_neu, df_neu_lhx$tg[df_neu_lhx$deg != "none"]))
+
+par(mfrow = c(1,2))
+set.seed(1234)
+boxplot(
+  df_neu_lhx$prob~df_neu_lhx$deg,
+  col = deg_cols, border = darken(deg_cols,.7),
+  main = "Interaction score\nof lhx predicted targets\n(neurons)",
+  xlab = "DEGs in lhx K.D.",
+  ylab = "Interaction score",
+  las = 2,
+  cex.main = .8,
+  frame.plot = FALSE,
+  outline = FALSE
+)
+stripchart(
+  df_neu_lhx$prob[f_neu]~df_neu_lhx$deg[f_neu],
+  col = deg_outl_col,
+  method = "jitter",
+  jitter=0.15,
+  vertical = TRUE,
+  pch = 20,
+  cex=0.7,
+  add = TRUE
+)
+set.seed(1234)
+boxplot(
+  df_neu_lhx$weighted_binding~df_neu_lhx$deg,
+  col = deg_cols, border = darken(deg_cols,.7),
+  main = "Weighted binding\nof lhx predicted targets\n(neurons)",
+  xlab = "DEGs in lhx K.D.",
+  ylab = "Weighted binding",
+  las = 2,
+  cex.main = .8,
+  frame.plot = FALSE,
+  outline = FALSE
+)
+stripchart(
+  df_neu_lhx$weighted_binding[f_neu]~df_neu_lhx$deg[f_neu],
+  col = deg_outl_col,
+  method = "jitter",
+  jitter=0.15,
+  vertical = TRUE,
+  pch = 20,
+  cex=0.7,
+  add = TRUE
+)
+par(mfrow = c(1,1))
+dev.off()
+```
+
+### parenchyma
+
+Loading, parsing and DEG assigning as above.
+
+```{r nw_parenchyma}
+# parenchyma
+par_nw <- data.table::fread("outputs/ananse/outs/network/parenchyma.network", header = TRUE)
+par_nw <- as.data.frame(par_nw)
+par_nw$tf <- sub("—.*","",par_nw$tf_target)
+par_nw$tg <- sub(".*—","",par_nw$tf_target)
+par_nw <- par_nw[,c(7,8,2,4,5,6)]
+df_par_lhx <- par_nw[par_nw$tf == lhx, -1]
+
+# par
+df_par_lhx$deg <- "none"
+# DEGs epi
+df_par_lhx$deg[df_par_lhx$tg %in% lhx_diffs$epi] <- "epi"
+# DEGs neu
+df_par_lhx$deg[df_par_lhx$tg %in% lhx_diffs$neu] <- "neu"
+# DEGs par
+df_par_lhx$deg[df_par_lhx$tg %in% lhx_diffs$par] <- "par"
+df_par_lhx$deg <- factor(df_par_lhx$deg, levels = c("none","neu","epi","par"))
+df_par_lhx$rank_prob <- relativise(rank(df_par_lhx$prob, ties.method = "min"))
+df_par_lhx$rank_wb <- relativise(rank(df_par_lhx$weighted_binding, ties.method = "min"))
+
+```
+
+The plot. The same about the stripchart of the epidermis boxplot above applies here.
+
+```{r boxplot_parenchyma, fig.width = 8, fig.height = 5}
+set.seed(123)
+non_deg_subsample_par <- sample(df_par_lhx$tg[df_par_lhx$deg == "none"], 500)
+f_par <- which(df_par_lhx$tg %in% c(non_deg_subsample_par, df_par_lhx$tg[df_par_lhx$deg != "none"]))
+par(mfrow = c(1,2))
+set.seed(1234)
+boxplot(
+  df_par_lhx$prob~df_par_lhx$deg,
+  col = deg_cols, border = darken(deg_cols,.7),
+  main = "Interaction score\nof lhx predicted targets\n(parenchyma)",
+  xlab = "DEGs in lhx K.D.",
+  ylab = "Interaction score",
+  las = 2,
+  cex.main = .8,
+  frame.plot = FALSE,
+  outline = FALSE
+)
+stripchart(
+  df_par_lhx$prob[f_par]~df_par_lhx$deg[f_par],
+  col = deg_outl_col,
+  method = "jitter",
+  jitter=0.15,
+  vertical = TRUE,
+  pch = 20,
+  cex=0.7,
+  add = TRUE
+)
+set.seed(1234)
+boxplot(
+  df_par_lhx$weighted_binding~df_par_lhx$deg,
+  col = deg_cols, border = darken(deg_cols,.7),
+  main = "Weighted binding\nof lhx predicted targets\n(parenchyma)",
+  xlab = "DEGs in lhx K.D.",
+  ylab = "Weighted binding",
+  las = 2,
+  cex.main = .8,
+  frame.plot = FALSE,
+  outline = FALSE
+)
+stripchart(
+  df_par_lhx$weighted_binding[f_par]~df_par_lhx$deg[f_par],
+  col = deg_outl_col,
+  method = "jitter",
+  jitter=0.15,
+  vertical = TRUE,
+  pch = 20,
+  cex=0.7,
+  add = TRUE
+)
+par(mfrow = c(1,1))
+```
+
+
+```{r}
+pdf("graphics/lhx_rnai_boxplot_ananse_parenchyma.pdf",wi = 8, he = 5)
+par(mfrow = c(1,2))
+set.seed(1234)
+boxplot(
+  df_par_lhx$prob~df_par_lhx$deg,
+  col = deg_cols, border = darken(deg_cols,.7),
+  main = "Interaction score\nof lhx predicted targets\n(parenchyma)",
+  xlab = "DEGs in lhx K.D.",
+  ylab = "Interaction score",
+  las = 2,
+  cex.main = .8,
+  frame.plot = FALSE,
+  outline = FALSE
+)
+stripchart(
+  df_par_lhx$prob[f_par]~df_par_lhx$deg[f_par],
+  col = deg_outl_col,
+  method = "jitter",
+  jitter=0.15,
+  vertical = TRUE,
+  pch = 20,
+  cex=0.7,
+  add = TRUE
+)
+set.seed(1234)
+boxplot(
+  df_par_lhx$weighted_binding~df_par_lhx$deg,
+  col = deg_cols, border = darken(deg_cols,.7),
+  main = "Weighted binding\nof lhx predicted targets\n(parenchyma)",
+  xlab = "DEGs in lhx K.D.",
+  ylab = "Weighted binding",
+  las = 2,
+  cex.main = .8,
+  frame.plot = FALSE,
+  outline = FALSE
+)
+stripchart(
+  df_par_lhx$weighted_binding[f_par]~df_par_lhx$deg[f_par],
+  col = deg_outl_col,
+  method = "jitter",
+  jitter=0.15,
+  vertical = TRUE,
+  pch = 20,
+  cex=0.7,
+  add = TRUE
+)
+par(mfrow = c(1,1))
+dev.off()
+```
+
+
+## The End!
+
+```{r}
+sessionInfo()
+```

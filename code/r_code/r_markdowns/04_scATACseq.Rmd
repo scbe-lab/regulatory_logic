@@ -6,7 +6,7 @@ output: html_document
 ---
 
 ```{r setup, include=FALSE}
-dir <- '~/projects/smed_cisreg/'
+dir <- '~/storage/projects/smed_cisreg_2025_github_repository/regulatory_logic/'
 fcha <- function(){ gsub("-","",Sys.Date()) }
 
 knitr::opts_chunk$set(echo = TRUE)
@@ -60,7 +60,7 @@ metadata <- read.csv(file = "outputs/scatac/NX73/outs/singlecell.csv",header = T
 We will be using the gtf to relate Open Chromatin Regions (OCRs) to nearby genes:
 
 ```{r load_gtf}
-smed_gtf <- rtracklayer::import("data/standard_references/schMedS3_h1.gtf") # are we sure this is the right gtf?
+smed_gtf <- rtracklayer::import("data/standard_references/schMedS3_h1.gtf")
 ```
 
 We create a chromatin assay object:

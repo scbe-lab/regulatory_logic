@@ -1,5 +1,5 @@
 ---
-title: "Smed CisReg project: Planarian HNF4 knock-down and Differential Gene Expression; library preparation"
+title: "Smed CisReg project 21: Planarian HNF4 knock-down and Differential Gene Expression; library preparation"
 author: "Alberto Perez-Posada @apposada"
 date: "8/11/2023"
 output:
@@ -159,6 +159,6 @@ We will finally save this file as an object we can load later on:
 #Save
 saveRDS(
   smed_hnf_scrna,
-  file = "outputs/rda/seurat_scrna/hnf4_rnai/smed_hnf_scrna_concatenated_libraries.RDS"
+  file = "outputs/rda/seurat_hnf4_kd/smed_hnf_scrna_concatenated_libraries.RDS"
 )
 ```

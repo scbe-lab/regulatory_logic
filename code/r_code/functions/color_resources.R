@@ -32,10 +32,29 @@ gb_col <-
     black1 = "#1a1a1a"
   )
 
+rbw <- c('#292929','#8e5d9d','#647eea','#25a7a3', '#ffec83', '#fb693c','#E00039','#860022')
+
+rbw_dim <- c("#d78574","#d2a065","#b9b284","#c0c0bb","#966b83","#4b6eaa","#558f96")
+
 average_cols <- function(x){ # from https://stackoverflow.com/a/29576746
   if(length(x)<2) stop("only one color.")
   a <- col2rgb(x)
   b <- sqrt(sapply(data.frame(t(a)),function(x){mean(x^2)}))/255
   y <- rgb(b[1],b[2],b[3])
   return(y)
+}
+
+sum_cols <- function(x){ # from https://stackoverflow.com/a/29576746
+  if(length(x)<2) stop("only one color.")
+  a <- col2rgb(x)
+  b <- colSums(t(a))
+  b[b>255] <- 255
+  b <- b/255
+  y <- rgb(b[1],b[2],b[3])
+  return(y)
+}
+
+ggcol <- function(n) {
+  hues = seq(15, 375, length = n + 1)
+  hcl(h = hues, l = 65, c = 100)[1:n]
 }

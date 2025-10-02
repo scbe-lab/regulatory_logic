@@ -1,0 +1,785 @@
+---
+title: "Reanalysis of Pax5 and soxP3 RNAi (Cheng et al) and leverage to TF/target networks"
+author: "Alberto Perez-Posada"
+date: "2024-12-11"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+dir <- '/omics-storage/lab-solana/alberto/projects/smed_cisreg/'
+fcha <- function(){ gsub("-","",Sys.Date()) }
+
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_knit$set(root.dir = dir)
+options(scipen=999)
+Sys.setenv(VROOM_CONNECTION_SIZE=5000072)
+pdf.options(family = "Helvetica")
+```
+
+## About
+
+This markdown reanalyses the knock-down RNAi of Pax5 and soxP3 in planaria, from Cheng et al., 2018 (PMID: 29100657). For more information please visit: https://doi.org/10.1016/j.ydbio.2017.08.030.
+
+Here we followed the same computational approach as provided in the manuscript, using bowtie2 for the mapping of reads, quantificaiton with HTSeq, and differential gene experssion with DESeq2.
+
+For each TF, we will retrieve a set of differentially expressed genes as done in the original manuscript, and bring them over to the networks of the different cell types to test whether they tend to have a higher predicted activity by the respective TF.
+
+Out of the three transcription factors studied in this work, sadly zfp1 falls outside the 399 TFs we annotated with motifs (see Methods). This is one of the limitations of our study, as motif annotation hinders the power of detection.
+
+## Load libraries and functions
+
+We will load the functions as we usually do:
+
+```{r, message = FALSE, warning = FALSE}
+library(countToFPKM)
+library(ComplexHeatmap)
+library(Mfuzz)
+library(dplyr)
+library(RColorBrewer)
+library(colorspace)
+library(viridis)
+library(Matrix)
+library(topGO)
+library(readr)
+library(ggplot2)
+library(ggrepel)
+library(ggrastr)
+library(DESeq2)
+
+# load functions
+source("/omics-storage/lab-solana/alberto/projects/smed_cisreg/code/r_code/functions/sourcefolder.R")
+sourceFolder(
+  "/omics-storage/lab-solana/alberto/projects/smed_cisreg/code/r_code/functions/", #change for definitive path once its final
+  recursive = TRUE
+)
+
+```
+
+## Load Data
+
+```{r}
+pax5 = "h1SMcG0008441"
+soxp = "h1SMcG0009867"
+zfp1 = "h1SMcG0017029"
+load("outputs/rda/smed_counts.rda")
+load("outputs/rda/smed_wgcna.rda")
+```
+
+Leveraging gene expression and gene network data: despite this (and other) knock-down assays were performed using bulk RNA-Seq in whole animals, we can integrate this information with our network data and ask the question of whether such genes have any different predicted interactions. If that was the case, one premise is that we should be able detect which are the cell types in which we can expect to find such genes. For that we can interrogate our single cell data. Are there any cell types expressing them more often?
+
+We will load here the single cell data to explore this later.
+
+```{r}
+scdata <- readRDS("outputs/rda/seurat_scrna/smed_cisreg_scRNA_consensus_identities.RDS")
+broadcols <-
+  setNames(
+    c(
+      "#969696", # neoblast
+      "#9ECAE1", # EEP
+      "#56A0CE", # EEP
+      "#2171B5", # epidermis
+      "#228B22", # phagocytes
+      "#869E42", # basal/goblet
+      "#B22222", # muscle
+      "#FEC44F", # neurons
+      "#FF69B4", # parenchyma
+      "#FFB0AB", # protonephridia
+      "#6428C8"  # secretory
+    ),
+    unique(sort(scdata$broadtype_splitbam))[c(6,2,4,3,9,1,5,7,8,10,11)]
+  )
+
+mat = scdata@assays$RNA@data
+all_genes = rownames(mat)
+
+```
+
+We load our gene information table:
+
+```{r}
+# Load gene information
+rosetta_ext <- read.delim2(
+  "/omics-storage/lab-solana/standard_references/Smed_Rink/20231127_Rosetta_EXTENDED.tsv",
+  header = TRUE
+)
+
+```
+
+Here we load the sample information (which is basically the SRA metadata table)
+
+```{r}
+samplesdir <- "/home/alberto/storage/projects/smed_cisreg/outputs/rna/pax5_sox8_zfp1_cheng/"
+
+sampletable <- 
+  read.delim2(
+    "/home/alberto/storage/DATA/static/reads/pax5_sox8_zfp1_cheng/sra_table.tsv",
+    header = TRUE
+  )
+
+sampletable <- sampletable[sampletable$RNAi != "" & sampletable$source_name != "X1 cells",]
+sampletable$time <- sampletable$time_point
+sampletable$time <- factor(sampletable$time, levels = paste0(unique(sort(as.numeric(sub("d","",sampletable$time)))),"d"))
+sampletable$RNAi <- factor(sampletable$RNAi, levels = c("unc22", "pax5", "sox8", "zfp1", "p53") )
+sampletable$replicate <- factor(sampletable$replicate, levels = c("1","2","3","4","5"))
+
+sampletable <- sampletable[,c("Run","RNAi","time","replicate")]
+rownames(sampletable) <- sampletable$Run
+
+head(sampletable)
+```
+
+We load the samples here.
+First we specify the directory where we have stored the counts.
+Then, with a lapply function, we collate together all these files.
+
+```{r}
+# Load the counts
+cheng_counts_list <- lapply(
+  list.files(path = samplesdir, pattern=".counts",recursive = TRUE),
+  function(x){
+    y = read.delim2(paste0(samplesdir,x),header = FALSE)
+    y = setNames(y$V2,y$V1)
+    return(y)
+  }
+)
+names(cheng_counts_list) <- gsub(".*/","",gsub(".counts","",list.files(path = samplesdir, pattern=".counts",recursive = TRUE)))
+cheng_bowtie2_counts <- do.call(cbind,cheng_counts_list)
+cheng_bowtie2_counts <- cheng_bowtie2_counts[,colnames(cheng_bowtie2_counts) %in% sampletable$Run]
+
+cheng_bowtie2_counts[1:5,1:5]
+```
+
+## Differential Gene Expression
+
+Because we have interacting factors (RNAi and time), we will use a LRT where the reduced model is just the linear combination of replicates, time, and RNAi.
+
+```{r}
+dds <- DESeqDataSetFromMatrix(
+  countData = cheng_bowtie2_counts,
+  colData = sampletable,
+  design = ~ replicate + time + RNAi + RNAi:time
+)
+
+smallestGroupSize <- 10
+keep <- rowSums(counts(dds) >= 10) >= smallestGroupSize
+dds <- dds[keep,]
+
+dds <- DESeq(dds, test="LRT", reduced=~replicate + time + RNAi)
+```
+
+After this we will do the same for each separate TF
+
+## PAX5
+
+We retrieve the results pertaining to control vs pax5. This consists of interrogating which genes have differential expression across any combination of time points, between control and pax5 RNAi.
+
+```{r}
+all_res_pax5 <- list()
+combinations_pax5 <- grep("pax5", grep("RNAi", grep("time", resultsNames(dds), value = TRUE), value = TRUE), value = TRUE)
+combinations_pax5
+```
+
+Because we are only interested in down-regulated, we will subset them.
+
+```{r}
+for (a in combinations_pax5){
+  message(a)
+  all_res_pax5[[a]]$res <-
+    results(dds, name = a)
+  all_res_pax5[[a]]$diffreg <-
+    rownames(all_res_pax5[[a]]$res[all_res_pax5[[a]]$res$padj < 0.05 & abs(all_res_pax5[[a]]$res$log2FoldChange) > 1.5,])
+  all_res_pax5[[a]]$down <-
+    rownames(all_res_pax5[[a]]$res[all_res_pax5[[a]]$res$padj < 0.05 & all_res_pax5[[a]]$res$log2FoldChange < -1.5,])
+}
+
+pax5_diffreg <- unique(unlist(sapply(all_res_pax5, function(x){x$diffreg})))
+
+pax5_down <- unique(unlist(sapply(all_res_pax5, function(x){x$down})))
+```
+
+
+```{r, fig.width = 5, fig.height = 8}
+vsd <- vst(dds)
+pax5_vsd <- assay(vsd)
+pax5_vsd <- pax5_vsd[rownames(pax5_vsd) %in% pax5_diffreg,c(25:36,1:12)]
+
+h_pax5 <- Heatmap(
+  t(scale(t(pax5_vsd[,]))),
+  clustering_method_rows = "ward.D2",
+  cluster_columns = FALSE,
+  show_column_names = FALSE,
+  show_row_names = FALSE,
+  name = "expression",
+  col = colorRamp2(breaks = c(-2,0,2), colors = sequential_hcl(10,"YlOrRd", rev = T)[c(2,5,9)]),
+  right_annotation = 
+    HeatmapAnnotation(
+      diffreg = setNames(
+        ifelse(
+          rownames(pax5_vsd) %in% pax5_diffreg & rownames(pax5_vsd) %in% pax5_down,
+          "DOWN",
+          "UP"
+        ),
+        rownames(pax5_vsd)
+      ),
+      col = list(diffreg = setNames(c("lightgreen","tomato"),c("UP","DOWN"))),
+      which = "row"
+    ),
+  top_annotation = 
+    HeatmapAnnotation(
+      df = sampletable[c(25:36,1:12),c("RNAi","time","replicate")],
+      col = 
+        list(
+          RNAi = setNames(c("orange","purple"),c("unc22","pax5")),
+          time = setNames(cividis(3),levels(sampletable$time)),
+          replicate = setNames(colorspace::lighten(darken(c("red","green","blue","magenta"),.3),.4),c("1","2","3","4"))
+        )
+    )
+  )
+
+pdf("graphics/pax5_heatmap.pdf", wi = 5, he = 8)
+draw(h_pax5)
+dev.off()
+
+draw(h_pax5)
+```
+
+To assess which cell types are expressing our genes more, we can calculate a "gene score" as done in other markdowns.
+
+```{r}
+score_pax5_DGE <-
+  gene_score(
+    x = mat, gene_set = pax5_down[pax5_down %in% rownames(mat)],
+    gene_pool = all_genes, remove_set_from_pool = TRUE,
+    fraction = 0.1
+  )
+```
+
+We will create a data frame for a later boxplot.
+
+To accomodate for outliers in the distributions, we will clip the data from outliers (bottom 5% and top 5%). 
+
+```{r}
+df_scores_pax5 <-
+  data.frame(
+    cell = colnames(scdata), # cells
+    clu_narrow = scdata$ctype,
+    cluster = factor(scdata$broadtype_splitbam, levels = unique(sort(scdata$broadtype_splitbam))[c(6,2,4,3,9,1,5,7,8,10,11)]), # cluster
+    score_pax5 = relativise(clip_q(clip_q(score_pax5_DGE,q=.01,method = "down"), method = "up", q = .99))
+  )
+```
+
+We create the plot here:
+
+```{r}
+set.seed(123)
+z <- df_scores_pax5 %>% group_by(cluster) %>% sample_n(200) %>% .$cell
+df_scores_pax5$jit <- ifelse(df_scores_pax5$cell %in% z, TRUE, FALSE)
+
+# score plot
+boxpl_score_pax5 <-
+  df_scores_pax5 %>%
+  ggplot(mapping = aes(x = cluster, y = score_pax5, fill = cluster, color = cluster)) +
+  geom_boxplot(outlier.shape = NA)+
+  geom_jitter(mapping = aes(shape=jit),size = .6, alpha = .25)+
+  theme_classic()+
+  scale_fill_manual(values = broadcols)+
+  scale_color_manual(values = darken(broadcols,0.5))+
+  scale_shape_manual(values = setNames(c(20,NA),c("TRUE","FALSE")))+
+  theme(axis.text.x = element_blank(), legend.position = "none")+
+  ylab(label = "score pax2/5/8 (RNAi) downregulated genes")+
+  coord_cartesian(ylim=c(0,1))
+```
+
+We plot it here:
+
+```{r, fig.height = 3.5, fig.width = 5}
+boxpl_score_pax5
+```
+
+```{r}
+pdf("graphics/pax5_downreg_genescore.pdf", he = 3.5, wi = 3.5)
+boxpl_score_pax5
+dev.off()
+```
+
+We confirm indeed the potential targets of prep are mostly expressed in the same cell types where we detected pax5 as influential (the epidermal lineage).
+
+Regarding epidermis, we will load here the ANANSE network of epidermis and parse it accordingly:
+
+```{r}
+# epid
+epi_nw <- data.table::fread("outputs/ananse/outs/network/epidermis.network", header = TRUE)
+epi_nw <- as.data.frame(epi_nw)
+epi_nw$tf <- sub("—.*","",epi_nw$tf_target)
+epi_nw$tg <- sub(".*—","",epi_nw$tf_target)
+epi_nw <- epi_nw[,c(7,8,2,4,5,6)]
+
+df_epi_pax5 <- epi_nw[epi_nw$tf == pax5, -1]
+
+head(df_epi_pax5)
+```
+
+We will also leverage these predicted scores with the gene expression data, to check if prep downregulated genes have a higher interaction in our networks.
+
+Provided we have single cell data to do the following, we will also incorporate a subfiltering to keep only the D.E.G.s whose higher expression is in the epidermis lineage. That is, prep RNAi D.E.G.s that are normally detected as expressed in the epidermis lineage.
+
+```{r}
+# a vector of which is the cell type with highest expression for each gene (using our pseudobulk data).
+smed_maxc <- setNames(apply(smed_counts_norm_cw, 1, function(x){names(x[x==max(x)])}),rownames(smed_counts_norm_cw))
+maxc_epi <- names(smed_maxc[smed_maxc == "epidermis"])
+```
+
+We incorporate this in a column of the data frame. We will also create a filter of 500 random non-D.E.G.s in order to do a stripchart on top of the boxplot.
+
+```{r}
+df_epi_pax5$deg <- factor(ifelse(df_epi_pax5$tg %in% pax5_down, "down","none"), levels = c("none","down")) # & df_epi_pax5$tg %in% maxc_epi
+
+df_epi_pax5$rank_prob <- relativise(rank(df_epi_pax5$prob, ties.method = "min"))
+df_epi_pax5$rank_wb <- relativise(rank(df_epi_pax5$weighted_binding, ties.method = "min"))
+
+head(df_epi_pax5)
+
+set.seed(123)
+non_deg_subsample_epi <- sample(df_epi_pax5$tg[df_epi_pax5$deg == "none"], 500)
+f_epi <- which(df_epi_pax5$tg %in% c(non_deg_subsample_epi,df_epi_pax5$tg[df_epi_pax5$deg != "none"]))
+```
+
+And here the plot:
+
+```{r, fig.width = 5, fig.height = 5}
+par(mfrow = c(1,2))
+
+deg_cols <- setNames(c("#c4c4c4","#2171B5"),c("none","down"))
+deg_outl_col <- deg_cols
+deg_outl_col <- darken(deg_outl_col,.7)
+deg_outl_col[1] <- alpha(deg_outl_col[1],.2)
+deg_outl_col[c(2,3,4)] <- alpha(deg_outl_col[c(2,3,4)],.25)
+
+set.seed(1234)
+boxplot(
+  df_epi_pax5$prob~df_epi_pax5$deg,
+  col = deg_cols, border = darken(deg_cols,.7),
+  main = "Interaction score\nof pax5 predicted targets\n(epi)",
+  xlab = "DEGs in pax5 K.D. (Cheng et al.)",
+  ylab = "Interaction score",
+  las = 2,
+  cex.main = .6,
+  frame.plot = FALSE,
+  outline = FALSE
+)
+stripchart(
+  df_epi_pax5$prob[f_epi]~df_epi_pax5$deg[f_epi],
+  col = deg_outl_col,
+  method = "jitter",
+  jitter=0.15,
+  vertical = TRUE,
+  pch = 20,
+  cex=0.7,
+  add = TRUE
+)
+
+set.seed(1234)
+boxplot(
+  df_epi_pax5$weighted_binding~df_epi_pax5$deg,
+  col = deg_cols, border = darken(deg_cols,.7),
+  main = "Interaction score\nof pax5 predicted targets\n(epi)",
+  xlab = "DEGs in pax5 K.D. (Cheng et al.)",
+  ylab = "Interaction score",
+  las = 2,
+  cex.main = .6,
+  frame.plot = FALSE,
+  outline = FALSE
+)
+stripchart(
+  df_epi_pax5$weighted_binding[f_epi]~df_epi_pax5$deg[f_epi],
+  col = deg_outl_col,
+  method = "jitter",
+  jitter=0.15,
+  vertical = TRUE,
+  pch = 20,
+  cex=0.7,
+  add = TRUE
+)
+```
+
+We see that both the prob score and the weighted binding are slightly up (especially the prob, but most importantly the weighted binding).
+
+```{r, echo = FALSE}
+pdf("graphics/pax5_rnai_boxplot_ananse_epidermis.pdf", he = 5, wi = 5)
+par(mfrow = c(1,2))
+
+set.seed(1234)
+boxplot(
+  df_epi_pax5$prob~df_epi_pax5$deg,
+  col = deg_cols, border = darken(deg_cols,.7),
+  main = "Interaction score\nof pax5 predicted targets\n(epi)",
+  xlab = "DEGs in pax5 K.D. (Cheng et al.)",
+  ylab = "Interaction score",
+  las = 2,
+  cex.main = .6,
+  frame.plot = FALSE,
+  outline = FALSE
+)
+stripchart(
+  df_epi_pax5$prob[f_epi]~df_epi_pax5$deg[f_epi],
+  col = deg_outl_col,
+  method = "jitter",
+  jitter=0.15,
+  vertical = TRUE,
+  pch = 20,
+  cex=0.7,
+  add = TRUE
+)
+
+set.seed(1234)
+boxplot(
+  df_epi_pax5$weighted_binding~df_epi_pax5$deg,
+  col = deg_cols, border = darken(deg_cols,.7),
+  main = "Interaction score\nof pax5 predicted targets\n(epi)",
+  xlab = "DEGs in pax5 K.D. (Cheng et al.)",
+  ylab = "Interaction score",
+  las = 2,
+  cex.main = .6,
+  frame.plot = FALSE,
+  outline = FALSE
+)
+stripchart(
+  df_epi_pax5$weighted_binding[f_epi]~df_epi_pax5$deg[f_epi],
+  col = deg_outl_col,
+  method = "jitter",
+  jitter=0.15,
+  vertical = TRUE,
+  pch = 20,
+  cex=0.7,
+  add = TRUE
+)
+dev.off()
+```
+
+## SOXP-3
+
+We retrieve the results pertaining to control vs soxp. This consists of interrogating which genes have differential expression across any combination of time points, between control and soxp RNAi.
+
+Note: soxP3 is labelled as sox8 in the SRA data tables.
+
+```{r}
+all_res_soxp <- list()
+combinations_soxp <- grep("sox8", grep("RNAi", grep("time", resultsNames(dds), value = TRUE), value = TRUE), value = TRUE)
+combinations_soxp
+```
+
+Because we are only interested in down-regulated, we will subset them.
+
+```{r}
+for (a in combinations_soxp){
+  message(a)
+  all_res_soxp[[a]]$res <-
+    results(dds, name = a)
+  all_res_soxp[[a]]$diffreg <-
+    rownames(all_res_soxp[[a]]$res[all_res_soxp[[a]]$res$padj < 0.1 & abs(all_res_soxp[[a]]$res$log2FoldChange) > 1,])
+  all_res_soxp[[a]]$down <-
+    rownames(all_res_soxp[[a]]$res[all_res_soxp[[a]]$res$padj < 0.11 & all_res_soxp[[a]]$res$log2FoldChange < -1,])
+}
+
+soxp_diffreg <- unique(unlist(sapply(all_res_soxp, function(x){x$diffreg})))
+
+soxp_down <- unique(unlist(sapply(all_res_soxp, function(x){x$down})))
+```
+
+```{r, fig.width = 5, fig.height = 8}
+soxp_vsd <- assay(vsd)
+soxp_vsd <- soxp_vsd[rownames(soxp_vsd) %in% soxp_diffreg,c(25:36,13:24)]
+
+h_soxp <-
+  Heatmap(
+    t(scale(t(soxp_vsd[,]))),
+    clustering_method_rows = "ward.D2",
+    cluster_columns = FALSE,
+    show_column_names = FALSE,
+    show_row_names = FALSE,
+    name = "expression",
+    col = colorRamp2(breaks = c(-2,0,2), colors = sequential_hcl(10,"YlOrRd", rev = T)[c(2,5,9)]),
+    right_annotation = 
+      HeatmapAnnotation(
+        diffreg = setNames(
+          ifelse(
+            rownames(soxp_vsd) %in% soxp_diffreg & rownames(soxp_vsd) %in% soxp_down,
+            "DOWN",
+            "UP"
+          ),
+          rownames(soxp_vsd)
+        ),
+        col = list(diffreg = setNames(c("lightgreen","tomato"),c("UP","DOWN"))),
+        which = "row"
+      ),
+    top_annotation = 
+      HeatmapAnnotation(
+        df = sampletable[c(25:36,13:24),c("RNAi","time","replicate")],
+        col = 
+          list(
+            RNAi = setNames(c("orange","purple"),c("unc22","sox8")),
+            time = setNames(cividis(3),levels(sampletable$time)),
+            replicate = setNames(colorspace::lighten(c("red","green","blue","magenta","yellow"),.3),c("1","2","3","4","5"))
+          )
+      )
+    )
+draw(h_soxp)
+```
+
+```{r}
+pdf("graphics/soxp_heatmap.pdf", wi = 5, he = 8)
+draw(h_soxp)
+dev.off()
+```
+
+To assess which cell types are expressing our genes more, we can calculate a "gene score" as done in other markdowns.
+
+```{r}
+score_soxp_DGE <-
+  gene_score(
+    x = mat, gene_set = soxp_down[soxp_down %in% rownames(mat)],
+    gene_pool = all_genes, remove_set_from_pool = TRUE,
+    fraction = 0.1
+  )
+```
+
+We will create a data frame for a later boxplot.
+
+To accomodate for outliers in the distributions, we will clip the data from outliers (bottom 5% and top 5%). 
+
+```{r}
+df_scores_soxp <-
+  data.frame(
+    cell = colnames(scdata), # cells
+    clu_narrow = scdata$ctype,
+    cluster = factor(scdata$broadtype_splitbam, levels = unique(sort(scdata$broadtype_splitbam))[c(6,2,4,3,9,1,5,7,8,10,11)]), # cluster
+    score_soxp = relativise(clip_q(clip_q(score_soxp_DGE,q=.01,method = "down"), method = "up", q = .99))
+  )
+```
+
+We create the plot here:
+
+```{r}
+set.seed(123)
+z <- df_scores_soxp %>% group_by(cluster) %>% sample_n(200) %>% .$cell
+df_scores_soxp$jit <- ifelse(df_scores_soxp$cell %in% z, TRUE, FALSE)
+
+# score plot
+boxpl_score_soxp <-
+  df_scores_soxp %>%
+  ggplot(mapping = aes(x = cluster, y = score_soxp, fill = cluster, color = cluster)) +
+  geom_boxplot(outlier.shape = NA)+
+  geom_jitter(mapping = aes(shape=jit),size = .6, alpha = .25)+
+  theme_classic()+
+  scale_fill_manual(values = broadcols)+
+  scale_color_manual(values = darken(broadcols,0.5))+
+  scale_shape_manual(values = setNames(c(20,NA),c("TRUE","FALSE")))+
+  theme(axis.text.x = element_blank(), legend.position = "none")+
+  ylab(label = "score soxP3 (RNAi) downregulated genes")+
+  coord_cartesian(ylim=c(0,1))
+```
+
+We plot it here:
+
+```{r, fig.height = 3.5, fig.width = 5}
+boxpl_score_soxp
+```
+
+```{r}
+pdf("graphics/soxp_downreg_genescore.pdf", he = 3.5, wi = 3.5)
+boxpl_score_soxp
+dev.off()
+```
+
+We confirm indeed the potential targets of prep are mostly expressed in the same cell types where we detected soxp as influential (the epidermal lineage).
+
+Regarding early epidermal progrenitors, we will load here the ANANSE network and parse it accordingly:
+
+```{r}
+# eep
+eep_nw <- data.table::fread("outputs/ananse/outs/network/eep.network", header = TRUE)
+eep_nw <- as.data.frame(eep_nw)
+eep_nw$tf <- sub("—.*","",eep_nw$tf_target)
+eep_nw$tg <- sub(".*—","",eep_nw$tf_target)
+eep_nw <- eep_nw[,c(7,8,2,4,5,6)]
+
+df_eep_soxp <- eep_nw[eep_nw$tf == soxp, -1]
+
+head(df_eep_soxp)
+```
+
+We will also leverage these predicted scores with the gene expression data, to check if prep downregulated genes have a higher interaction in our networks.
+
+Provided we have single cell data to do the following, we will also incorporate a subfiltering to keep only the D.E.G.s whose higher expression is in the epidermis lineage. That is, prep RNAi D.E.G.s that are normally detected as expressed in the epidermis lineage.
+
+```{r}
+# a vector of which is the cell type with highest expression for each gene (using our pseudobulk data).
+smed_maxc <- setNames(apply(smed_counts_norm_cw, 1, function(x){names(x[x==max(x)])}),rownames(smed_counts_norm_cw))
+maxc_eep <- names(smed_maxc[smed_maxc %in% c("early epidermal progenitors", "late epidermal progenitors", "epidermis")])
+```
+
+We incorporate this in a column of the data frame. We will also create a filter of 500 random non-D.E.G.s in order to do a stripchart on top of the boxplot.
+
+```{r}
+df_eep_soxp$deg <- factor(ifelse(df_eep_soxp$tg %in% soxp_down, "down","none"), levels = c("none","down")) # & df_eep_soxp$tg %in% maxc_eep
+
+df_eep_soxp$rank_prob <- relativise(rank(df_eep_soxp$prob, ties.method = "min"))
+df_eep_soxp$rank_wb <- relativise(rank(df_eep_soxp$weighted_binding, ties.method = "min"))
+
+head(df_eep_soxp)
+
+set.seed(123)
+non_deg_subsample_eep <- sample(df_eep_soxp$tg[df_eep_soxp$deg == "none"], 500)
+f_eep <- which(df_eep_soxp$tg %in% c(non_deg_subsample_eep,df_eep_soxp$tg[df_eep_soxp$deg != "none"]))
+```
+
+And here the plot:
+
+```{r, fig.width = 5, fig.height = 5}
+par(mfrow = c(1,2))
+
+deg_cols <- setNames(c("#c4c4c4","#9ECAE1"),c("none","down"))
+deg_outl_col <- deg_cols
+deg_outl_col <- darken(deg_outl_col,.7)
+deg_outl_col[1] <- alpha(deg_outl_col[1],.2)
+deg_outl_col[c(2,3,4)] <- alpha(deg_outl_col[c(2,3,4)],.25)
+
+set.seed(1234)
+boxplot(
+  df_eep_soxp$prob~df_eep_soxp$deg,
+  col = deg_cols, border = darken(deg_cols,.7),
+  main = "Interaction score\nof soxp predicted targets\n(eep)",
+  xlab = "DEGs in soxp K.D. (Cheng et al.)",
+  ylab = "Interaction score",
+  las = 2,
+  cex.main = .6,
+  frame.plot = FALSE,
+  outline = FALSE
+)
+stripchart(
+  df_eep_soxp$prob[f_eep]~df_eep_soxp$deg[f_eep],
+  col = deg_outl_col,
+  method = "jitter",
+  jitter=0.15,
+  vertical = TRUE,
+  pch = 20,
+  cex=0.7,
+  add = TRUE
+)
+
+set.seed(1234)
+boxplot(
+  df_eep_soxp$weighted_binding~df_eep_soxp$deg,
+  col = deg_cols, border = darken(deg_cols,.7),
+  main = "Interaction score\nof soxp predicted targets\n(eep)",
+  xlab = "DEGs in soxp K.D. (Cheng et al.)",
+  ylab = "Interaction score",
+  las = 2,
+  cex.main = .6,
+  frame.plot = FALSE,
+  outline = FALSE
+)
+stripchart(
+  df_eep_soxp$weighted_binding[f_eep]~df_eep_soxp$deg[f_eep],
+  col = deg_outl_col,
+  method = "jitter",
+  jitter=0.15,
+  vertical = TRUE,
+  pch = 20,
+  cex=0.7,
+  add = TRUE
+)
+```
+
+We see that both the prob score and the weighted binding are slightly up (especially the prob, but most importantly the weighted binding).
+
+```{r, echo = FALSE}
+pdf("graphics/soxp_rnai_boxplot_ananse_eep.pdf", he = 5, wi = 5)
+par(mfrow = c(1,2))
+
+set.seed(1234)
+boxplot(
+  df_eep_soxp$prob~df_eep_soxp$deg,
+  col = deg_cols, border = darken(deg_cols,.7),
+  main = "Interaction score\nof soxp predicted targets\n(eep)",
+  xlab = "DEGs in soxp K.D. (Cheng et al.)",
+  ylab = "Interaction score",
+  las = 2,
+  cex.main = .6,
+  frame.plot = FALSE,
+  outline = FALSE
+)
+stripchart(
+  df_eep_soxp$prob[f_eep]~df_eep_soxp$deg[f_eep],
+  col = deg_outl_col,
+  method = "jitter",
+  jitter=0.15,
+  vertical = TRUE,
+  pch = 20,
+  cex=0.7,
+  add = TRUE
+)
+
+set.seed(1234)
+boxplot(
+  df_eep_soxp$weighted_binding~df_eep_soxp$deg,
+  col = deg_cols, border = darken(deg_cols,.7),
+  main = "Interaction score\nof soxp predicted targets\n(eep)",
+  xlab = "DEGs in soxp K.D. (Cheng et al.)",
+  ylab = "Interaction score",
+  las = 2,
+  cex.main = .6,
+  frame.plot = FALSE,
+  outline = FALSE
+)
+stripchart(
+  df_eep_soxp$weighted_binding[f_eep]~df_eep_soxp$deg[f_eep],
+  col = deg_outl_col,
+  method = "jitter",
+  jitter=0.15,
+  vertical = TRUE,
+  pch = 20,
+  cex=0.7,
+  add = TRUE
+)
+dev.off()
+```
+
+## Saving all data
+
+```{r}
+save(
+  cheng_bowtie2_counts,
+  sampletable,
+  dds,
+  all_res_pax5,
+  pax5_diffreg,
+  pax5_down,
+  pax5_vsd,
+  df_scores_pax5,
+  all_res_soxp,
+  soxp_diffreg,
+  soxp_down,
+  soxp_vsd,
+  df_scores_soxp,
+  file = "outputs/rda/pax5_soxp3_chengetal_reanalysis.rda"
+)
+
+save_to_excel(
+  list_of_objects = 
+    list(
+      chengetal_bowtie2_counts = cheng_bowtie2_counts,
+      chengetal_samples_table = sampletable,
+      pax5_diffreg_norm_counts = pax5_vsd,
+      soxp_diffreg_norm_counts = pax5_vsd
+    ),
+  output_file_name =  paste0("./outputs/",fcha(),"_pax5_soxp_chengetal_reanalysis.xlsx"),
+  rowNames = TRUE
+  )
+```
+
+## The End!
+
+```{r}
+sessionInfo()
+```

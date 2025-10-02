@@ -1,0 +1,507 @@
+---
+title: "Reanalysis of p53 RNAi (Tu et al) and leverage to TF/target networks"
+author: "Alberto Perez-Posada"
+date: "2024-12-11"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+dir <- '/omics-storage/lab-solana/alberto/projects/smed_cisreg/'
+fcha <- function(){ gsub("-","",Sys.Date()) }
+
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_knit$set(root.dir = dir)
+options(scipen=999)
+Sys.setenv(VROOM_CONNECTION_SIZE=5000072)
+pdf.options(family = "Helvetica")
+```
+
+## About
+
+This markdown reanalyses the knock-down RNAi of p53 in planaria, from Tu et al., 2015 (PMID: 26457503), which was also analysed in Cheng et al., 2018 (PMID: 29100657). For more information please visit:  https://doi.org/10.7554/eLife.10501 and https://doi.org/10.1016/j.ydbio.2017.08.030 .
+
+Here we used bowtie2 for the mapping of reads, quantification with HTSeq, and differential gene expression with DESeq2.
+
+We will retrieve a set of differentially expressed genes as done in the original manuscript, and bring them over to the networks of the different cell types to test whether they tend to have a higher predicted activity by p53.
+
+## Load libraries and functions
+
+We will load the functions as we usually do:
+
+```{r, message = FALSE, warning = FALSE}
+library(countToFPKM)
+library(ComplexHeatmap)
+library(Mfuzz)
+library(dplyr)
+library(RColorBrewer)
+library(colorspace)
+library(viridis)
+library(Matrix)
+library(topGO)
+library(readr)
+library(ggplot2)
+library(ggrepel)
+library(ggrastr)
+library(DESeq2)
+
+# load functions
+source("/omics-storage/lab-solana/alberto/projects/smed_cisreg/code/r_code/functions/sourcefolder.R")
+sourceFolder(
+  "/omics-storage/lab-solana/alberto/projects/smed_cisreg/code/r_code/functions/", #change for definitive path once its final
+  recursive = TRUE
+)
+
+volcano_plot <- function(d,fc_thres = 1.5, p_thres = 0.1, main = "Volcano plot"){
+  p <-
+    d %>%
+    ggplot(aes(x = log2FoldChange, y = -log(padj), fill = deg, colour = deg))+
+    geom_point(shape = 21)+
+    scale_fill_manual(values = setNames(c("#FF6347A1","#24242430"),c("DEG","none")))+
+    scale_colour_manual(values = colorspace::darken(setNames(c("tomato","#24242460"),c("DEG","none")),.3))+
+    theme_classic()+
+    geom_vline(xintercept=c(-fc_thres), color="#a6c8e2",linetype = "longdash")+
+    geom_vline(xintercept=c(fc_thres), color="#a6c8e2",linetype = "longdash")+
+    geom_hline(yintercept=-log(p_thres), color="#a6c8e2",linetype = "longdash")+
+    ggtitle(main)
+  
+  p
+}
+```
+
+## Load Data
+
+```{r}
+p53 = "h1SMcG0016868"
+load("outputs/rda/smed_counts.rda")
+load("outputs/rda/smed_wgcna.rda")
+load("~/storage/projects/smed_cisreg/outputs/rda/stuckemann_AP_remapped.rda")
+```
+
+Leveraging gene expression and gene network data: despite this (and other) knock-down assays were performed using bulk RNA-Seq in whole animals, we can integrate this information with our network data and ask the question of whether such genes have any different predicted interactions. If that was the case, one premise is that we should be able detect which are the cell types in which we can expect to find such genes. For that we can interrogate our single cell data. Are there any cell types expressing them more often?
+
+We will load here the single cell data to explore this later.
+
+```{r}
+scdata <- readRDS("outputs/rda/seurat_scrna/smed_cisreg_scRNA_consensus_identities.RDS")
+broadcols <-
+  setNames(
+    c(
+      "#969696", # neoblast
+      "#9ECAE1", # EEP
+      "#56A0CE", # EEP
+      "#2171B5", # epidermis
+      "#228B22", # phagocytes
+      "#869E42", # basal/goblet
+      "#B22222", # muscle
+      "#FEC44F", # neurons
+      "#FF69B4", # parenchyma
+      "#FFB0AB", # protonephridia
+      "#6428C8"  # secretory
+    ),
+    unique(sort(scdata$broadtype_splitbam))[c(6,2,4,3,9,1,5,7,8,10,11)]
+  )
+
+mat = scdata@assays$RNA@data
+all_genes = rownames(mat)
+```
+
+We load our gene information table:
+
+```{r}
+# Load gene information
+rosetta_ext <- read.delim2(
+  "/omics-storage/lab-solana/standard_references/Smed_Rink/20231127_Rosetta_EXTENDED.tsv",
+  header = TRUE
+)
+
+```
+
+Here we load the sample information (which is basically the SRA metadata table)
+
+```{r}
+samplesdir <- "/home/alberto/storage/projects/smed_cisreg/outputs/rna/cdh4_p53_tu/"
+
+sampletable <- 
+  read.delim2(
+    "/home/alberto/storage/projects/smed_cisreg/outputs/rna/cdh4_p53_tu/sampletable.tsv",
+    header = TRUE
+  )
+
+col_keep <- sampletable$Run[grep("p53|unc",sampletable$RNAi)]
+sampletable <-sampletable[sampletable$Run %in% col_keep,]
+sampletable$time <- sub(" days.*","",sampletable$time_after_rnai_treatment)
+sampletable$time <- factor(paste0(sampletable$time,"d"), levels = paste0(unique(sort(as.numeric(sampletable$time))),"d"))
+sampletable$RNAi <- factor(sampletable$RNAi, levels = c("unc22","p53") )
+sampletable$replicate <- factor(sampletable$replicate, levels = c("1","2","3"))
+
+sampletable <- sampletable[,c(1,22,23,31)]
+rownames(sampletable) <- sampletable$Run
+
+head(sampletable)
+```
+
+We load the samples here.
+First we specify the directory where we have stored the counts.
+Then, with a lapply function, we collate together all these files.
+
+```{r}
+p53_counts_list <- lapply(
+  list.files(path = samplesdir, pattern=".counts",recursive = TRUE),
+  function(x){
+    y = read.delim2(paste0(samplesdir,x),header = FALSE)
+    y = setNames(y$V2,y$V1)
+    return(y)
+  }
+)
+names(p53_counts_list) <- gsub(".*/","",gsub(".counts","",list.files(path = samplesdir, pattern=".counts",recursive = TRUE)))
+p53_bowtie2_counts <- do.call(cbind,p53_counts_list)
+p53_bowtie2_counts <- p53_bowtie2_counts[,colnames(p53_bowtie2_counts) %in% col_keep]
+
+p53_bowtie2_counts[1:5,1:5]
+```
+
+## Differential Gene Expression
+
+We create a DESeq object from the count data and the sample table, using the design batch + condition.
+
+```{r}
+dds <- DESeqDataSetFromMatrix(
+  countData = p53_bowtie2_counts,
+  colData = sampletable,
+  # design = ~ replicate + time + RNAi
+  design = ~ replicate + time + RNAi + RNAi:time
+  )
+
+smallestGroupSize <- 10
+keep <- rowSums(counts(dds) >= 10) >= smallestGroupSize
+dds <- dds[keep,]
+```
+
+
+```{r}
+dds <- DESeq(dds, test="LRT", reduced=~replicate + time + RNAi)
+```
+
+```{r}
+all_res <- list()
+combinations <- grep("RNAi", grep("time", resultsNames(dds), value = TRUE), value = TRUE)
+combinations
+```
+
+Because we are only interested in down-regulated, we will subset them.
+
+```{r}
+for (a in combinations){
+  message(a)
+  all_res[[a]]$res <-
+    results(dds, name = a)
+  all_res[[a]]$diffreg <-
+    rownames(all_res[[a]]$res[all_res[[a]]$res$padj < 0.05 & abs(all_res[[a]]$res$log2FoldChange) > 1.5,])
+  all_res[[a]]$down <-
+    rownames(all_res[[a]]$res[all_res[[a]]$res$padj < 0.05 & all_res[[a]]$res$log2FoldChange < -1.5,])
+}
+
+p53_diffreg <- unique(unlist(sapply(all_res, function(x){x$diffreg})))
+
+p53_down <- unique(unlist(sapply(all_res, function(x){x$down})))
+```
+
+We will show the expression over time of these diff.reg. genes in each experiment.
+
+```{r}
+vsd <- vst(dds)
+p53_vsd <- assay(vsd)
+p53_vsd <- p53_vsd[rownames(p53_vsd) %in% p53_diffreg,]
+```
+
+```{r, fig.width = 5, fig.height = 8}
+h_p53 <- Heatmap(
+  t(scale(t(p53_vsd[,c(18:34,1:17)]))),
+  clustering_method_rows = "ward.D2",
+  cluster_columns = FALSE,
+  show_column_names = FALSE,
+  show_row_names = FALSE,
+  name = "expression",
+  col = colorRamp2(breaks = c(-2,0,2), colors = sequential_hcl(10,"YlOrRd", rev = T)[c(2,5,9)]),
+  right_annotation = HeatmapAnnotation(
+      diffreg = setNames(
+        ifelse(
+          rownames(p53_vsd) %in% p53_diffreg & rownames(p53_vsd) %in% p53_down,
+          "DOWN",
+          "UP"
+        ),
+        rownames(p53_vsd)
+      ),
+      col = list(diffreg = setNames(c("lightgreen","tomato"),c("UP","DOWN"))),
+      which = "row"
+    ),
+  top_annotation = 
+    HeatmapAnnotation(
+      df = sampletable[c(18:34,1:17),c("RNAi","time","replicate")],
+      col = 
+        list(
+          RNAi = setNames(c("orange","purple"),c("unc22","p53")),
+          time = setNames(cividis(6),levels(sampletable$time)),
+          replicate = setNames(colorspace::lighten(c("red","green","blue"),.3),c("1","2","3"))
+        )
+    ),
+  column_split = sampletable$RNAi[c(18:34,1:17)],
+  column_title = NULL
+  )
+
+pdf("graphics/p53_heatmap.pdf",wi = 5, he = 8)
+draw(h_p53)
+dev.off()
+
+draw(h_p53)
+```
+
+## Leveraging single cell expression and network data
+
+To assess which cell types are expressing our genes more, we can calculate a "gene score" as done in other markdowns.
+
+```{r}
+score_p53_DGE <-
+  gene_score(
+    x = mat, gene_set = p53_down[p53_down %in% rownames(mat)],
+    gene_pool = all_genes, remove_set_from_pool = TRUE,
+    fraction = 0.1
+  )
+```
+
+We will create a data frame for a later boxplot.
+
+To accomodate for outliers in the distributions, we will clip the data from outliers (bottom 5% and top 5%).
+
+We will use the narrow cell types (not the broad) to visualise this as p53 is specific of certain kinds of neurons.
+
+```{r}
+df_scores <-
+  data.frame(
+    cell = colnames(scdata), # cells
+    clu_narrow = scdata$ctype,
+    cluster = factor(scdata$broadtype_splitbam, levels = unique(sort(scdata$broadtype_splitbam))[c(6,2,4,3,9,1,5,7,8,10,11)]), # cluster
+    score_p53 = relativise(clip_q(clip_q(score_p53_DGE,q=.01,method = "down"), method = "up", q = .99))
+  )
+```
+
+We create the plot here:
+
+```{r}
+# score plot
+set.seed(123)
+z <- df_scores %>% group_by(cluster) %>% sample_n(200) %>% .$cell
+df_scores$jit <- ifelse(df_scores$cell %in% z, TRUE, FALSE)
+
+# score plot
+boxpl_score_p53 <-
+  df_scores %>%
+  ggplot(mapping = aes(x = cluster, y = score_p53, fill = cluster, color = cluster)) +
+  geom_boxplot(outlier.shape = NA)+
+  geom_jitter(mapping = aes(shape=jit),size = .6, alpha = .25)+
+  theme_classic()+
+  scale_fill_manual(values = broadcols)+
+  scale_color_manual(values = darken(broadcols,0.5))+
+  scale_shape_manual(values = setNames(c(20,NA),c("TRUE","FALSE")))+
+  theme(axis.text.x = element_blank(), legend.position = "none")+
+  ylab(label = "score p53 (RNAi) downregulated genes")+
+  coord_cartesian(ylim=c(0,1))
+```
+
+We plot it here:
+
+```{r, fig.height = 3.5, fig.width = 3.5}
+boxpl_score_p53
+```
+
+```{r}
+pdf("graphics/p53_downreg_genescore.pdf", he = 3.5, wi = 3.5)
+boxpl_score_p53
+dev.off()
+```
+
+We confirm indeed the potential targets of prep are mostly expressed in the same cell types where we detected p53 as influential (the epidermal lineage).
+
+# Leveraging differential expression and network data
+
+Regarding epidermis, we will load here the ANANSE network of epidermis and parse it accordingly:
+
+```{r}
+# lep
+lep_nw <- data.table::fread("outputs/ananse/outs/network/lep.network", header = TRUE)
+lep_nw <- as.data.frame(lep_nw)
+lep_nw$tf <- sub("—.*","",lep_nw$tf_target)
+lep_nw$tg <- sub(".*—","",lep_nw$tf_target)
+lep_nw <- lep_nw[,c(7,8,2,4,5,6)]
+
+df_lep_p53 <- lep_nw[lep_nw$tf == p53, -1]
+
+head(df_lep_p53)
+```
+
+We will also leverage these predicted scores with the gene expression data, to check if prep downregulated genes have a higher interaction in our networks.
+
+Provided we have single cell data to do the following, we will also incorporate a subfiltering to keep only the D.E.G.s whose higher expression is in the epidermis lineage. That is, prep RNAi D.E.G.s that are normally detected as expressed in the epidermis lineage.
+
+```{r}
+# a vector of which is the cell type with highest expression for each gene (using our pseudobulk data).
+smed_maxc <- setNames(apply(smed_counts_norm_cw, 1, function(x){names(x[x==max(x)])}),rownames(smed_counts_norm_cw))
+maxc_lep <- names(smed_maxc[smed_maxc == "late epidermal progenitors"])
+```
+
+We incorporate this in a column of the data frame. We will also create a filter of 500 random non-D.E.G.s in order to do a stripchart on top of the boxplot.
+
+```{r}
+df_lep_p53$deg <- factor(ifelse(df_lep_p53$tg %in% p53_down & df_lep_p53$tg %in% maxc_lep, "down","none"), levels = c("none","down"))
+
+df_lep_p53$rank_prob <- relativise(rank(df_lep_p53$prob, ties.method = "min"))
+df_lep_p53$rank_wb <- relativise(rank(df_lep_p53$weighted_binding, ties.method = "min"))
+
+set.seed(123)
+non_deg_subsample_lep <- sample(df_lep_p53$tg[df_lep_p53$deg == "none"], 500)
+f_lep <- which(df_lep_p53$tg %in% c(non_deg_subsample_lep,df_lep_p53$tg[df_lep_p53$deg != "none"]))
+```
+
+And here the plot:
+
+```{r, fig.width = 5, fig.height = 5}
+par(mfrow = c(1,2))
+deg_cols <- setNames(c("#c4c4c4","#56A0CE"),c("none","down"))
+deg_outl_col <- deg_cols
+deg_outl_col <- darken(deg_outl_col,.7)
+deg_outl_col[1] <- alpha(deg_outl_col[1],.2)
+deg_outl_col[c(2,3,4)] <- alpha(deg_outl_col[c(2,3,4)],.25)
+
+set.seed(1234)
+boxplot(
+  df_lep_p53$prob~df_lep_p53$deg,
+  col = deg_cols, border = darken(deg_cols,.7),
+  main = "Interaction score\nof p53 predicted targets\n(lep)",
+  xlab = "DEGs in p53 K.D. (Kao et al.)",
+  ylab = "Interaction score",
+  las = 2,
+  cex.main = .6,
+  frame.plot = FALSE,
+  outline = FALSE
+)
+stripchart(
+  df_lep_p53$prob[f_lep]~df_lep_p53$deg[f_lep],
+  col = deg_outl_col,
+  method = "jitter",
+  jitter=0.15,
+  vertical = TRUE,
+  pch = 20,
+  cex=0.7,
+  add = TRUE
+)
+
+set.seed(1234)
+boxplot(
+  df_lep_p53$weighted_binding~df_lep_p53$deg,
+  col = deg_cols, border = darken(deg_cols,.7),
+  main = "Interaction score\nof p53 predicted targets\n(lep)",
+  xlab = "DEGs in p53 K.D. (Kao et al.)",
+  ylab = "Interaction score",
+  las = 2,
+  cex.main = .6,
+  frame.plot = FALSE,
+  outline = FALSE
+)
+stripchart(
+  df_lep_p53$weighted_binding[f_lep]~df_lep_p53$deg[f_lep],
+  col = deg_outl_col,
+  method = "jitter",
+  jitter=0.15,
+  vertical = TRUE,
+  pch = 20,
+  cex=0.7,
+  add = TRUE
+)
+```
+
+We see that both the prob score and the weighted binding are slightly up (especially the prob, but most importantly the weighted binding).
+
+```{r, echo = FALSE}
+pdf("graphics/p53_rnai_boxplot_ananse_epidermis.pdf", he = 5, wi = 5)
+par(mfrow = c(1,2))
+
+set.seed(1234)
+boxplot(
+  df_lep_p53$prob~df_lep_p53$deg,
+  col = deg_cols, border = darken(deg_cols,.7),
+  main = "Interaction score\nof p53 predicted targets\n(lep)",
+  xlab = "DEGs in p53 K.D. (Kao et al.)",
+  ylab = "Interaction score",
+  las = 2,
+  cex.main = .6,
+  frame.plot = FALSE,
+  outline = FALSE
+)
+stripchart(
+  df_lep_p53$prob[f_lep]~df_lep_p53$deg[f_lep],
+  col = deg_outl_col,
+  method = "jitter",
+  jitter=0.15,
+  vertical = TRUE,
+  pch = 20,
+  cex=0.7,
+  add = TRUE
+)
+
+set.seed(1234)
+boxplot(
+  df_lep_p53$weighted_binding~df_lep_p53$deg,
+  col = deg_cols, border = darken(deg_cols,.7),
+  main = "Interaction score\nof p53 predicted targets\n(lep)",
+  xlab = "DEGs in p53 K.D. (Kao et al.)",
+  ylab = "Interaction score",
+  las = 2,
+  cex.main = .6,
+  frame.plot = FALSE,
+  outline = FALSE
+)
+stripchart(
+  df_lep_p53$weighted_binding[f_lep]~df_lep_p53$deg[f_lep],
+  col = deg_outl_col,
+  method = "jitter",
+  jitter=0.15,
+  vertical = TRUE,
+  pch = 20,
+  cex=0.7,
+  add = TRUE
+)
+dev.off()
+```
+
+## Saving all data
+
+```{r}
+save(
+  p53_bowtie2_counts,
+  sampletable,
+  dds,
+  all_res,
+  p53_diffreg,
+  p53_down,
+  p53_vsd,
+  df_scores,
+  file = "outputs/rda/p53_tuetal_reanalysis.rda"
+)
+
+save_to_excel(
+  list_of_objects = 
+    list(
+      tuetal_bowtie2_counts = p53_bowtie2_counts,
+      tuetal_samples_table = sampletable,
+      p53_diffreg_norm_counts = p53_vsd
+    ),
+  output_file_name =  paste0("./outputs/",fcha(),"_p53_tuetal_reanalysis.xlsx"),
+  rowNames = TRUE
+  )
+```
+
+## The End!
+
+```{r}
+sessionInfo()
+```

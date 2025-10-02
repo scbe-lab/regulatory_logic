@@ -1,0 +1,54 @@
+fate_tf	tg_name
+eep pax2/5/8-1	pdp1
+eep pax2/5/8-1	utx
+eep prep	EGR-1
+eep prep	egr*-2
+epidermis pax2/5/8-1	not6
+epidermis pax2/5/8-1	calreticulin
+epidermis pax2/5/8-1	epidermal growth factor receptor 3 (egfr-3)
+epidermis pax2/5/8-1	foxN2/3-3
+epidermis soxB1-2	FERM domain containing-1
+epidermis soxB1-2	GCR052 (gcr052)
+phagocytes nkx2-2	rar-b
+phagocytes nkx2-2	HNF4 (hnf4)
+phagocytes nkx2-2	lin54-2
+phagocytes nkx2-2	GATA456 (gata456)
+phagocytes hnf4	NPHP1 (NPHP1)
+phagocytes hnf4	usf protein (usf)
+basalgoblet mitfl-1	multiple epidermal growth factor like domains protein-1
+basalgoblet mitfl-1	Rho-associated kinase (ROCK)
+basalgoblet klf-2	rbpj
+basalgoblet klf-2	atf2-1
+basalgoblet klf-2	Rapunzel
+basalgoblet klf-2	da protein (da)
+muscle foxD2	Ptk7
+muscle foxD2	GLI-1 (gli-1)
+muscle foxD2	WntA
+muscle nr4a-2	neuregulin-type 1 (nrg-1)
+muscle nr4a-2	patched-like protein
+muscle nr4a-2	pou6-2
+muscle nr4a-2	hypothetical protein ror
+muscle nr4a-2	alx3-1
+neuron foxJ1-4	hypothetical protein ski
+neuron foxJ1-4	coe protein (coe)
+neuron foxJ1-4	dynamin-1-like protein
+neuron foxJ1-4	cux-1
+neuron foxJ1-4	nf-i/a
+neuron foxJ1-4	calreticulin-1
+neuron isl-1	GCR022
+neuron isl-1	roboA
+parenchyma ets-1	HNF4 (hnf4)
+parenchyma ets-1	glypican-1
+parenchyma foxF2	slc29a-1 (slc29a-1)
+parenchyma foxF2	l3mbtl4
+protonephridia pou2/3-1	dishevelled-associated activator of morphogenesis 1 (DAAM1)
+protonephridia pou2/3-1	carbonic anhydrase VII-like
+protonephridia pou2/3-1	NLK-1
+protonephridia foxA1	rfx3
+protonephridia foxA1	NPHP6 (NPHP6)
+protonephridia foxA1	alpha-int-2
+secretory cux-2	lmpt-3
+secretory cux-2	gelsolin-like protein
+secretory cux-2	foxO
+secretory fer3l-3	spdef-2
+secretory fer3l-3	zfp354

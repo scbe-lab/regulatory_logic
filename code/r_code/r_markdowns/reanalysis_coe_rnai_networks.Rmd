@@ -1,0 +1,722 @@
+---
+title: "Reanalysis of COE RNAi (Cowles et al) and leverage to TF/target networks"
+author: "Alberto Perez-Posada"
+date: "2024-12-11"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+dir <- '/omics-storage/lab-solana/alberto/projects/smed_cisreg/'
+fcha <- function(){ gsub("-","",Sys.Date()) }
+
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_knit$set(root.dir = dir)
+options(scipen=999)
+Sys.setenv(VROOM_CONNECTION_SIZE=5000072)
+pdf.options(family = "Helvetica")
+```
+
+## About
+
+This markdown reanalyses the knock-down RNAi of coe in planaria, from Cowles et al., 2014 (PMID: 25356635). For more information please visit: https://doi.org/10.1371/journal.pgen.1004746.
+
+Here we used bowtie2 for the mapping of reads, quantification with HTSeq, and differential gene expression with DESeq2.
+
+We will retrieve a set of differentially expressed genes as done in the original manuscript, and bring them over to the networks of the different cell types to test whether they tend to have a higher predicted activity by coe.
+
+## Load libraries and functions
+
+We will load the functions as we usually do:
+
+```{r, message = FALSE, warning = FALSE}
+library(countToFPKM)
+library(ComplexHeatmap)
+library(Mfuzz)
+library(dplyr)
+library(RColorBrewer)
+library(colorspace)
+library(viridis)
+library(Matrix)
+library(topGO)
+library(readr)
+library(ggplot2)
+library(ggrepel)
+library(ggrastr)
+library(DESeq2)
+
+# load functions
+source("/omics-storage/lab-solana/alberto/projects/smed_cisreg/code/r_code/functions/sourcefolder.R")
+sourceFolder(
+  "/omics-storage/lab-solana/alberto/projects/smed_cisreg/code/r_code/functions/", #change for definitive path once its final
+  recursive = TRUE
+)
+```
+
+## Load Data
+
+```{r}
+coe <- "h1SMcG0016003"
+load("outputs/rda/smed_counts.rda")
+load("outputs/rda/smed_wgcna.rda")
+load("~/storage/projects/smed_cisreg/outputs/rda/stuckemann_AP_remapped.rda")
+```
+
+Leveraging gene expression and gene network data: despite this (and other) knock-down assays were performed using bulk RNA-Seq in whole animals, we can integrate this information with our network data and ask the question of whether such genes have any different predicted interactions. If that was the case, one premise is that we should be able detect which are the cell types in which we can expect to find such genes. For that we can interrogate our single cell data. Are there any cell types expressing them more often?
+
+We will load here the single cell data to explore this later.
+
+```{r}
+scdata <- readRDS("outputs/rda/seurat_scrna/smed_cisreg_scRNA_consensus_identities.RDS")
+broadcols <-
+  setNames(
+    c(
+      "#969696", # neoblast
+      "#9ECAE1", # EEP
+      "#56A0CE", # EEP
+      "#2171B5", # epidermis
+      "#228B22", # phagocytes
+      "#869E42", # basal/goblet
+      "#B22222", # muscle
+      "#FEC44F", # neurons
+      "#FF69B4", # parenchyma
+      "#FFB0AB", # protonephridia
+      "#6428C8"  # secretory
+    ),
+    unique(sort(scdata$broadtype_splitbam))[c(6,2,4,3,9,1,5,7,8,10,11)]
+  )
+
+mat = scdata@assays$RNA@data
+all_genes = rownames(mat)
+
+```
+
+We load our gene information table:
+
+```{r}
+# Load gene information
+rosetta_ext <- read.delim2(
+  "/omics-storage/lab-solana/standard_references/Smed_Rink/20231127_Rosetta_EXTENDED.tsv",
+  header = TRUE
+)
+
+```
+
+Here we load the sample information (which is basically the SRA metadata table)
+
+```{r}
+samplesdir <- "/home/alberto/storage/projects/smed_cisreg/outputs/rna/coe_cowles/"
+
+sampletable <- 
+  read.delim2(
+    "/home/alberto/storage/projects/smed_cisreg/outputs/rna/coe_cowles/sampletable.tsv",
+    header = TRUE
+    )
+
+sampletable$batch =
+  translate_ids(
+    sampletable$Run,
+    dict = data.frame(
+      run = c("SRR2486925", "SRR2486926", "SRR1133800", "SRR2486927", "SRR2486928", "SRR2486929"),
+      batch = factor(c("B","C","A","A","B","C"), levels = c("A","B","C"))
+    )
+  )
+
+head(sampletable)
+```
+
+We load the samples here.
+First we specify the directory where we have stored the counts.
+Then, with a lapply function, we collate together all these files.
+
+```{r}
+# Load the counts
+coe_counts_list <- lapply(
+  list.files(path = samplesdir, pattern=".counts",recursive = TRUE),
+  function(x){
+    y = read.delim2(paste0(samplesdir,x),header = FALSE)
+    y = setNames(y$V2,y$V1)
+    return(y)
+  }
+)
+names(coe_counts_list) <- gsub(".*/","",gsub(".counts","",list.files(path = samplesdir, pattern=".counts",recursive = TRUE)))
+
+coe_bowtie2_counts <- do.call(cbind,coe_counts_list)
+
+coe_bowtie2_counts[1:5,1:5]
+```
+
+## Differential Gene Expression
+
+We create a DESeq object from the count data and the sample table, using the design batch + condition.
+
+```{r}
+dds <- DESeqDataSetFromMatrix(countData = coe_bowtie2_counts,
+                              colData = sampletable,
+                              design = ~ batch + condition)
+```
+
+We will have a quick look at the replicates by retrieving the variance-stabilised expression data from the object, clustering, and plotting a heatmap.
+
+```{r}
+vsd <- vst(dds, blind=FALSE)
+sampleDists <- dist(t(assay(vsd)))
+h <- hclust(sampleDists)
+```
+
+Here it is:
+
+```{r, fig.width = 4.2, fig.height = 3.5}
+coe_hm <- Heatmap(
+  name = "Pearson",
+  cor(log1p(assay(vsd))),
+  cluster_rows = h,
+  cluster_columns = h,
+  col = sequential_hcl(10,"YlOrRd", rev = T),
+  top_annotation = 
+    HeatmapAnnotation(
+      batch = sampletable$batch,
+      condition = sampletable$condition,
+      col = 
+        list(
+          batch = setNames(colorspace::lighten(c("red","green","blue"),.3), c("A","B","C")),
+          condition = setNames(c("orange","purple"),c("control","coe_RNAi"))
+          )
+      ),
+  left_annotation = 
+    HeatmapAnnotation(
+      batch = sampletable$batch,
+      condition = sampletable$condition,
+      col = 
+        list(
+          batch = setNames(colorspace::lighten(c("red","green","blue"),.3), c("A","B","C")),
+          condition = setNames(c("orange","purple"),c("control","coe_RNAi"))
+        ),
+      which = "row",
+      show_legend = FALSE
+    ),
+  show_row_names = FALSE,
+  show_column_names = FALSE
+  )
+
+draw(coe_hm)
+
+pdf("graphics/coe_heatmap_samples.pdf", wi = 4.2, he = 3.5)
+draw(coe_hm)
+dev.off()
+```
+
+Replicates of the same condition group together. That is reassuring.
+
+```{r}
+dds <- estimateSizeFactors(dds)
+dds <- estimateDispersions(dds)
+dds <- nbinomWaldTest(dds)
+```
+
+```{r}
+res <- results(dds, contrast=c("condition","coe_RNAi","control"))
+res <- res[complete.cases(res),]
+
+fc_thres <- log(1,2) # a foldchange of 1.5x
+p_thres <- 0.1
+
+f_signif <- res$padj < p_thres & abs(res$log2FoldChange) > fc_thres
+
+res$deg <- ifelse(f_signif, "DEG", "none")
+```
+
+
+```{r, fig.width = 3.5, fig.height = 3.5}
+v_coe <-
+  volcano_plot(
+    res,
+    fc_thres = fc_thres,
+    p_thres = p_thres,
+    main = "Diff. Exp. Genes in Cowles et al., 2014"
+    )
+
+print(v_coe)
+```
+
+```{r}
+pdf("graphics/coe_volcano.pdf",wi = 3.5, he = 3.5)
+print(v_coe)
+dev.off()
+```
+
+Because we are only interested in down-regulated, we will subset them.
+
+```{r}
+coe_diffreg <- rownames(res)[f_signif]
+coe_down <- rownames(res)[f_signif & res$log2FoldChange < 0 ]
+```
+
+```{r, fig.width = 5, fig.height = 8}
+h_coe <- 
+  Heatmap(
+    name = "expression",
+    t(scale(t(assay(vsd[rownames(vsd) %in% coe_diffreg,])))),
+    clustering_method_rows = "ward.D2",
+    clustering_method_columns = "ward.D2",
+    col = rev(brewer.pal(7,"RdYlBu")),
+    show_row_names = FALSE,
+    show_column_names = FALSE,
+    right_annotation = 
+    HeatmapAnnotation(
+      diffreg = setNames(
+        ifelse(
+          rownames(vsd[rownames(vsd) %in% coe_diffreg,]) %in% coe_down,
+          "DOWN",
+          "UP"
+        ),
+        rownames(vsd[rownames(vsd) %in% coe_diffreg,])
+      ),
+      col = list(diffreg = setNames(c("lightgreen","tomato"),c("UP","DOWN"))),
+      which = "row"
+    ),
+    top_annotation = 
+      HeatmapAnnotation(
+        condition = sampletable$condition,
+        batch = sampletable$batch,
+        col = 
+          list(
+            condition = setNames(c("orange","purple"), c("control","coe_RNAi")),
+            batch = setNames(colorspace::lighten(c("red","green","blue"),.2), c("A","B","C"))
+          )
+      ),
+    column_split = sampletable$condition[c(4:6,1:3)]
+  )
+
+pdf("graphics/coe_heatmap.pdf",wi = 5, he = 8)
+draw(h_coe)
+dev.off()
+
+draw(h_coe)
+```
+
+## coe differential expression and anteroposterior
+
+```{r, fig.width = 3, fig.height = 4}
+ap_coe <-
+  ap_filt[rownames(ap_filt) %in% coe_diffreg,]
+
+ap_coe_hm <- 
+  Heatmap(
+    name = "expression",
+    t(scale(t(ap_coe))),
+    col = cividis(10),
+    cluster_columns = FALSE,
+    show_row_names = FALSE,
+    left_annotation = 
+      HeatmapAnnotation(
+        DEG = sapply(
+          rownames(ap_coe),
+          function(x){
+            a = res[rownames(res) == x,]
+            y = ifelse(a$log2FoldChange > 0, "UP", "DOWN")
+            return(y)
+          }
+        ),
+        col = list(DEG = setNames(c("lightgreen","tomato"), c("UP","DOWN"))),
+        which = "row"
+      )
+    )
+
+draw(ap_coe_hm)
+```
+
+
+```{r}
+pdf("graphics/coe_rnai_hm.pdf", width = 3, he = 4)
+draw(ap_coe_hm)
+dev.off()
+```
+
+To assess which cell types are expressing our genes more, we can calculate a "gene score" as done in other markdowns.
+
+```{r}
+score_coe_DGE <-
+  gene_score(
+    x = mat, gene_set = coe_down[coe_down %in% rownames(mat)],
+    gene_pool = all_genes, remove_set_from_pool = TRUE,
+    fraction = 0.1
+  )
+```
+
+We will create a data frame for a later boxplot.
+
+To accomodate for outliers in the distributions, we will clip the data from outliers (bottom 5% and top 5%).
+
+We will use the narrow cell types (not the broad) to visualise this as coe is specific of certain kinds of neurons.
+
+```{r}
+df_scores <-
+  data.frame(
+    cell = colnames(scdata), # cells
+    clu_narrow = scdata$ctype,
+    cluster = factor(scdata$broadtype_splitbam, levels = unique(sort(scdata$broadtype_splitbam))[c(6,2,4,3,9,1,5,7,8,10,11)]), # cluster
+    score_coe = relativise(clip_q(clip_q(score_coe_DGE,q=.01,method = "down"), method = "up", q = .99))
+  )
+```
+
+We create the plot here:
+
+```{r}
+# score plot
+set.seed(123)
+z <- df_scores %>% group_by(clu_narrow) %>% sample_n(100) %>% .$cell
+df_scores$jit <- ifelse(df_scores$cell %in% z, TRUE, FALSE)
+
+# score plot
+boxpl_score_coe <-
+  df_scores %>%
+  ggplot(mapping = aes(x = clu_narrow, y = score_coe, fill = clu_narrow, color = clu_narrow)) +
+  geom_boxplot(outlier.shape = NA)+
+  geom_jitter(mapping = aes(shape=jit),size = .6, alpha = .25)+
+  theme_classic()+
+  scale_fill_manual(values = setNames(smed_ctypes$col,smed_ctypes$ctype))+
+  scale_color_manual(values = darken(setNames(smed_ctypes$col,smed_ctypes$ctype),0.5))+
+  scale_shape_manual(values = setNames(c(20,NA),c("TRUE","FALSE")))+
+  theme(axis.text.x = element_blank(), legend.position = "none")+
+  ylab(label = "score coe (RNAi) downregulated genes")+
+  coord_cartesian(ylim=c(0,1))
+```
+
+We plot it here:
+
+```{r, fig.height = 3.5, fig.width = 8}
+boxpl_score_coe
+```
+
+```{r}
+pdf("graphics/coe_downreg_genescore.pdf", he = 3.5, wi = 8)
+boxpl_score_coe
+dev.off()
+```
+
+We confirm indeed the potential targets of prep are mostly expressed in the same cell types where we detected coe as influential (the epidermal lineage and neurons).
+
+# Leveraging differential expression and network data
+
+Regarding epidermis, we will load here the ANANSE network of epidermis and parse it accordingly:
+
+```{r}
+# epid
+epi_nw <- data.table::fread("outputs/ananse/outs/network/epidermis.network", header = TRUE)
+epi_nw <- as.data.frame(epi_nw)
+epi_nw$tf <- sub("—.*","",epi_nw$tf_target)
+epi_nw$tg <- sub(".*—","",epi_nw$tf_target)
+epi_nw <- epi_nw[,c(7,8,2,4,5,6)]
+
+df_epi_coe <- epi_nw[epi_nw$tf == coe, -1]
+
+head(df_epi_coe)
+```
+
+We will also leverage these predicted scores with the gene expression data, to check if prep downregulated genes have a higher interaction in our networks.
+
+Provided we have single cell data to do the following, we will also incorporate a subfiltering to keep only the D.E.G.s whose higher expression is in the epidermis lineage. That is, prep RNAi D.E.G.s that are normally detected as expressed in the epidermis lineage.
+
+```{r}
+# a vector of which is the cell type with highest expression for each gene (using our pseudobulk data).
+smed_maxc <- setNames(apply(smed_counts_norm_cw, 1, function(x){names(x[x==max(x)])}),rownames(smed_counts_norm_cw))
+maxc_epid <- names(smed_maxc[smed_maxc %in% c("early epidermal progenitors", "late epidermal progenitors", "epidermis")])
+maxc_neu <- names(smed_maxc[smed_maxc %in% grep("neuron", colnames(smed_counts), va = T) ])
+```
+
+We incorporate this in a column of the data frame. We will also create a filter of 500 random non-D.E.G.s in order to do a stripchart on top of the boxplot.
+
+```{r}
+df_epi_coe$deg <- factor(ifelse(df_epi_coe$tg %in% coe_down & df_epi_coe$tg %in% maxc_epid, "down","none"), levels = c("none","down"))
+
+df_epi_coe$rank_prob <- relativise(rank(df_epi_coe$prob, ties.method = "min"))
+df_epi_coe$rank_wb <- relativise(rank(df_epi_coe$weighted_binding, ties.method = "min"))
+
+set.seed(123)
+non_deg_subsample_epi <- sample(df_epi_coe$tg[df_epi_coe$deg == "none"], 500)
+f_epi <- which(df_epi_coe$tg %in% c(non_deg_subsample_epi,df_epi_coe$tg[df_epi_coe$deg != "none"]))
+```
+
+And here the plot:
+
+```{r, fig.width = 5, fig.height = 5}
+par(mfrow = c(1,2))
+
+deg_cols <- setNames(c("#c4c4c4","#2171B5"),c("none","down"))
+deg_outl_col <- deg_cols
+deg_outl_col <- darken(deg_outl_col,.7)
+deg_outl_col[1] <- alpha(deg_outl_col[1],.2)
+deg_outl_col[c(2,3,4)] <- alpha(deg_outl_col[c(2,3,4)],.25)
+
+set.seed(1234)
+boxplot(
+  df_epi_coe$prob~df_epi_coe$deg,
+  col = deg_cols, border = darken(deg_cols,.7),
+  main = "Interaction score\nof coe predicted targets\n(epidermis)",
+  xlab = "DEGs in coe K.D. (Kao et al.)",
+  ylab = "Interaction score",
+  las = 2,
+  cex.main = .6,
+  frame.plot = FALSE,
+  outline = FALSE
+)
+stripchart(
+  df_epi_coe$prob[f_epi]~df_epi_coe$deg[f_epi],
+  col = deg_outl_col,
+  method = "jitter",
+  jitter=0.15,
+  vertical = TRUE,
+  pch = 20,
+  cex=0.7,
+  add = TRUE
+)
+
+set.seed(1234)
+boxplot(
+  df_epi_coe$weighted_binding~df_epi_coe$deg,
+  col = deg_cols, border = darken(deg_cols,.7),
+  main = "Interaction score\nof coe predicted targets\n(epidermis)",
+  xlab = "DEGs in coe K.D. (Kao et al.)",
+  ylab = "Interaction score",
+  las = 2,
+  cex.main = .6,
+  frame.plot = FALSE,
+  outline = FALSE
+)
+stripchart(
+  df_epi_coe$weighted_binding[f_epi]~df_epi_coe$deg[f_epi],
+  col = deg_outl_col,
+  method = "jitter",
+  jitter=0.15,
+  vertical = TRUE,
+  pch = 20,
+  cex=0.7,
+  add = TRUE
+)
+```
+
+We see that both the prob score and the weighted binding are slightly up (especially the prob, but most importantly the weighted binding).
+
+```{r, echo = FALSE}
+pdf("graphics/coe_rnai_boxplot_ananse_epidermis.pdf", he = 5, wi = 5)
+par(mfrow = c(1,2))
+
+set.seed(1234)
+boxplot(
+  df_epi_coe$prob~df_epi_coe$deg,
+  col = deg_cols, border = darken(deg_cols,.7),
+  main = "Interaction score\nof coe predicted targets\n(epidermis)",
+  xlab = "DEGs in coe K.D. (Kao et al.)",
+  ylab = "Interaction score",
+  las = 2,
+  cex.main = .6,
+  frame.plot = FALSE,
+  outline = FALSE
+)
+stripchart(
+  df_epi_coe$prob[f_epi]~df_epi_coe$deg[f_epi],
+  col = deg_outl_col,
+  method = "jitter",
+  jitter=0.15,
+  vertical = TRUE,
+  pch = 20,
+  cex=0.7,
+  add = TRUE
+)
+
+set.seed(1234)
+boxplot(
+  df_epi_coe$weighted_binding~df_epi_coe$deg,
+  col = deg_cols, border = darken(deg_cols,.7),
+  main = "Interaction score\nof coe predicted targets\n(epidermis)",
+  xlab = "DEGs in coe K.D. (Kao et al.)",
+  ylab = "Interaction score",
+  las = 2,
+  cex.main = .6,
+  frame.plot = FALSE,
+  outline = FALSE
+)
+stripchart(
+  df_epi_coe$weighted_binding[f_epi]~df_epi_coe$deg[f_epi],
+  col = deg_outl_col,
+  method = "jitter",
+  jitter=0.15,
+  vertical = TRUE,
+  pch = 20,
+  cex=0.7,
+  add = TRUE
+)
+dev.off()
+```
+
+For neurons we do about the same:
+
+```{r}
+# neur
+neu_nw <- data.table::fread("outputs/ananse/outs/network/neuron.network", header = TRUE)
+neu_nw <- as.data.frame(neu_nw)
+neu_nw$tf <- sub("—.*","",neu_nw$tf_target)
+neu_nw$tg <- sub(".*—","",neu_nw$tf_target)
+neu_nw <- neu_nw[,c(7,8,2,4,5,6)]
+
+df_neu_coe <- neu_nw[neu_nw$tf == coe, -1]
+
+head(df_neu_coe)
+```
+
+```{r}
+# DEGs coe
+df_neu_coe$deg <- factor(ifelse(df_neu_coe$tg %in% coe_down & df_neu_coe$tg %in% maxc_neu, "down","none"), levels = c("none","down"))
+
+df_neu_coe$rank_prob <- relativise(rank(df_neu_coe$prob, ties.method = "min"))
+df_neu_coe$rank_wb <- relativise(rank(df_neu_coe$weighted_binding, ties.method = "min"))
+
+head(df_neu_coe)
+
+set.seed(123)
+non_deg_subsample_neu <- sample(df_neu_coe$tg[df_neu_coe$deg == "none"], 500)
+
+f_neu <- which(df_neu_coe$tg %in% c(non_deg_subsample_neu,df_neu_coe$tg[df_neu_coe$deg != "none"]))
+
+deg_cols <- setNames(c("#c4c4c4","#FEC44F"),c("none","down"))
+deg_outl_col <- deg_cols
+deg_outl_col <- darken(deg_outl_col,.7)
+deg_outl_col[1] <- alpha(deg_outl_col[1],.2)
+deg_outl_col[c(2,3,4)] <- alpha(deg_outl_col[c(2,3,4)],.25)
+```
+
+
+```{r, fig.width = 5, fig.height = 5}
+par(mfrow = c(1,2))
+set.seed(1234)
+boxplot(
+  df_neu_coe$prob~df_neu_coe$deg,
+  col = deg_cols, border = darken(deg_cols,.7),
+  main = "Interaction score\nof coe predicted targets\n(neutonephridia/pharynx)",
+  xlab = "DEGs in coe K.D. (Kao et al.)",
+  ylab = "Interaction score",
+  las = 2,
+  cex.main = .6,
+  frame.plot = FALSE,
+  outline = FALSE
+)
+stripchart(
+  df_neu_coe$prob[f_neu]~df_neu_coe$deg[f_neu],
+  col = deg_outl_col,
+  method = "jitter",
+  jitter=0.15,
+  vertical = TRUE,
+  pch = 20,
+  cex=0.7,
+  add = TRUE
+)
+set.seed(1234)
+boxplot(
+  df_neu_coe$weighted_binding~df_neu_coe$deg,
+  col = deg_cols, border = darken(deg_cols,.7),
+  main = "Interaction score\nof coe predicted targets\n(neutonephridia/pharynx)",
+  xlab = "DEGs in coe K.D. (Kao et al.)",
+  ylab = "Interaction score",
+  las = 2,
+  cex.main = .6,
+  frame.plot = FALSE,
+  outline = FALSE
+)
+stripchart(
+  df_neu_coe$weighted_binding[f_neu]~df_neu_coe$deg[f_neu],
+  col = deg_outl_col,
+  method = "jitter",
+  jitter=0.15,
+  vertical = TRUE,
+  pch = 20,
+  cex=0.7,
+  add = TRUE
+)
+par(mfrow = c(1,1))
+```
+
+```{r}
+pdf("graphics/coe_rnai_boxplot_ananse_neurons.pdf", he = 5, wi = 5)
+par(mfrow = c(1,2))
+set.seed(1234)
+boxplot(
+  df_neu_coe$prob~df_neu_coe$deg,
+  col = deg_cols, border = darken(deg_cols,.7),
+  main = "Interaction score\nof coe predicted targets\n(neutonephridia/pharynx)",
+  xlab = "DEGs in coe K.D. (Kao et al.)",
+  ylab = "Interaction score",
+  las = 2,
+  cex.main = .6,
+  frame.plot = FALSE,
+  outline = FALSE
+)
+stripchart(
+  df_neu_coe$prob[f_neu]~df_neu_coe$deg[f_neu],
+  col = deg_outl_col,
+  method = "jitter",
+  jitter=0.15,
+  vertical = TRUE,
+  pch = 20,
+  cex=0.7,
+  add = TRUE
+)
+set.seed(1234)
+boxplot(
+  df_neu_coe$weighted_binding~df_neu_coe$deg,
+  col = deg_cols, border = darken(deg_cols,.7),
+  main = "Interaction score\nof coe predicted targets\n(neutonephridia/pharynx)",
+  xlab = "DEGs in coe K.D. (Kao et al.)",
+  ylab = "Interaction score",
+  las = 2,
+  cex.main = .6,
+  frame.plot = FALSE,
+  outline = FALSE
+)
+stripchart(
+  df_neu_coe$weighted_binding[f_neu]~df_neu_coe$deg[f_neu],
+  col = deg_outl_col,
+  method = "jitter",
+  jitter=0.15,
+  vertical = TRUE,
+  pch = 20,
+  cex=0.7,
+  add = TRUE
+)
+par(mfrow = c(1,1))
+dev.off()
+```
+
+## Saving all data
+
+```{r}
+save(
+  ap_coe,
+  coe_bowtie2_counts,
+  sampletable,
+  dds,
+  res,
+  coe_diffreg,
+  coe_down,
+  vsd,
+  df_scores,
+  file = "outputs/rda/coe_cowlesetal_reanalysis.rda"
+)
+
+save_to_excel(
+  list_of_objects = 
+    list(
+      cowlesetal_bowtie2_counts = coe_bowtie2_counts,
+      cowlesetal_samples_table = sampletable,
+      cowleseatal_results = as.data.frame(res),
+      coe_diffreg_norm_counts = assay(vsd)
+    ),
+  output_file_name =  paste0("./outputs/",fcha(),"_coe_cowlesetal_reanalysis.xlsx"),
+  rowNames = TRUE
+  )
+```
+
+## The End!
+
+```{r}
+sessionInfo()
+```

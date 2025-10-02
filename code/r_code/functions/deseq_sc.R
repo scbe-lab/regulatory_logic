@@ -72,7 +72,7 @@ deseq_sc <-
       ...
     )
     
-    print("filtering")
+    message("filtering")
     smallestGroupSize <- min_passing_samples
     keep <- rowSums(counts(dds) >= min_counts_per_sample) >= smallestGroupSize
     # (we could expand the list of genes we are not recapturing using the following)
@@ -85,11 +85,11 @@ deseq_sc <-
     
     dds <- dds[keep,]
     
-    print("DGE")
+    message("DGE")
     dds <- DESeq(dds, ...)
     
     # Results
-    print("results")
+    message("results")
     res <- results(object = dds, contrast = contrast_info)
     r <- as.data.frame(res)
     
@@ -106,7 +106,7 @@ deseq_sc <-
           res = r,
           diffreg_genes = signif
         )
-        print("only 1 diff gene found")
+        message("only 1 diff gene found")
         return(res)
       } else {
         res <- list(
@@ -114,7 +114,7 @@ deseq_sc <-
           res = r,
           diffgenes = NA
         )
-        print("No diff genes found")
+        message("No diff genes found")
         return(res)
       }
     }
@@ -129,7 +129,7 @@ deseq_sc <-
     # If plotting has been requested
     if(plot_results == TRUE){
       # Create volcano plot
-      print("volcano")
+      message("volcano")
       v <-
         r %>% 
         ggplot(
@@ -138,18 +138,18 @@ deseq_sc <-
         geom_point() + theme_minimal()
       
       # Create transformed data matrix for heatmap
-      print("heatmap qnorm")
+      message("heatmap qnorm")
       m_hm <-  as.matrix(t(scale(t(quantnorm(m)[rownames(m) %in% signif,]))))
       
       # Create heatmap annotations
-      print("hm annot")
+      message("hm annot")
       ha_sampletable <- HeatmapAnnotation(
         df = d[,-c(1)], 
         col = dynamic_colors_annotation(df = d[,-c(1)], rand.seed = 4)
       )
       
       # Create heatmap
-      print("hm")
+      message("hm")
       hm <- Heatmap(
         name = "expression",
         m_hm,
@@ -159,9 +159,9 @@ deseq_sc <-
       )
       
       # Create pca
-      print("vsd")
+      message("vsd")
       vsd <-  varianceStabilizingTransformation(dds, blind = FALSE) # already filtered
-      print("pca")
+      message("pca")
       pcaData <- plotPCA(vsd, intgroup=c(contrast_info[1], "replicate"), returnData=TRUE)
       percentVar <- round(100 * attr(pcaData, "percentVar"))
       pc <- 

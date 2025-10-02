@@ -1,5 +1,5 @@
 ---
-title: "Smed CisReg project: Planarian HNF4 knock-down and Differential Gene Expression; Seurat Analysis"
+title: "Smed CisReg project 22: Planarian HNF4 knock-down and Differential Gene Expression; Seurat Analysis"
 author: "Alberto Perez-Posada @apposada"
 date: "8/11/2023"
 output:
@@ -56,7 +56,7 @@ sourceFolder(
 ## Load data
 
 ```{r}
-smed_hnf_scrna <- readRDS("outputs/rda/seurat_scrna/hnf4_rnai/smed_hnf_scrna_concatenated_libraries.RDS")
+smed_hnf_scrna <- readRDS("outputs/rda/seurat_hnf4_kd/smed_hnf_scrna_concatenated_libraries.RDS")
 ```
 
 ## Seurat Analysis
@@ -335,7 +335,7 @@ print(Umap_group_exp)
 
 write.table(
   data.frame(cell = gsub("..*_","",colnames(smed_hnf_scrna)), exp = smed_hnf_scrna$experiment),
-  file = "~/projects/smed_cisreg/outputs/hnf_KD/cell_barcodes/gfpi_hnf_cell_barcodes.tsv",
+  file = "outputs/hnf_KD/cell_barcodes/gfpi_hnf_cell_barcodes.tsv",
   sep = "\t",
   col.names = FALSE,
   row.names = FALSE,
@@ -424,7 +424,7 @@ We set up some coloring for the figure that's coming.
 ```{r}
 smed_ctypes <- 
   read.delim2(
-    file = "~/projects/smed_cisreg/outputs/smed_cisreg_ctypes.tsv",
+    file = "outputs/celltype_annotation/smed_cisreg_ctypes.tsv",
     sep = "\t"
   )
 ```
@@ -471,6 +471,13 @@ library(igraph)
 ```
 
 ```{r voting_table}
+classifications <- 
+  data.frame(
+    cluster = smed_hnf_scrna$seurat_clusters,
+    predicted = smed_hnf_scrna$predicted.id
+  )
+
+
 #table
 classifications_table <- table(smed_hnf_scrna$seurat_clusters,smed_hnf_scrna$predicted.id)
 classifications_table <- as.matrix(classifications_table)
@@ -485,6 +492,8 @@ M <- matrix(
 M[is.na(M)] <- 0
 M <- t(apply(M,1,function(x){x/sum(x)})) # ostias # , relativise
 M2 <- M[,apply(M,2,function(x){any(x>0.75)})] # 
+
+M3 <- M2
 M3[M3 < 0.75] <- 0
 
 #graph_voting
@@ -619,9 +628,6 @@ smed_hnf_scrna_ctypes <- smed_hnf_scrna_ctypes[order(smed_hnf_scrna_ctypes$ctype
 smed_hnf_scrna_ctypes$ctype <- as.character(smed_hnf_scrna_ctypes$ctype)
 smed_hnf_scrna_ctypes$ctype[smed_hnf_scrna_ctypes$cluster == "14"] <- "aberrant phagocyte progenitors"
 
-# remove dup entry of dvb muscle
-smed_hnf_scrna_ctypes <- smed_hnf_scrna_ctypes[smed_hnf_scrna_ctypes$weight == 1,]
-
 smed_hnf_scrna_ctypes$col <- 
   translate_ids(
     x = smed_hnf_scrna_ctypes$ctype,
@@ -704,11 +710,11 @@ dev.off()
 ```{r}
 saveRDS(
 smed_hnf_scrna,
-file = "outputs/rda/seurat_scrna/hnf4_rnai/smed_hnf_scrna_SeuratObject.RDS"
+file = "outputs/rda/seurat_hnf4_kd/smed_hnf_scrna_SeuratObject.RDS"
 )
 write.table(
   smed_hnf_scrna_ctypes,
-  "outputs/smed_hnf4i_ctypes_table.tsv",
+  "outputs/celltype_annotation/smed_hnf4i_ctypes_table.tsv",
   sep = "\t", dec = ".", col.names = TRUE, row.names = FALSE, quote = FALSE
 )
 

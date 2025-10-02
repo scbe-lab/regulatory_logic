@@ -1,0 +1,633 @@
+--
+title: 'Smed CisReg project 17.B: OCR co-accesibility analysis using WGCNA. Chromatin Accessibility and Gene Expression agreement'
+author: "Alberto Perez-Posada @apposada"
+date: "20/3/2025"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+dir <- '~/storage/projects/smed_cisreg/'
+fcha <- function(){ gsub("-","",Sys.Date()) }
+
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_knit$set(root.dir = dir)
+options(scipen=999)
+options(family="ArialMT")
+Sys.setenv(VROOM_CONNECTION_SIZE=5000072)
+```
+
+## About
+
+In this markdown we will run WGCNA on the pseudobulk of the single-cell ATAC-seq (see previous markdown). We will use the vast majority of OCRs detected in our dataset. An alternative run using OCRs detected as open in differentiated cells (vs neoblasts or vs all the rest) also exists (see Markdown #__).
+
+This markdown is split into three different smaller markdowns to make it easier to navigate. Markdown A is just the WGCNA Run, markdown B is the agreement between accessibility and gene expression, markdown C is about motif enrichment in the ATAC OCRs plus agreement with TF expression.
+
+In markdown B, we will analyse the agreement between the accesibility of OCRs and the expression of the genes that are nearby.
+
+## Load libraries
+
+```{r libraries, message=FALSE, warning=FALSE}
+# Libraries
+library(circlize)
+library(cola)
+library(colorspace)
+library(ComplexHeatmap)
+library(dplyr)
+library(ggplot2)
+library(igraph)
+library(plyr)
+library(rtracklayer)
+library(viridis)
+library(WGCNA)
+```
+
+## Load functions
+
+```{r load_functions}
+source("code/r_code/functions/sourcefolder.R")
+
+sourceFolder(
+  "code/r_code/functions/", #change for definitive path once its final
+  recursive = TRUE
+  )
+```
+
+## Load Data
+
+We load previous data including the pseudobulk of the previous markdown.
+
+```{r}
+load("outputs/rda/scatac_psbulk_counts_clustering_allpeaks_revision.rda")
+
+load("outputs/rda/scatac_celltype_utils.rda")
+
+load("outputs/rda/smed_cisreg_scatac_wgcna_revision.rda")
+```
+
+## Agreement with gene expression of neighbouring genes
+
+We can investigate whether thess chromatin accessibility patterns have any relationship with the expression of their neighbouring genes. For this we can collapse the counts data at the broad type pseudobulk level, and correlate the expression profiles of genes and close-by OCRs.
+
+Here we load the dataset of scRNA, we run the pseudobulk broad (using the resolution retrieved by the ATAC, i.e. with early and late epidermal progenitors), and we quickly normalise by "library" size after estimating size factors via the DESeq2 package.
+
+```{r}
+scdata <- 
+  readRDS("outputs/rda/seurat_scrna/smed_cisreg_scRNA_consensus_identities.RDS")
+
+psbulk_broad <- 
+  pseudobulk(
+    x = scdata@assays$RNA@counts,
+    ident = scdata$broadtype_splitbam
+  )
+
+psbulk_broad <- psbulk_broad[,c(2,8,10,7,6,1,9,3,4,11,5)]
+
+psbulk_broad_dds <- DESeq2::DESeqDataSetFromMatrix(
+  countData = psbulk_broad,
+  colData = data.frame(condition = colnames(psbulk_broad)),
+  design = ~ condition)
+psbulk_broad_dds <- DESeq2::estimateSizeFactors(psbulk_broad_dds)
+psbulk_broad_norm <- DESeq2::counts(psbulk_broad_dds, normalized=TRUE)
+psbulk_broad_norm <- psbulk_broad_norm[rowSums(psbulk_broad_norm) > 0,]
+```
+
+To marry this data to our chromatin accessibility data, we can use `bedtools` to assign every OCR to a nearby gene. Here we load the result of running such command.
+
+```{r}
+closestbed <- read.delim2(
+  "outputs/associate_peaks_genes/smed_cisreg_closestbed_1geneperpeak.tsv",
+  header = FALSE
+)
+```
+
+We will first check the agreement of accessibility of all chromatin peaks and all their associated genes. For that we will subset the gene/OCR table, the scATAC pseudobulk matrix, and the RNA pseudobulk matrix, to contain all the same OCRs and genes. To generate a subset matrix of RNA with just the nearby genes, we use this table of gene/OCR to retrieve the RNA counts data in the exact same order we have the OCR matrix. 
+
+```{r}
+closest_both <-
+  closestbed[
+    closestbed$V4 %in% rownames(scatac_cw) &
+    closestbed$V10 %in% rownames(psbulk_broad_norm),
+    c(4,10)
+  ]
+
+scatac_cw_closest <- scatac_cw[rownames(scatac_cw) %in% closest_both$V4,]
+scatac_cw_closest <- 
+  scatac_cw_closest[match(closest_both$V4,rownames(scatac_cw_closest)),]
+scatac_cw_closest <- scatac_cw_closest[complete.cases(scatac_cw_closest),]
+
+psbulk_closest <- psbulk_broad_norm[rownames(psbulk_broad_norm) %in% closest_both$V10,]
+psbulk_closest <- 
+  psbulk_broad_norm[match(closest_both$V10,rownames(psbulk_broad_norm)),]
+psbulk_closest <- psbulk_closest[complete.cases(psbulk_closest),]
+```
+
+Then the heatmaps:
+
+```{r, fig.width = 6, fig.height = 10}
+h_atac_closest_all <-
+  Heatmap(
+    scatac_cw_closest,
+    name = "accessibility",
+    cluster_rows = TRUE,
+    cluster_columns = as.hclust(cooc$tree),
+    show_row_names = FALSE,
+    show_column_names = FALSE,
+    col = colorRamp2(breaks = c(0,quantile(scatac_cw[scatac_cw>0],.9)), colors = c("#fcfdff", "#174fbc")),
+    column_split = 4,
+    top_annotation =
+      HeatmapAnnotation(
+        cluster = colnames(scatac_cw),
+        col = list(cluster = broad_cols)
+      )
+  )
+
+h_rna_closest_all <-
+  Heatmap(
+    name = "expression",
+    t(apply(log1p(psbulk_closest),1,relativise)),
+    cluster_rows = TRUE,
+    cluster_columns = as.hclust(cooc$tree),
+    column_split = 4,
+    show_row_names = FALSE,
+    show_column_names = FALSE,
+    col = colorRampPalette(c("#f1f5ff","#b1b8c4","#2c2b46"))(10),
+    top_annotation = 
+      HeatmapAnnotation(
+        cluster = factor(colnames(psbulk_closest), levels = colnames(psbulk_closest)),
+        col = list(cluster = setNames(broad_cols,colnames(psbulk_closest))),
+        show_legend = FALSE
+      )
+  )
+
+
+draw(h_atac_closest_all+h_rna_closest_all)
+
+```
+
+
+```{r}
+pdf("graphics/scatac_all_ocr_and_assoc_genes_heatmap.pdf", wi = 6, he = 10)
+draw(h_atac_closest_all+h_rna_closest_all)
+dev.off()
+```
+
+Again, these are ALL the peaks and ALL their associated genes. That's nice, we see a general agreement. But it's true that there are many that are not in full agreement either.
+
+The expression of genes associated to OCRs belonging to co-accessibility modules, however, may look better. For that, let's subset the pseudobulk RNA matrix to contain all the genes associated to the ~14K OCRs.
+
+```{r}
+closest_wg <-
+  closestbed[
+    closestbed$V4 %in% rownames(coacc_wg_module) &
+    closestbed$V10 %in% rownames(psbulk_broad_norm),
+    c(4,10)
+  ]
+
+psbulk_closest_wg <- as.data.frame(psbulk_broad_norm[rownames(psbulk_broad_norm) %in% closest_wg$V10,])
+psbulk_closest_wg$peak <- translate_ids(rownames(psbulk_closest_wg), closest_wg[,c(2,1)])
+
+common_ocrs <- intersect(rownames(coacc_wg_module),psbulk_closest_wg$peak)
+
+coacc_wg_module_ <- coacc_wg_module[common_ocrs,]
+psbulk_closest_wg <- psbulk_closest_wg[match(common_ocrs,psbulk_closest_wg$peak),]
+modulecolumn <- which(sapply(coacc_wg_module_,function(x){!(is.numeric(x))}))
+```
+
+Below a subsetting for the sake of visualisation, keeping just some OCRs and associated genes per module.
+
+```{r}
+nOCRs_per_module <- 20
+set.seed(4343)
+coacc_wg_module_viz_ <- 
+  coacc_wg_module_ %>% rownames_to_column(var = "rowname") %>% group_by(module) %>% slice_sample(n=nOCRs_per_module) %>% column_to_rownames()
+
+psbulk_closest_wg_viz <-
+  psbulk_closest_wg[match(rownames(coacc_wg_module_viz_),psbulk_closest_wg$peak),]
+```
+
+And the Heatmaps:
+
+```{r, fig.width = 6, fig.height = 9}
+h_atac_closest_wg_ <-
+  Heatmap(
+    t(apply(coacc_wg_module_viz_[,-modulecolumn],1,relativise)),
+    name = "accessibility",
+    cluster_rows= F,
+    show_row_names = F,
+    show_row_dend = F,
+    cluster_columns = as.hclust(cooc$tree),
+    show_column_names = FALSE,
+    column_names_side = "bottom",
+    row_split = coacc_wg_module_viz_$module,
+    row_title_gp = gpar(fontsize = 6),
+    column_names_gp = gpar(fontsize = 6),
+    row_title_side = "right",
+    row_title_rot = 0,
+    column_split = 4,
+    col = c("#fcfdff", "#174fbc"),
+    top_annotation=wg_ha,
+    bottom_annotation = wg_ha,
+    left_annotation = wg_mod,
+    heatmap_legend_param = gpar(nrow = 2)
+  )
+
+h_rna_closest_wg_ <-
+  Heatmap(
+    name = "expression",
+    t(apply(log1p(psbulk_closest_wg_viz[,1:11]),1,relativise)),
+    cluster_rows= F,
+    show_row_names = F,
+    show_row_dend = F,
+    cluster_columns = as.hclust(cooc$tree),
+    show_column_names = FALSE,
+    column_names_side = "bottom",
+    row_split = coacc_wg_module_viz_$module,
+    row_title_gp = gpar(fontsize = 6),
+    column_names_gp = gpar(fontsize = 6),
+    row_title_side = "left",
+    row_title_rot = 0,
+    column_split = 4,
+    col = colorRampPalette(c("#f1f5ff","#b1b8c4","#2c2b46"))(10),
+    top_annotation = 
+      HeatmapAnnotation(
+        cluster = factor(colnames(psbulk_closest), levels = colnames(psbulk_closest)),
+        col = list(cluster = setNames(broad_cols,colnames(psbulk_closest))),
+        show_legend = FALSE
+      ),
+    bottom_annotation = 
+      HeatmapAnnotation(
+        cluster = factor(colnames(psbulk_closest), levels = colnames(psbulk_closest)),
+        col = list(cluster = setNames(broad_cols,colnames(psbulk_closest))),
+        show_legend = FALSE
+      )
+  )
+
+draw(h_atac_closest_wg_+h_rna_closest_wg_)
+```
+
+
+```{r}
+pdf("graphics/scatac_all_wg_ocr_and_assoc_genes_heatmap.pdf", wi = 6, he = 9)
+draw(h_atac_closest_wg_+h_rna_closest_wg_)
+dev.off()
+```
+
+To further prune this for visualisation, we will correlate the individual gene expression profiles with the average accessibility profile of the different ATAC modules.
+
+We will first add the module column to our gene/OCR/pseudobulk broad expression data.
+
+```{r}
+psbulk_closest_wg$module <- translate_ids(x =psbulk_closest_wg$peak, dict = coacc_id_module)
+
+m <- psbulk_closest_wg
+m[,1:11] <- t(apply(m[,1:11],1,relativise))
+```
+
+To calculate the correlations, we will aggregate the accessibility profiles at the module level, to generate average accessibility profiles:
+
+```{r}
+ata_mods <-
+  aggregate(
+    coacc_wg_module[,1:11],
+    by = list(module = coacc_wg_module$module),
+    FUN = mean
+  )
+rownames(ata_mods) <- ata_mods$module
+ata_mods$module = NULL
+```
+
+Here we correlate the broad expression of every gene with the average accessibility profile of the module of their associated peaks. If a gene was ever associated to two or more peaks, we will correlate it with each.
+
+```{r}
+exp_kme_ata_cor <- 
+  sapply(
+    m$peak,
+    function(x){
+      
+      a = rownames(m)[m$peak == x]
+      e = as.numeric(m[a,1:11])
+      
+      b = m$module[m$peak == x]
+      y = as.numeric(ata_mods[b,])
+      
+      z = cor(e,y)
+      return(z)
+      
+    }
+  )
+
+names(exp_kme_ata_cor) <-
+  paste(
+    names(exp_kme_ata_cor),
+    translate_ids(names(exp_kme_ata_cor), closest_wg),
+    translate_ids(names(exp_kme_ata_cor), coacc_id_module),
+    sep = "_"
+  )
+```
+
+We tidy this up in a nice data frame:
+
+```{r}
+exp_kme_ata_cor_df <-
+  data.frame(
+    peak = sapply(names(exp_kme_ata_cor), function(x){unlist(strsplit(x,"_")[[1]][1])}),
+    id = sapply(names(exp_kme_ata_cor), function(x){unlist(strsplit(x,"_")[[1]][2])}),
+    clu = sapply(names(exp_kme_ata_cor), function(x){unlist(strsplit(x,"_")[[1]][3])}),
+    cor = exp_kme_ata_cor
+  )
+
+exp_kme_ata_cor_df$col = translate_ids(exp_kme_ata_cor_df$clu,coacc_modules_table[,c(4,7)])
+
+head(exp_kme_ata_cor_df)
+```
+
+We subset the top 20 genes with high correlation with each module, for visualisation. Note that we do so by selecting the top peak IDs (because gene IDs can be repeated due to association of multiple OCRs to one gene). But since the correlation value was done using the expression of the gene, it's all the same-just that the peak ID label is helpful to tell apart.
+
+```{r}
+set.seed(1234)
+exp_kme_ata_cor_df %>% 
+  group_by(clu) %>% 
+  # arrange(desc(cor),.by_group=TRUE) %>%
+  slice_max(order_by = cor, n = 20) %>%
+  slice_sample(n=20) -> exp_kme_ata_cor_df_top
+
+exp_kme_ata_cor_df$is_top <-
+  ifelse(exp_kme_ata_cor_df$peak %in% exp_kme_ata_cor_df_top$peak, TRUE, FALSE)
+```
+
+Here the heatmap:
+
+```{r, fig.height = 12, fig.width = 3}
+exp_top <- m[rownames(m) %in% exp_kme_ata_cor_df_top$id,]
+
+exp_top_hm <-
+  Heatmap(
+    name = "expression",
+    as.matrix(exp_top[,1:11]),
+    cluster_rows = FALSE,
+    cluster_columns = as.hclust(cooc$tree),
+    column_split = 4,
+    row_split = exp_top$module,
+    row_title_rot = 0,
+    show_row_names = FALSE,
+    show_column_names = FALSE,
+    col = c("#f1f5ff","#b1b8c4","#2c2b46"),
+    row_title_gp = gpar(fontsize = 3),
+    top_annotation = 
+      HeatmapAnnotation(
+        cluster = factor(colnames(psbulk_closest), levels = colnames(psbulk_closest)),
+        col = list(cluster = setNames(broad_cols, colnames(psbulk_closest))), show_legend = FALSE
+      )
+  )
+
+draw(exp_top_hm)
+```
+
+```{r, fig.height = 12, fig.width = 6.5}
+ata_top <- coacc_wg_module[rownames(coacc_wg_module) %in% exp_kme_ata_cor_df_top$peak,] # peaks assoc to top corr pairs
+ata_top <- ata_top[match(exp_kme_ata_cor_df_top$peak[match(rownames(exp_top),exp_kme_ata_cor_df_top$id)],rownames(ata_top)),] # same order as in exp matrix
+ata_top <- ata_top[order(ata_top$module),]
+
+# not all top assoc and highly corr per module, but this does not make any sense. ONly explanation is that i am not subsetting 20 unique pairs per module and there are repeating peaks. I don't mind, again this is just for visualisation. The convoluted unlist/sapply/length/rep/table oneliner should make do.
+wg_mod_top <-
+  HeatmapAnnotation(
+    stack = 
+      anno_barplot(
+        hm_bp[unlist(sapply(1:length(levels(coacc_modules_table$newname)), function(x){rep(x,table(ata_top$module)[x])})),],
+        gp = gpar(col = smed_broadtypes$col),
+        border = FALSE
+      ),
+    npeaks = 
+      anno_barplot(
+        moduleSizes[unlist(sapply(1:length(levels(coacc_modules_table$newname)), function(x){rep(x,table(ata_top$module)[x])}))],
+        gp = gpar(col = "#444444"),#rep(coacc_modules_table$general_color,each=30),xlim = c(50,1000)),
+        border = FALSE
+      ),
+    gap = unit(10, "points"),
+    which = "row"
+  )
+
+wg_ha@anno_list$cluster@label <- NULL
+
+
+h_atac_wg_top <-
+  Heatmap(
+    t(apply(ata_top[,-modulecolumn],1,relativise)),
+    name = "accessibility",
+    cluster_rows= F,
+    show_row_names = F,
+    show_row_dend = F,
+    cluster_columns = as.hclust(cooc$tree),
+    show_column_names = FALSE,
+    column_names_side = "bottom",
+    row_split = ata_top$module,
+    row_title_gp = gpar(fontsize = 6),
+    column_names_gp = gpar(fontsize = 6),
+    row_title_side = "right",
+    row_title_rot = 0,
+    column_split = 4,
+    col = c("#fcfdff", "#174fbc"),
+    top_annotation=wg_ha,
+    bottom_annotation = wg_ha,
+    left_annotation = wg_mod_top,
+    heatmap_legend_param = gpar(nrow = 2)
+)
+
+
+draw(h_atac_wg_top+exp_top_hm)
+
+```
+
+```{r}
+pdf("graphics/scatac_closestbed_geneexp_top_allpeaks_revision.pdf", height = 12, width = 3)
+draw(exp_top_hm)
+dev.off()
+
+pdf("graphics/scatac_TOP_wg_TOP_ocr_and_TOP_assoc_genes_heatmap_revision.pdf", wi = 6, he = 10)
+draw(h_atac_wg_top+exp_top_hm)
+dev.off()
+```
+
+We can check the correlation value of every gene to the module profile of their associated OCRs in this plot. Red dots means highly correlated gene/modules:
+
+```{r, fig.width = 12, fig.height = 4}
+set.seed(1234)
+exp_kme_ata_cor_df_plot <- 
+  exp_kme_ata_cor_df %>%
+  group_by(clu) %>%
+  arrange(is_top) %>%
+  ggplot(
+    aes(
+      x = clu,
+      y = cor
+    )
+  )+
+  geom_boxplot(aes(bg = clu), colour = darken(coacc_modules_table$newcolor, .5))+
+  scale_fill_manual(values=coacc_modules_table$newcolor)+
+  geom_jitter(aes(col = is_top),width = 0.2, size = 1)+
+  scale_colour_manual(values = c(alpha("#4c4c4c",.15),"tomato"))+
+  theme_minimal()+
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))+
+  theme(legend.position="none")+
+  ylim(c(-1,1))
+
+exp_kme_ata_cor_df_plot
+
+```
+
+
+
+```{r}
+pdf("graphics/show_top_genes_from_heatmap_allpeaks__revision.pdf", wi = 12, he = 4)
+exp_kme_ata_cor_df_plot
+dev.off()
+```
+
+A graph showing the agreement between scRNA modules and scATAC modules (via closest associated gene as a proxy)
+
+```{r, fig.width = 8, fig.height = 8}
+# load("~/projects/smed_cisreg/outputs/rda/smed_wgcna_allpeaks.rda")
+load("~/storage/projects/smed_cisreg/outputs/rda/smed_wgcna.rda")
+
+rna_wg_and_atac_wg =
+  merge(
+    coacc_id_module,
+    closestbed,
+    by.x = 1,
+    by.y = 4,
+    all.x = TRUE
+    )[,c(1,2,11)]
+    
+rna_wg_and_atac_wg =
+  merge(
+    rna_wg_and_atac_wg,
+    smed_id_module,
+    by.x = 3,
+    by.y = 1,
+    all.x = TRUE
+    )
+
+rna_wg_and_atac_wg_table = 
+  table(
+    rna_wg_and_atac_wg$module.x,
+    rna_wg_and_atac_wg$module.y
+    )
+```
+
+Here the graph:
+
+```{r, fig.width = 8, fig.height = 8}
+g_RA <-
+  graph_from_biadjacency_matrix(
+    as.matrix(rna_wg_and_atac_wg_table),
+    weighted = TRUE,
+    directed = FALSE
+  )
+
+g_RA <- subgraph.edges(g_RA,eids = E(g_RA)[E(g_RA)$weight > 5])
+
+V(g_RA)$size = 4
+V(g_RA)$shape = "square"
+V(g_RA)$shape[grep("O",V(g_RA)$name)] <- "circle"
+V(g_RA)$color <- translate_ids(V(g_RA)$name, dict = smed_modules_table[,c(4,8)])
+V(g_RA)$color[grep("O",V(g_RA)$name)] <- translate_ids(V(g_RA)$name[grep("O",V(g_RA)$name)], dict = coacc_modules_table[,c(4,9)])
+
+E(g_RA)$width = 5*(relativise(log(E(g_RA)$weight))+.1)
+
+set.seed(1234)
+l_RA <- layout_nicely(g_RA)
+plot(g_RA, layout = l_RA, vertex.frame.color = darken(V(g_RA)$color,.4), vertex.label.color = "black", vertex.label.family = "ArialMT", vertex.label.cex = .66)
+
+pdf("graphics/scatac_wgcna_and_rna_wgcna_agreement_graph.pdf", wi = 8, he = 8, family="ArialMT")
+plot(g_RA, layout = l_RA, vertex.frame.color = darken(V(g_RA)$color,.4), vertex.label.color = "black", vertex.label.family = "ArialMT", vertex.label.cex = .66)
+dev.off()
+```
+
+We can also check for the statistical support of these connections. For that we will perform pairwise hypergeometric tests and check whether the module membership of each pair OCR/gene tend to be in agrement.
+
+Then we will visualise it using a graph all the same.
+
+```{r, fig.width = 8, fig.height = 8}
+rna_wg_and_atac_wg <- rna_wg_and_atac_wg[complete.cases(rna_wg_and_atac_wg),]
+rna_wg_and_atac_wg$pairID <- paste0(rna_wg_and_atac_wg$V10,rna_wg_and_atac_wg$id)
+
+test <-
+  comparemodules(
+    ma = data.frame(id = rna_wg_and_atac_wg$V10, module = rna_wg_and_atac_wg$module.y),
+    mb = data.frame(id = rna_wg_and_atac_wg$id, module = rna_wg_and_atac_wg$module.x),
+    f = rbind(
+      data.frame(id = rna_wg_and_atac_wg$V10, gfam = rna_wg_and_atac_wg$pairID),
+      data.frame(id = rna_wg_and_atac_wg$id, gfam = rna_wg_and_atac_wg$pairID)
+      )
+  )
+
+g_hypg <-
+  graph_from_biadjacency_matrix(
+    as.matrix(-log(test$hypgeom)),
+    weighted = TRUE,
+    directed = FALSE
+  )
+
+g_hypg <- subgraph.edges(g_hypg,eids = E(g_hypg)[E(g_hypg)$weight > 3])
+
+V(g_hypg)$size = 4
+V(g_hypg)$shape = "square"
+V(g_hypg)$shape[grep("O",V(g_hypg)$name)] <- "circle"
+V(g_hypg)$color <- translate_ids(V(g_hypg)$name, dict = smed_modules_table[,c(4,8)])
+V(g_hypg)$color[grep("O",V(g_hypg)$name)] <- translate_ids(V(g_hypg)$name[grep("O",V(g_hypg)$name)], dict = coacc_modules_table[,c(4,9)])
+
+E(g_hypg)$width = 5*(relativise(log(E(g_hypg)$weight))+.1)
+
+set.seed(1234)
+l_hypg <- layout_nicely(g_hypg)
+plot(g_hypg, layout = l_hypg, vertex.frame.color = darken(V(g_hypg)$color,.4), vertex.label.color = "black", vertex.label.family = "Arial", vertex.label.cex = .66)
+
+pdf("graphics/scatac_wgcna_and_rna_wgcna_agreement_graph_hypg.pdf", wi = 8, he = 8, family="ArialMT")
+plot(g_hypg, layout = l_hypg, vertex.frame.color = darken(V(g_hypg)$color,.4), vertex.label.color = "black", vertex.label.family = "ArialMT", vertex.label.cex = .66)
+dev.off()
+```
+
+## Saving the data
+
+We will keep on in Markdown C.
+
+
+```{r}
+save(
+  psbulk_broad, 
+  psbulk_broad_norm, 
+  closest_both, 
+  scatac_cw_closest, 
+  psbulk_closest, 
+  closest_wg, 
+  psbulk_closest_wg, 
+  coacc_wg_module_, 
+  ata_mods, 
+  exp_kme_ata_cor, 
+  exp_kme_ata_cor_df, 
+  exp_kme_ata_cor_df_top, 
+  exp_top, ata_top, 
+  rna_wg_and_atac_wg, 
+  rna_wg_and_atac_wg_table, 
+  test, 
+  file = "outputs/rda/scatac_wgcna/smed_cisreg_scatac_wgcna_agreement_revision.rda"
+)
+```
+
+```{r}
+save_to_excel(
+  list_of_objects =
+    list(
+      ocr_gene_association = closest_both,
+      ocr_gene_correlation = exp_kme_ata_cor_df,
+      ocr_gene_module_association = rna_wg_and_atac_wg[,c(1,2,4,3,5)] %>% dplyr::rename(OCR_module = module.x, gene_module = module.y, OCR_id = id, gene_id = V10),
+      `ocr_gene module enrichment` = test$stats[,1:10] %>% mutate_at(c(3:6),as.numeric)
+    )
+    ,
+  output_file_name = paste0("outputs/tables_for_supp/",fcha(),"_smed_cisreg_scatac_modules_and_associated_genes.xlsx")
+)
+```
+
+```{r}
+sessionInfo()
+```

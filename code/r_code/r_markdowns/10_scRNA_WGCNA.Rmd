@@ -1,5 +1,5 @@
 ---
-title: 'Smed CisReg project 07: WGCNA analysis'
+title: 'Smed CisReg project 10: WGCNA analysis'
 author: 'Alberto Perez Posada @apposada'
 date: '10/25/2023'
 output:
@@ -12,7 +12,7 @@ editor_options:
 
 ```{r setup, include=FALSE}
 
-dir <- '/mnt/sda/alberto/projects/smed_cisreg/'
+dir <- '~/storage/projects/smed_cisreg_2025_github_repository/'
 fcha <- function(){ gsub("-","",Sys.Date()) }
 
 knitr::opts_chunk$set(echo = TRUE)
@@ -48,14 +48,12 @@ library(plyr)
 library(xlsx)
 ```
 
-## Loading necessary code (CHANGE PATHS)
+## Loading necessary code
 
 ```{r load_functions, warning = FALSE, message=FALSE}
 # add sourcefolder here
 source("code/r_code/functions/sourcefolder.R")
 sourceFolder(folder="code/r_code/functions/",recursive = TRUE)
-source("code/r_code/functions/wgcna_igraph_functions.R")
-source("./code/r_code/functions/topGO_wrapper.R")
 ```
 
 ## Data Preparation
@@ -64,10 +62,10 @@ We prepare by loading the necessary data from our previous markdowns:
 
 ```{r load_data}
 load(
-  "outputs/rda/smed_counts.rda"
+  "outputs/rda/scrna_counts/smed_counts.rda"
 )
 rosetta  <- read.delim2(
-  "~/../Standard_References/Smed_Rink/20231127_Rosetta_EXTENDED.tsv",
+  "data/gene_annotation_information/20231127_Rosetta_EXTENDED.tsv",
   header = T)
 ```
 
@@ -361,7 +359,7 @@ featplot_genes_from_modules(
   module_list = smed_modules_table$newname,
   wg_module = smed_wg_module,
   scdata = smed_cisreg_scrna,
-  output_root_path = "~/projects/smed_cisreg/graphics/wgcna_exploration_modules/featplots_modules_deseq_CW/",
+  output_root_path = "graphics/wgcna_exploration_modules/featplots_modules_deseq_CW/",
   num_genes=30
   )
 ```
@@ -375,7 +373,7 @@ hier1 <- hclust(as.dist(diss1), method="average" )
 diag(diss1) = NA
 
 png(
-  file = "./graphics/smed_wgcna_NetworkTOMplot.png",
+  file = "graphics/smed_wgcna_NetworkTOMplot.png",
   width = 1280,
   height = 1280,
   units = "px",
@@ -485,13 +483,13 @@ draw(smed_wg_hm)
 dev.off()
 ```
 
-And the result of plotting this as a heatmap, where rows correspond to genes and columns correspond to cell clusters. Color intensity indicates z-scored expression at a given cell cluster. Several transcription factors of interest have been highlighted.
+And the result of plotting this as a heatmap, where rows correspond to genes and columns correspond to cell clusters. Color intensity indicates z-scored expression at a given cell cluster.
 
 ```{r echo = FALSE, warning = FALSE, message = FALSE, fig.width = 6, fig.height = 15}
 ngenes_per_module <- 30
 
 set.seed(4343)
-smed_wg_module_viz <- smed_wg_module %>% group_by(module) %>% slice_sample(n=ngenes_per_module)
+smed_wg_module_viz <- smed_wg_module %>% tibble::rownames_to_column(var = "id") %>% group_by(module) %>% slice_sample(n=ngenes_per_module) %>% tibble::column_to_rownames(var = "id")
 
 
 wg_ha = HeatmapAnnotation(
@@ -524,6 +522,9 @@ wg_mod <-
         gp = gpar(col = "#444444"),#rep(smed_modules_table$general_color,each=30),xlim = c(50,1000)),
         border = FALSE
       ),
+    tau = apply(apply(MEs,1,relativise),1,tau)[rep(1:length(levels(smed_modules_table$newname)),each=ngenes_per_module)],
+    # tau = apply(smed_counts_norm_cw[match(rownames(smed_wg_module_viz),rownames(smed_counts_norm_cw)),],1,tau),
+    col = list(tau=colorRamp2(breaks = c(0.75,1), col = c("blue","red"))),# c("#3d85c6","#e04d4d"))),
     gap = unit(10, "points"),
     which = "row"
   )
@@ -555,10 +556,113 @@ draw(smed_cisreg_wgcna_hm)
 ```
 
 ```{r}
-pdf("graphics/smed_cisreg_wgcna_heatmap.pdf", width = 8, heigh = 12)
+pdf("graphics/smed_cisreg_wgcna_heatmap_revision_supp.pdf", width = 6, heigh = 12)
 draw(smed_cisreg_wgcna_hm)
 dev.off()
 ```
+
+The modules below are the ones that we discuss in the main text of Figure 2. Thus we will make a smaller heatmap for the main figure.
+
+```{r, fig.width = 4, fig.height = 5}
+mods_main <- 
+  c(
+    "m05", "m07", "m08", "m23", "m24", "m52",
+    "m32", "m33", "m41", "m42", "m18",
+    "m51", "m26", "m27", "m19", "m50",
+    "m53", "m37", "m44", "m45", "m46",
+    "m49"
+    )
+
+smed_wg_module_main <- smed_wg_module[smed_wg_module$module %in% mods_main,]
+
+ngenes_per_module <- 30
+
+set.seed(4343)
+smed_wg_module_viz_main <- 
+  smed_wg_module_main %>% 
+  tibble::rownames_to_column(var = "id") %>% 
+  group_by(module) %>% 
+  slice_sample(n=ngenes_per_module) %>% 
+  tibble::column_to_rownames(var = "id")
+
+wg_ha = HeatmapAnnotation(
+  name = "cell types",
+  cluster = factor(
+    colnames(smed_wg_module)[-modulecolumn],
+    levels=smed_ctypes$ctype),
+  col = list(
+    cluster = setNames(
+      smed_ctypes$col,
+      smed_ctypes$ctype)
+  ),
+  show_legend = FALSE
+)
+
+moduleSizes <- setNames(
+  smed_modules_table$num_genes[smed_modules_table$newname %in% mods_main],
+  mods_main)
+
+wg_mod <-
+  HeatmapAnnotation(
+    stack = 
+      anno_barplot(
+        hm_bp[which(smed_modules_table$newname %in% mods_main),][
+          rep(1:length(mods_main),each=ngenes_per_module),
+          ],
+        gp = gpar(col = smed_ctypes$col),
+        border = FALSE
+      ),
+    log10_ngen = 
+      anno_barplot(
+        rep(moduleSizes,each=ngenes_per_module),
+        gp = gpar(col = "#444444"),
+        border = FALSE
+      ),
+    tau = apply(
+      t(apply(smed_wg_module_viz_main[,-modulecolumn],1,relativise)),
+      1,tau),
+    col = list(tau=colorRamp2(breaks = c(0.75,1),col = c("blue","red"))),
+    gap = unit(10, "points"),
+    which = "row"
+  )
+wg_ha@anno_list$cluster@label <- NULL
+
+
+smed_wg_module_viz_main$module <- 
+  factor(smed_wg_module_viz_main$module, levels = mods_main)
+
+smed_cisreg_wgcna_hm_main <-
+  Heatmap(
+    t(apply(smed_wg_module_viz_main[,-modulecolumn],1,relativise)),
+    name = "scaled\nexpression",
+    cluster_rows= F,
+    show_row_names = F,
+    show_row_dend = F,
+    cluster_columns = F,
+    show_column_names = F,
+    column_names_side = "bottom",
+    row_split = smed_wg_module_viz_main$module,
+    row_title_gp = gpar(fontsize = 10),
+    column_names_gp = gpar(fontsize = 6),
+    row_title_side = "left",
+    row_title_rot = 0,
+    col = colorRamp2(breaks = seq(0,1,length = 10), colors = colorRampPalette(c("#f1f5ff","#b1b8c4","#2c2b46"))(10)),
+    top_annotation=wg_ha,
+    bottom_annotation = wg_ha,
+    right_annotation = wg_mod,
+    heatmap_legend_param = gpar(nrow = 2)
+  )
+
+draw(smed_cisreg_wgcna_hm_main)
+```
+
+
+```{r}
+pdf("graphics/smed_cisreg_wgcna_heatmap_revision_main.pdf", wi = 4, he = 5)
+draw(smed_cisreg_wgcna_hm_main)
+dev.off()
+```
+
 
 ## Gene Ontology Analysis
 
@@ -569,7 +673,7 @@ For this we will use a wrapper function of the GO enrichment analysis tools prov
 gene_universe <- rownames(smed_counts)
 
 # gene-GO mappings
-smed_id_GO <- readMappings("./outputs/gene_annotation/smed_GOs.tsv")
+smed_id_GO <- readMappings("data/gene_annotation_information/smed_GOs.tsv")
 
 #list of genes of interest
 smed_wg_list <- split(rownames(smed_wg_module),smed_wg_module$module)
@@ -586,14 +690,6 @@ smed_wg_GO_all<-
     gene_universe = gene_universe,
     gene2GO = smed_id_GO
   )
-
-# gene-GO mappings
-smed_id_GO <- readMappings("./outputs/gene_annotation/smed_GOs.tsv")
-
-
-#list of genes of interest
-smed_wg_list <- split(rownames(smed_wg_module),smed_wg_module$module)
-smed_wg_list <- smed_wg_list[match(smed_modules_table$newname, names(smed_wg_list))]
 
 # GO term analysis wrapper
 smed_wg_GO_all_rosetaall_bg_elim <- 
@@ -660,7 +756,7 @@ dev.off()
 ## Saving genome region files for motif enrichment
 
 ```{r}
-smed_promoters <- read.delim2(file = "/mnt/sda/alberto/projects/smed_cisreg/outputs/associate_peaks_genes/promoters.bed", header = FALSE)
+smed_promoters <- read.delim2(file = "outputs/associate_peaks_genes/promoters.bed", header = FALSE)
 
 for (i in 1:length(smed_wg_list)) {
   newname <- gsub(" ", "_", names(smed_wg_list)[i])
@@ -669,7 +765,7 @@ for (i in 1:length(smed_wg_list)) {
   tbl <- smed_promoters[smed_promoters$V4 %in% smed_wg_list[[i]],]
   write.table(
     tbl,
-    file = paste0("outputs/wgcna/homer/promoters/promoters_module_",newname,".bed"),
+    file = paste0("outputs/motif_analyses/wgcna/homer/promoters/promoters_module_",newname,".bed"),
     sep = "\t", row.names = FALSE, col.names = FALSE, quote = FALSE
   )
   message("Done ",newname); rm(tbl)
@@ -682,7 +778,7 @@ for (i in 1:length(smed_wg_list)) {
 smed_wg_GO_table <- ldply(smed_wg_GO_all[[1]], .id="module")
 write.xlsx(
   smed_wg_GO_table,
-  file = paste0("./outputs/",fcha(),"_smed_wgcna_GOterms.xlsx"),
+  file = paste0("outputs/tables_for_supp/",fcha(),"_smed_wgcna_GOterms.xlsx"),
   sheetName = "schmidtea_wgcna_GOterms",
   col.names = TRUE, row.names = FALSE, showNA = TRUE
   )
@@ -704,7 +800,7 @@ write.table(
 write.xlsx(
   smed_id_module,
   file = paste0(
-    "./outputs/",
+    "outputs/tables_for_supp/",
     fcha(),
     "_smed_wgcna_id_module.xlsx"
     ),
@@ -722,7 +818,7 @@ TOM_2 <- TOM[
   rownames(TOM) %in% smed_id_module$id,
   colnames(TOM) %in% smed_id_module$id
 ]
-saveRDS(TOM_2,"outputs/rda/wgcna_TOM_matrix.rds")
+saveRDS(TOM_2,"outputs/rda/scrna_wgcna/wgcna_TOM_matrix.rds")
 ```
 
 ```{r save_all_wgcna}
@@ -744,7 +840,7 @@ save(
   dissTOM,
   TOM_2,
   hm_bp,
-  file = "outputs/rda/smed_wgcna_all.rda"
+  file = "outputs/rda/scrna_wgcna/smed_wgcna_all.rda"
 )
 ```
 
@@ -758,7 +854,7 @@ save(
   MEs,
   smed_wg_GO_all,
   hm_bp,
-  file = "outputs/rda/smed_wgcna.rda"
+  file = "outputs/rda/scrna_wgcna/smed_wgcna.rda"
 )
 
 xlsx::write.xlsx(

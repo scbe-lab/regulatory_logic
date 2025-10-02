@@ -1,0 +1,999 @@
+---
+title: "Reanalysis of alx3-1 RNAi (Akheralie et al) and leverage to TF/target networks"
+author: "Alberto Perez-Posada"
+date: "2024-12-11"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+dir <- '/omics-storage/lab-solana/alberto/projects/smed_cisreg/'
+fcha <- function(){ gsub("-","",Sys.Date()) }
+
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_knit$set(root.dir = dir)
+options(scipen=999)
+Sys.setenv(VROOM_CONNECTION_SIZE=5000072)
+pdf.options(family = "Helvetica")
+```
+
+## About
+
+This markdown reanalyses the knock-down RNAi of alx3-1 in planaria, from Akheralie et al., 2023 (PMID: 37681295). For more information please visit: https://doi.org/10.1242/dev.201777.
+
+Here we used bowtie2 for the mapping of reads, quantification with HTSeq, and differential gene expression with DESeq2.
+
+We will retrieve a set of differentially expressed genes as done in the original manuscript, and bring them over to the networks of the different cell types to test whether they tend to have a higher predicted activity by coe.
+
+## Load libraries and functions
+
+We will load the functions as we usually do:
+
+```{r, message = FALSE, warning = FALSE}
+library(countToFPKM)
+library(ComplexHeatmap)
+library(Mfuzz)
+library(dplyr)
+library(RColorBrewer)
+library(colorspace)
+library(viridis)
+library(Matrix)
+library(topGO)
+library(readr)
+library(ggplot2)
+library(ggrepel)
+library(ggrastr)
+library(DESeq2)
+
+# load functions
+source("/omics-storage/lab-solana/alberto/projects/smed_cisreg/code/r_code/functions/sourcefolder.R")
+sourceFolder(
+  "/omics-storage/lab-solana/alberto/projects/smed_cisreg/code/r_code/functions/", #change for definitive path once its final
+  recursive = TRUE
+)
+```
+
+## Load Data
+
+We will load a bunch of data at the beginning of the markdown. Leveraging gene expression and gene network data: despite this (and other) knock-down assays were performed using bulk RNA-Seq in whole animals, we can integrate this information with our network data and ask the question of whether such genes have any different predicted interactions. If that was the case, one premise is that we should be able detect which are the cell types in which we can expect to find such genes. For that we can interrogate our single cell data. Are there any cell types expressing them more often?
+
+We will load here the single cell data to explore this later.
+
+```{r}
+scdata <- readRDS("outputs/rda/seurat_scrna/smed_cisreg_scRNA_consensus_identities.RDS")
+
+scdata <- readRDS("outputs/rda/seurat_scrna/smed_cisreg_scRNA_consensus_identities.RDS")
+broadcols <-
+  setNames(
+    c(
+      "#969696", # neoblast
+      "#9ECAE1", # EEP
+      "#56A0CE", # EEP
+      "#2171B5", # epidermis
+      "#228B22", # phagocytes
+      "#869E42", # basal/goblet
+      "#B22222", # muscle
+      "#FEC44F", # neurons
+      "#FF69B4", # parenchyma
+      "#FFB0AB", # protonephridia
+      "#6428C8"  # secretory
+    ),
+    unique(sort(scdata$broadtype_splitbam))[c(6,2,4,3,9,1,5,7,8,10,11)]
+  )
+
+mat = scdata@assays$RNA@data
+all_genes = rownames(mat)
+```
+
+We will load the pseudobulk counts to quantify the max expression of every gene. From this we can get the genes with a max of expresison in muscle, neurons, and secretory cells.
+
+```{r}
+load("outputs/rda/smed_counts.rda")
+# a vector of which is the cell type with highest expression for each gene (using our pseudobulk data).
+smed_maxc <- setNames(apply(smed_counts_norm_cw, 1, function(x){names(x[x==max(x)])}),rownames(smed_counts_norm_cw))
+
+maxc_sec <- names(smed_maxc[grep("secretory",smed_maxc)])
+maxc_neu <- names(smed_maxc[smed_maxc %in% grep("neuron", colnames(smed_counts), va = T) ])
+maxc_mus <- names(smed_maxc[smed_maxc %in% grep("muscle", colnames(smed_counts), va = T) ])
+```
+
+Then we will load the network data of muscle, neurons, and secretory cells.
+
+```{r}
+# Load networks, keep them there
+mus_nw <- data.table::fread("outputs/ananse/outs/network/muscle.network", header = TRUE)
+mus_nw <- as.data.frame(mus_nw)
+mus_nw$tf <- sub("—.*","",mus_nw$tf_target)
+mus_nw$tg <- sub(".*—","",mus_nw$tf_target)
+mus_nw <- mus_nw[,c(7,8,2,4,5,6)]
+
+neu_nw <- data.table::fread("outputs/ananse/outs/network/neuron.network", header = TRUE)
+neu_nw <- as.data.frame(neu_nw)
+neu_nw$tf <- sub("—.*","",neu_nw$tf_target)
+neu_nw$tg <- sub(".*—","",neu_nw$tf_target)
+neu_nw <- neu_nw[,c(7,8,2,4,5,6)]
+
+sec_nw <- data.table::fread("outputs/ananse/outs/network/secretory.network", header = TRUE)
+sec_nw <- as.data.frame(sec_nw)
+sec_nw$tf <- sub("—.*","",sec_nw$tf_target)
+sec_nw$tg <- sub(".*—","",sec_nw$tf_target)
+sec_nw <- sec_nw[,c(7,8,2,4,5,6)]
+```
+
+Let's keep the gene ID of alx3-1 at hand:
+
+```{r}
+alx <- "h1SMcG0021040"
+```
+
+```{r}
+p_alx <-
+  FeaturePlot(
+    scdata,
+    reduction = "umap",
+    dims = c(1,2),
+    features = alx,
+    cols = colorRampPalette(c("lightgrey","#a100d2","#4c1f89"))(10),
+    pt.size = 0.5,
+    order = T,
+    label = FALSE,
+    slot = "counts"
+  )+NoAxes()+NoLegend()
+
+png(paste0("graphics/umap_alx_",alx,".png"), wi = 256, he = 256)
+print(p_alx)
+dev.off()
+
+umap_broad <-
+  DimPlot(
+    scdata,
+    reduction = "umap",
+    dims = c(1,2),
+    group.by = "broadtype",
+    cols = setNames(broadcols, sub("_go","/go", names(broadcols))),
+    pt.size = 0.5,
+    label = FALSE
+  )+NoAxes()+NoLegend()
+
+png(paste0("graphics/umap_broad.png"), wi = 256, he = 256)
+print(umap_broad)
+dev.off()
+```
+
+## Differential Gene Expression
+
+Here we load the sample information (which is basically the SRA metadata table)
+
+```{r}
+# Load files information
+samplesdir <- "/home/alberto/storage/projects/smed_cisreg/outputs/rna/alx3_akheralie/intact/salmon_output/"
+files <- list.files(path = samplesdir,pattern = ".sf",recursive = TRUE)
+
+sampletable <- 
+  read.delim2(
+    "/home/alberto/storage/projects/smed_cisreg/outputs/rna/alx3_akheralie/intact/sampletable.tsv",
+    header = TRUE
+  )
+rownames(sampletable) <- sampletable$Run
+sampletable$condition <- factor(sampletable$condition, levels = c("control(RNAi)","alx-3(RNAi)"))
+sampletable$batch <- factor(sampletable$batch, levels = c(1,2,3))
+sampletable <- sampletable[,c("Run","condition","batch")]
+
+head(sampletable)
+```
+
+We load the samples here using `tximport`:
+
+```{r}
+# Load the counts
+txi <- tximport(paste0(samplesdir,files), type = "salmon", tx2gene = rosetta_ext[,c(2,1)])
+```
+
+## Differential Gene Expression
+
+We create a DESeq object from the count data and the sample table, using the design batch + condition.
+
+```{r}
+# DESeq dds object
+dds <- DESeqDataSetFromTximport(txi,colData = sampletable, ~batch+condition)
+```
+
+We will have a quick look at the replicates by retrieving the variance-stabilised expression data from the object, clustering, and plotting a PCA.
+
+```{r}
+vsd <- vst(dds, blind=FALSE)
+plotPCA(vsd, ntop = 200, intgroup = c("condition","batch")) # we can consider removing replicate 2 from the assay tbh
+```
+
+Also a heatmap:
+
+```{r, fig.width = 4.2, fig.height = 3.5}
+sampleDists <- dist(t(assay(vsd)))
+h <- hclust(sampleDists)
+h_alx_samples <-
+  Heatmap(
+    name = "Pearson",
+    cor(log1p(assay(vsd))),
+    cluster_rows = h,
+    cluster_columns = h,
+    col = sequential_hcl(10,"YlOrRd", rev = T),
+    top_annotation = 
+      HeatmapAnnotation(
+        batch = sampletable$batch,
+        condition = sampletable$condition,
+        col = 
+          list(
+            batch = setNames(colorspace::lighten(c("red","green","blue"),.2), c("1","2","3")),
+            condition = setNames(c("orange","purple"), c("control(RNAi)","alx-3(RNAi)"))
+          )
+      ),
+    left_annotation = 
+      HeatmapAnnotation(
+        batch = sampletable$batch,
+        condition = sampletable$condition,
+        col = 
+          list(
+            batch = setNames(colorspace::lighten(c("red","green","blue"),.2), c("1","2","3")),
+            condition = setNames(c("orange","purple"), c("control(RNAi)","alx-3(RNAi)"))
+          ),
+        which = "row",
+        show_legend = FALSE
+      )
+  )
+
+draw(h_alx_samples)
+
+pdf("graphics/alx_heatmap_samples.pdf", wi = 5.5, he = 4)
+draw(h_alx_samples)
+dev.off()
+```
+
+We follow with estimation of size factors and dispersions, and the Wald test.
+
+```{r}
+dds <- estimateSizeFactors(dds)
+dds <- estimateDispersions(dds)
+dds <- nbinomWaldTest(dds)
+```
+
+```{r}
+res <- results(dds, contrast=c("condition","alx-3(RNAi)","control(RNAi)"))
+res <- res[complete.cases(res),]
+
+fc_thres <- log(1.5,2) # a foldchange of 1.5x
+p_thres <- 0.1
+
+f_signif <- res$padj < p_thres & abs(res$log2FoldChange) > fc_thres
+
+res$deg <- ifelse(f_signif, "DEG", "none")
+```
+
+The volcano plot:
+
+```{r, fig.width = 3.5, fig.height = 3.5}
+v_alx <-
+  volcano_plot(res,fc_thres = fc_thres, p_thres = p_thres, main = "Diff. Exp. Genes in Akheralie et al., 2023", ylim = 120)
+
+print(v_alx)
+
+
+```
+
+```{r}
+pdf("graphics/alx_volcano.pdf", wi = 4, he = 5)
+print(v_alx)
+dev.off()
+```
+
+Because we are only interested in down-regulated, we will subset them.
+
+```{r}
+alx_diffreg <- rownames(res)[f_signif]
+alx_down <- rownames(res)[res$padj < p_thres & res$log2FoldChange < - fc_thres ]
+```
+
+```{r, fig.width = 5, fig.height = 6}
+h_alx <- 
+  Heatmap(
+    name = "expression",
+    t(scale(t(assay(vsd[rownames(vsd) %in% alx_diffreg,])))),
+    clustering_method_rows = "ward.D2",
+    clustering_method_columns = "ward.D2",
+    col = rev(brewer.pal(10,"RdYlBu")),
+    show_row_names = FALSE,
+    show_column_names = FALSE,
+    right_annotation = 
+      HeatmapAnnotation(
+        diffreg = setNames(
+          ifelse(
+            rownames(vsd[rownames(vsd) %in% alx_diffreg,]) %in% alx_diffreg & rownames(vsd[rownames(vsd) %in% alx_diffreg,]) %in% alx_down,
+            "DOWN",
+            "UP"
+          ),
+          rownames(vsd[rownames(vsd) %in% alx_diffreg,])
+        ),
+        col = list(diffreg = setNames(c("lightgreen","tomato"),c("UP","DOWN"))),
+        which = "row"
+      ),
+    top_annotation = 
+      HeatmapAnnotation(
+        batch = sampletable$batch,
+        condition = sampletable$condition,
+        col = 
+          list(
+            batch = setNames(colorspace::lighten(c("red","green","blue"),.2), c("1","2","3")),
+            condition = setNames(c("orange","purple"), c("control(RNAi)","alx-3(RNAi)"))
+          )
+      )
+  )
+
+pdf("graphics/alx_heatmap.pdf", wi = 5, he = 6)
+draw(h_alx)
+dev.off()
+
+draw(h_alx)
+```
+
+## Gene score of alx3-1
+
+To assess which cell types are expressing our genes more, we can calculate a "gene score" as done in other markdowns.
+
+```{r}
+score_alx <-
+  gene_score(
+    x = mat, gene_set = alx_down[alx_down %in% rownames(mat)],
+    gene_pool = all_genes, remove_set_from_pool = TRUE,
+    fraction = 0.1
+  )
+
+```
+
+We will create a data frame for a later boxplot.
+
+To accomodate for outliers in the distributions, we will clip the data from outliers (bottom 5% and top 5%).
+
+```{r}
+df_scores_alx <-
+  data.frame(
+    cell = colnames(scdata), # cells
+    clu_narrow = scdata$ctype,
+    cluster = factor(scdata$broadtype_splitbam, levels = unique(sort(scdata$broadtype_splitbam))[c(6,2,4,3,9,1,5,7,8,10,11)]), # cluster
+    score_alx = relativise(clip_q(clip_q(score_alx,q=.05,method = "down"), method = "up", q = .95))
+  )
+```
+
+We create the plot here:
+
+```{r}
+# score plot
+set.seed(123)
+z <- df_scores_alx %>% group_by(cluster) %>% sample_n(200) %>% .$cell
+df_scores_alx$jit <- ifelse(df_scores_alx$cell %in% z, TRUE, FALSE)
+
+# score plot
+boxpl_score_alx <-
+  df_scores_alx %>%
+  ggplot(mapping = aes(x = cluster, y = score_alx, fill = cluster, color = cluster)) +
+  geom_boxplot(outlier.shape = NA)+
+  geom_jitter(mapping = aes(shape=jit),size = .6, alpha = .25)+
+  theme_classic()+
+  scale_fill_manual(values = broadcols)+
+  scale_color_manual(values = darken(broadcols,0.5))+
+  scale_shape_manual(values = setNames(c(20,NA),c("TRUE","FALSE")))+
+  theme(axis.text.x = element_blank(), legend.position = "none")+
+  ylab(label = "score alx3-1 (RNAi) downregulated genes")+
+  coord_cartesian(ylim=c(0,1))
+```
+
+We plot it here:
+
+```{r, fig.height = 3.5, fig.width = 3.5}
+boxpl_score_alx
+```
+
+```{r}
+pdf("graphics/alx_downreg_genescore.pdf", he = 3.5, wi = 3.5)
+boxpl_score_alx
+dev.off()
+```
+
+We confirm indeed the potential targets of prep are mostly expressed in the same cell types where we detected coe as influential (the epidermal lineage and neurons).
+
+## Leveraging differential expression and network data
+
+We will leverage these predicted ANANSE interaction scores with the gene expression data, to check if prep downregulated genes have a higher interaction in our networks.
+
+Provided we have single cell data to do the following, we will also incorporate a subfiltering to keep only the D.E.G.s whose higher expression is in the broad cell type of choice (muscle, neurons, secretory). That is, prep RNAi D.E.G.s that are normally detected as expressed in muscle, neurons, or secretory cells.
+
+We incorporate this in a column of the data frame. We will also create a filter of 500 random non-D.E.G.s in order to do a stripchart on top of the boxplot.
+
+### Muscle
+
+Regarding muscle:
+
+```{r}
+# muscle
+df_mus_alx <- mus_nw[mus_nw$tf == alx, -1]
+
+# DEGs alx
+df_mus_alx$deg <- 
+  factor(ifelse(
+    df_mus_alx$tg %in% alx_down & 
+      df_mus_alx$tg %in% maxc_mus
+    , "down","none"), levels = c("none","down"))
+
+df_mus_alx$rank_prob <- relativise(rank(df_mus_alx$prob, ties.method = "min"))
+df_mus_alx$rank_wb <- relativise(rank(df_mus_alx$weighted_binding, ties.method = "min"))
+
+head(df_mus_alx)
+
+set.seed(123)
+non_deg_subsample_mus <- sample(df_mus_alx$tg[df_mus_alx$deg == "none"], 500)
+
+f_mus <- which(df_mus_alx$tg %in% c(non_deg_subsample_mus,df_mus_alx$tg[df_mus_alx$deg != "none"]))
+
+deg_cols <- setNames(c("#c4c4c4","#B22222"),c("none","down"))
+deg_outl_col <- deg_cols
+deg_outl_col <- darken(deg_outl_col,.7)
+deg_outl_col[1] <- alpha(deg_outl_col[1],.2)
+deg_outl_col[c(2,3,4)] <- alpha(deg_outl_col[c(2,3,4)],.25)
+```
+
+And here the plot:
+
+```{r, fig.width = 5, fig.height = 5}
+par(mfrow = c(1,2))
+set.seed(1234)
+boxplot(
+  df_mus_alx$prob~df_mus_alx$deg,
+  col = deg_cols, border = darken(deg_cols,.7),
+  main = "Interaction score\nof alx predicted targets\n(musron)",
+  xlab = "DEGs in alx K.D. (Akheralie et al.)",
+  ylab = "Interaction score",
+  las = 2,
+  cex.main = .6,
+  frame.plot = FALSE,
+  outline = FALSE
+)
+stripchart(
+  df_mus_alx$prob[f_mus]~df_mus_alx$deg[f_mus],
+  col = deg_outl_col,
+  method = "jitter",
+  jitter=0.15,
+  vertical = TRUE,
+  pch = 20,
+  cex=0.7,
+  add = TRUE
+)
+set.seed(1234)
+boxplot(
+  df_mus_alx$weighted_binding~df_mus_alx$deg,
+  col = deg_cols, border = darken(deg_cols,.7),
+  main = "Weighted binding\nof alx predicted targets\n(muscle)",
+  xlab = "DEGs in alx K.D. (Akheralie et al.)",
+  ylab = "Weighted binding",
+  las = 2,
+  cex.main = .6,
+  frame.plot = FALSE,
+  outline = FALSE
+)
+stripchart(
+  df_mus_alx$weighted_binding[f_mus]~df_mus_alx$deg[f_mus],
+  col = deg_outl_col,
+  method = "jitter",
+  jitter=0.15,
+  vertical = TRUE,
+  pch = 20,
+  cex=0.7,
+  add = TRUE
+)
+par(mfrow = c(1,1))
+```
+
+### Neurons
+
+```{r}
+# neuron
+df_neu_alx <- neu_nw[neu_nw$tf == alx, -1]
+
+# DEGs alx
+df_neu_alx$deg <- 
+  factor(ifelse(
+    df_neu_alx$tg %in% alx_down & 
+      df_neu_alx$tg %in% maxc_neu
+    , "down","none"), levels = c("none","down"))
+
+df_neu_alx$rank_prob <- relativise(rank(df_neu_alx$prob, ties.method = "min"))
+df_neu_alx$rank_wb <- relativise(rank(df_neu_alx$weighted_binding, ties.method = "min"))
+
+head(df_neu_alx)
+
+set.seed(123)
+non_deg_subsample_neu <- sample(df_neu_alx$tg[df_neu_alx$deg == "none"], 500)
+
+f_neu <- which(df_neu_alx$tg %in% c(non_deg_subsample_neu,df_neu_alx$tg[df_neu_alx$deg != "none"]))
+
+deg_cols <- setNames(c("#c4c4c4","#FEC44F"),c("none","down"))
+deg_outl_col <- deg_cols
+deg_outl_col <- darken(deg_outl_col,.7)
+deg_outl_col[1] <- alpha(deg_outl_col[1],.2)
+deg_outl_col[c(2,3,4)] <- alpha(deg_outl_col[c(2,3,4)],.25)
+```
+
+```{r, fig.width = 5, fig.height = 5}
+par(mfrow = c(1,2))
+set.seed(1234)
+boxplot(
+  df_neu_alx$prob~df_neu_alx$deg,
+  col = deg_cols, border = darken(deg_cols,.7),
+  main = "Interaction score\nof alx predicted targets\n(neuron)",
+  xlab = "DEGs in alx K.D. (Akheralie et al.)",
+  ylab = "Interaction score",
+  las = 2,
+  cex.main = .6,
+  frame.plot = FALSE,
+  outline = FALSE
+)
+stripchart(
+  df_neu_alx$prob[f_neu]~df_neu_alx$deg[f_neu],
+  col = deg_outl_col,
+  method = "jitter",
+  jitter=0.15,
+  vertical = TRUE,
+  pch = 20,
+  cex=0.7,
+  add = TRUE
+)
+set.seed(1234)
+boxplot(
+  df_neu_alx$weighted_binding~df_neu_alx$deg,
+  col = deg_cols, border = darken(deg_cols,.7),
+  main = "Weighted binding\nof alx predicted targets\n(neuron)",
+  xlab = "DEGs in alx K.D. (Akheralie et al.)",
+  ylab = "Weighted binding",
+  las = 2,
+  cex.main = .6,
+  frame.plot = FALSE,
+  outline = FALSE
+)
+stripchart(
+  df_neu_alx$weighted_binding[f_neu]~df_neu_alx$deg[f_neu],
+  col = deg_outl_col,
+  method = "jitter",
+  jitter=0.15,
+  vertical = TRUE,
+  pch = 20,
+  cex=0.7,
+  add = TRUE
+)
+par(mfrow = c(1,1))
+```
+
+### Secretory
+
+```{r}
+# secretory
+df_sec_alx <- sec_nw[sec_nw$tf == alx, -1]
+
+# DEGs alx
+df_sec_alx$deg <- 
+  factor(ifelse(
+    df_sec_alx$tg %in% alx_down # &
+    # df_sec_alx$tg %in% maxc_sec
+    , "down","none"
+  ), levels = c("none","down"))
+
+df_sec_alx$rank_prob <- relativise(rank(df_sec_alx$prob, ties.method = "min"))
+df_sec_alx$rank_wb <- relativise(rank(df_sec_alx$weighted_binding, ties.method = "min"))
+
+set.seed(123)
+non_deg_subsample_sec <- sample(df_sec_alx$tg[df_sec_alx$deg == "none"], 500)
+
+f_sec <- which(df_sec_alx$tg %in% c(non_deg_subsample_sec,df_sec_alx$tg[df_sec_alx$deg != "none"]))
+```
+
+```{r}
+par(mfrow = c(1,2))
+deg_cols <- setNames(c("#c4c4c4","#6428C8"),c("none","down"))
+deg_outl_col <- deg_cols
+deg_outl_col <- darken(deg_outl_col,.7)
+deg_outl_col[1] <- alpha(deg_outl_col[1],.2)
+deg_outl_col[c(2,3,4)] <- alpha(deg_outl_col[c(2,3,4)],.25)
+
+set.seed(1234)
+boxplot(
+  df_sec_alx$prob~df_sec_alx$deg,
+  col = deg_cols, border = darken(deg_cols,.7),
+  main = "Interaction score\nof alx predicted targets\n(secretory)",
+  xlab = "DEGs in alx K.D. (Akheralie et al.)",
+  ylab = "Interaction score",
+  las = 2,
+  cex.main = .6,
+  frame.plot = FALSE,
+  outline = FALSE
+)
+stripchart(
+  df_sec_alx$prob[f_sec]~df_sec_alx$deg[f_sec],
+  col = deg_outl_col,
+  method = "jitter",
+  jitter=0.15,
+  vertical = TRUE,
+  pch = 20,
+  cex=0.7,
+  add = TRUE
+)
+
+set.seed(1234)
+boxplot(
+  df_sec_alx$weighted_binding~df_sec_alx$deg,
+  col = deg_cols, border = darken(deg_cols,.7),
+  main = "Weighted binding\nof alx predicted targets\n(secretory)",
+  xlab = "DEGs in alx K.D. (Akheralie et al.)",
+  ylab = "Weighted binding",
+  las = 2,
+  cex.main = .6,
+  frame.plot = FALSE,
+  outline = FALSE
+)
+stripchart(
+  df_sec_alx$weighted_binding[f_sec]~df_sec_alx$deg[f_sec],
+  col = deg_outl_col,
+  method = "jitter",
+  jitter=0.15,
+  vertical = TRUE,
+  pch = 20,
+  cex=0.7,
+  add = TRUE
+)
+par(mfrow = c(1,1))
+```
+
+### Plot of all together
+
+```{r}
+pdf("graphics/alx_ananse_score.pdf",wi = 9, he = 3.5)
+par(mfrow = c(1,6))
+
+# MUSCLE
+set.seed(123)
+non_deg_subsample_mus <- sample(df_mus_alx$tg[df_mus_alx$deg == "none"], 500)
+
+f_mus <- which(df_mus_alx$tg %in% c(non_deg_subsample_mus,df_mus_alx$tg[df_mus_alx$deg != "none"]))
+
+deg_cols <- setNames(c("#c4c4c4","#B22222"),c("none","down"))
+deg_outl_col <- deg_cols
+deg_outl_col <- darken(deg_outl_col,.7)
+deg_outl_col[1] <- alpha(deg_outl_col[1],.2)
+deg_outl_col[c(2,3,4)] <- alpha(deg_outl_col[c(2,3,4)],.25)
+
+set.seed(1234)
+boxplot(
+  df_mus_alx$prob~df_mus_alx$deg,
+  col = deg_cols, border = darken(deg_cols,.7),
+  main = "Interaction score\nof alx predicted targets\n(musron)",
+  xlab = "DEGs in alx K.D. (Akheralie et al.)",
+  ylab = "Interaction score",
+  las = 2,
+  cex.main = .6,
+  frame.plot = FALSE,
+  outline = FALSE
+)
+stripchart(
+  df_mus_alx$prob[f_mus]~df_mus_alx$deg[f_mus],
+  col = deg_outl_col,
+  method = "jitter",
+  jitter=0.15,
+  vertical = TRUE,
+  pch = 20,
+  cex=0.7,
+  add = TRUE
+)
+set.seed(1234)
+boxplot(
+  df_mus_alx$weighted_binding~df_mus_alx$deg,
+  col = deg_cols, border = darken(deg_cols,.7),
+  main = "Weighted binding\nof alx predicted targets\n(muscle)",
+  xlab = "DEGs in alx K.D. (Akheralie et al.)",
+  ylab = "Weighted binding",
+  las = 2,
+  cex.main = .6,
+  frame.plot = FALSE,
+  outline = FALSE
+)
+stripchart(
+  df_mus_alx$weighted_binding[f_mus]~df_mus_alx$deg[f_mus],
+  col = deg_outl_col,
+  method = "jitter",
+  jitter=0.15,
+  vertical = TRUE,
+  pch = 20,
+  cex=0.7,
+  add = TRUE
+)
+
+# NEURONS
+set.seed(123)
+non_deg_subsample_neu <- sample(df_neu_alx$tg[df_neu_alx$deg == "none"], 500)
+
+f_neu <- which(df_neu_alx$tg %in% c(non_deg_subsample_neu,df_neu_alx$tg[df_neu_alx$deg != "none"]))
+
+deg_cols <- setNames(c("#c4c4c4","#FEC44F"),c("none","down"))
+deg_outl_col <- deg_cols
+deg_outl_col <- darken(deg_outl_col,.7)
+deg_outl_col[1] <- alpha(deg_outl_col[1],.2)
+deg_outl_col[c(2,3,4)] <- alpha(deg_outl_col[c(2,3,4)],.25)
+
+set.seed(1234)
+boxplot(
+  df_neu_alx$prob~df_neu_alx$deg,
+  col = deg_cols, border = darken(deg_cols,.7),
+  main = "Interaction score\nof alx predicted targets\n(neuron)",
+  xlab = "DEGs in alx K.D. (Akheralie et al.)",
+  ylab = "Interaction score",
+  las = 2,
+  cex.main = .6,
+  frame.plot = FALSE,
+  outline = FALSE
+)
+stripchart(
+  df_neu_alx$prob[f_neu]~df_neu_alx$deg[f_neu],
+  col = deg_outl_col,
+  method = "jitter",
+  jitter=0.15,
+  vertical = TRUE,
+  pch = 20,
+  cex=0.7,
+  add = TRUE
+)
+set.seed(1234)
+boxplot(
+  df_neu_alx$weighted_binding~df_neu_alx$deg,
+  col = deg_cols, border = darken(deg_cols,.7),
+  main = "Weighted binding\nof alx predicted targets\n(neuron)",
+  xlab = "DEGs in alx K.D. (Akheralie et al.)",
+  ylab = "Weighted binding",
+  las = 2,
+  cex.main = .6,
+  frame.plot = FALSE,
+  outline = FALSE
+)
+stripchart(
+  df_neu_alx$weighted_binding[f_neu]~df_neu_alx$deg[f_neu],
+  col = deg_outl_col,
+  method = "jitter",
+  jitter=0.15,
+  vertical = TRUE,
+  pch = 20,
+  cex=0.7,
+  add = TRUE
+)
+
+## SECRETORY
+
+set.seed(123)
+non_deg_subsample_sec <- sample(df_sec_alx$tg[df_sec_alx$deg == "none"], 500)
+
+f_sec <- which(df_sec_alx$tg %in% c(non_deg_subsample_sec,df_sec_alx$tg[df_sec_alx$deg != "none"]))
+
+deg_cols <- setNames(c("#c4c4c4","#6428C8"),c("none","down"))
+deg_outl_col <- deg_cols
+deg_outl_col <- darken(deg_outl_col,.7)
+deg_outl_col[1] <- alpha(deg_outl_col[1],.2)
+deg_outl_col[c(2,3,4)] <- alpha(deg_outl_col[c(2,3,4)],.25)
+
+set.seed(1234)
+boxplot(
+  df_sec_alx$prob~df_sec_alx$deg,
+  col = deg_cols, border = darken(deg_cols,.7),
+  main = "Interaction score\nof alx predicted targets\n(secretory)",
+  xlab = "DEGs in alx K.D. (Akheralie et al.)",
+  ylab = "Interaction score",
+  las = 2,
+  cex.main = .6,
+  frame.plot = FALSE,
+  outline = FALSE
+)
+stripchart(
+  df_sec_alx$prob[f_sec]~df_sec_alx$deg[f_sec],
+  col = deg_outl_col,
+  method = "jitter",
+  jitter=0.15,
+  vertical = TRUE,
+  pch = 20,
+  cex=0.7,
+  add = TRUE
+)
+
+set.seed(1234)
+boxplot(
+  df_sec_alx$weighted_binding~df_sec_alx$deg,
+  col = deg_cols, border = darken(deg_cols,.7),
+  main = "Weighted binding\nof alx predicted targets\n(secretory)",
+  xlab = "DEGs in alx K.D. (Akheralie et al.)",
+  ylab = "Weighted binding",
+  las = 2,
+  cex.main = .6,
+  frame.plot = FALSE,
+  outline = FALSE
+)
+stripchart(
+  df_sec_alx$weighted_binding[f_sec]~df_sec_alx$deg[f_sec],
+  col = deg_outl_col,
+  method = "jitter",
+  jitter=0.15,
+  vertical = TRUE,
+  pch = 20,
+  cex=0.7,
+  add = TRUE
+)
+par(mfrow = c(1,1))
+dev.off()
+```
+
+
+## Saving all data
+
+```{r}
+save_to_excel(
+  list_of_objects = 
+    list(
+      akheralieetal_bowtie2_counts = counts(dds,normalized = FALSE),
+      akheralieetal_samples_table = sampletable,
+      akheralieeatal_results = as.data.frame(res),
+      alx_diffreg_norm_counts = assay(vsd)
+    ),
+  output_file_name =  paste0("./outputs/",fcha(),"_alx_akheralieetal_reanalysis.xlsx"),
+  rowNames = TRUE
+)
+```
+
+## Identifying potential candidates to validate secretory role
+
+Below is the code (rough draft) that was used to manually inspect the feature plots of potential candidate genes.
+
+The initial main criteria were:
+
+ - Having a predicted weighted binding of 0.9 or higher with alx3-1 in the secretory network of ANANSE
+ - Belonging to any of the secretory modules from our WGCNA analysis
+ 
+Additional criteria:
+ - Appears as differentially expressed in the knockdown RNA-Seq of alx3-1.
+ 
+Eventually we saw that h1SMcG0000140 was among the best candidates, and in addition it has an in situ already from Fincher et al., 2018. So, we decided for h1SMcG0000140.
+
+
+```{r, eval = FALSE}
+candidate_insitus_targets_alx <-
+  df_sec_alx$tg[
+    df_sec_alx$weighted_binding > .9 &
+    # df_sec_alx$prob > quantile(df_sec_alx$prob[df_sec_alx$deg=="down"],.95) &
+    df_sec_alx$tg %in% smed_id_module$id[smed_id_module$module %in% smed_modules_table$newname[grep("secretory",smed_modules_table$celltypes)] ] &
+    df_sec_alx$tg %in% alx_down
+      ] # h1SMcG0000140, h1SMcG0017255, h1SMcG0021964
+
+for (i in candidate_insitus_targets_alx){
+  j = paste0("graphics/candidate_sec/candidate_sec_",i,".png")
+
+  f <-FeaturePlot(
+    scdata,
+    features = i,
+    cols = c("#DAE7F2","#531ccb"),
+    order = TRUE,
+    pt.size = 1
+  )+ggtitle(i)
+
+  png(j, wi = 512, he = 512)
+  print(f)
+  dev.off()
+
+  message(i)
+}
+
+# c("h1SMcG0020662","h1SMcG0020160","h1SMcG0009505","h1SMcG0000426","h1SMcG0022558","h1SMcG0022546")
+
+# mirar si 140 is high interactor en pou62 network of secretory
+df_sec_pou <- sec_nw[sec_nw$tf == "h1SMcG0013730", -1]
+
+# a vector of which is the cell type with highest expression for each gene (using our pseudobulk data).
+smed_maxc <- setNames(apply(smed_counts_norm_cw, 1, function(x){names(x[x==max(x)])}),rownames(smed_counts_norm_cw))
+maxc_sec <- names(smed_maxc[grep("secretory",smed_maxc)])
+maxc_neu <- names(smed_maxc[smed_maxc %in% grep("neuron", colnames(smed_counts), va = T) ])
+
+# DEGs alx
+df_sec_alx$deg <-
+  factor(ifelse(
+    df_sec_alx$tg %in% alx_down #&
+    # df_sec_alx$tg %in% maxc_sec
+    , "down","none"
+  ), levels = c("none","down"))
+
+df_sec_alx$rank_prob <- relativise(rank(df_sec_alx$prob, ties.method = "min"))
+df_sec_alx$rank_wb <- relativise(rank(df_sec_alx$weighted_binding, ties.method = "min"))
+
+
+grep_candidates_insitus_targets_alx_2 <-
+  c("0021964", "0028625", "0028112", "0028110", "0026716", "0021653", "0017439",
+    "0015757", "0015756", "0005115", "0000205", "0000199", "0022571", "0022566",
+    "0022558", "0022554", "0022547", "0022546", "0022447", "0021159", "0020934",
+    "0020673", "0020600", "0019426", "0019147", "0018836", "0017915", "0017894",
+    "0017787", "0017757", "0017756", "0017754", "0017429", "0017255", "0016534",
+    "0016478", "0013672", "0009505", "0009304", "0009291", "0006020", "0005848",
+    "0004969", "0002054", "0001554", "0000480", "0000359", "0000140", "0022089"
+    )
+
+c2 <- unname(unlist(sapply(grep_candidates_insitus_targets_alx_2,function(x){grep(x,candidate_insitus_targets_alx,value=TRUE)})))
+
+c2_ <- c2[c2]
+
+for (i in unname(unlist(sapply(grep_candidates_insitus_targets_alx_2,function(x){grep(x,candidate_insitus_targets_alx,value=TRUE)}))) ){
+
+  s <- which(rosetta_ext$gene == i)
+
+  name <- paste(i,rosetta_ext$Preferred_name[s],rosetta_ext$PF_name[s],rosetta_ext$PFAMs[s],rosetta_ext$name[s],sep="\n")
+
+  j = paste0("graphics/candidate_sec/candidate_sec_2_",i,".png")
+
+  f <-FeaturePlot(
+    scdata,
+    features = i,
+    cols = c("#DAE7F2","#531ccb"),
+    order = TRUE,
+    pt.size = 1
+    )+
+    ggtitle(name)+
+    theme(plot.title = element_text(size = 10, face = "bold"))
+
+  png(j, wi = 512, he = 512)
+  print(f)
+  dev.off()
+
+  message(i)
+}
+```
+
+## Ploting in situ data
+
+Here is the code used to plot the h1SMcG0000140 WISH quantification of number of cells per mm2 of regenerated tisue, per animal, per condition (control vs alx3-1 knockdown).
+
+```{r}
+nocells <- read.delim2("data/knockdown_data/alx_knockdown_WISH_nocells.tsv", dec = ".", header = TRUE)
+nocells$condition = factor(nocells$condition, levels = c("gfp(RNAi)","alx3-1(RNAi)"))
+alx_cols <- setNames(c("orange","purple"),c("gfp(RNAi)","alx3-1(RNAi)"))
+wp <- wilcox.test(nocells$cells.per.mm2 ~ nocells$condition, alternative = "greater")$p.value
+tp <- t.test(nocells$cells.per.mm2 ~ nocells$condition, alternative = "greater")$p.value
+ymax <- round(max(nocells$cells.per.mm2)+ max(nocells$cells.per.mm2)*0.1)
+
+set.seed(7002)
+p_wish <-
+  nocells %>%
+  ggplot(
+    mapping = 
+      aes( 
+        x = condition,
+        y = cells.per.mm2,
+        color = condition,
+        fill = condition
+      )
+  )+
+  geom_boxplot(outlier.shape = NA)+
+  geom_jitter(size = 2, alpha = .75)+
+  scale_fill_manual(values = lighten(alx_cols, .3) )+
+  scale_color_manual(values = darken(alx_cols, .5) )+
+  theme_classic()+
+  theme(legend.position = "none")+
+  ylim(0,ymax)+
+  ylab("number of cells/mm^2 in\nregenerating area (1/6th of animal length)")+
+  ggtitle("number of h1SMcG0000140 cells\nin alx3-1 knockdown")
+
+pdf("graphics/alx_wish_boxplot.pdf",wi = 2.5, he = 5)
+set.seed(7002)
+print(p_wish)
+dev.off()
+
+print(p_wish)
+```
+
+## The End!
+
+```{r}
+sessionInfo()
+```

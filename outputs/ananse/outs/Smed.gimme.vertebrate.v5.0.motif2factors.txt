@@ -1,0 +1,2807 @@
+Motif	Factor	Evidence	Curated
+GM.5.0.Sox.0001	h1SMcG0008523	Orthologs	N
+GM.5.0.Homeodomain.0001	h1SMcG0021332	Orthologs	N
+GM.5.0.Mixed.0001	h1SMcG0000971	Orthologs	N
+GM.5.0.Nuclear_receptor.0001	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Mixed.0002	h1SMcG0011535	Orthologs	N
+GM.5.0.Mixed.0002	h1SMcG0016366	Orthologs	N
+GM.5.0.Nuclear_receptor.0002	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.bHLH.0001	h1SMcG0020191	Orthologs	N
+GM.5.0.bHLH.0001	h1SMcG0023005	Orthologs	N
+GM.5.0.bHLH.0001	h1SMcG0004307	Orthologs	N
+GM.5.0.bHLH.0001	h1SMcG0011688	Orthologs	N
+GM.5.0.Myb_SANT.0001	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.C2H2_ZF.0001	h1SMcG0002697	Orthologs	N
+GM.5.0.C2H2_ZF.0001	h1SMcG0000656	Orthologs	N
+GM.5.0.GATA.0001	h1SMcG0009369	Orthologs	N
+GM.5.0.C2H2_ZF.0002	h1SMnG0012616	Orthologs	N
+GM.5.0.C2H2_ZF.0002	h1SMcG0006102	Orthologs	N
+GM.5.0.C2H2_ZF.0002	h1SMcG0011242	Orthologs	N
+GM.5.0.bZIP.0001	h1SMcG0016730	Orthologs	N
+GM.5.0.bZIP.0001	h1SMcG0008907	Orthologs	N
+GM.5.0.bZIP.0001	h1SMcG0010789	Orthologs	N
+GM.5.0.Homeodomain.0002	h1SMcG0020634	Orthologs	N
+GM.5.0.Homeodomain.0002	h1SMcG0016366	Orthologs	N
+GM.5.0.Homeodomain.0002	h1SMcG0002500	Orthologs	N
+GM.5.0.Homeodomain.0002	h1SMcG0002883	Orthologs	N
+GM.5.0.Homeodomain.0002	h1SMcG0022849	Orthologs	N
+GM.5.0.Ets.0001	h1SMcG0000267	Orthologs	N
+GM.5.0.Ets.0001	h1SMcG0014005	Orthologs	N
+GM.5.0.Ets.0001	h1SMnG0022954	Orthologs	N
+GM.5.0.Ets.0001	h1SMcG0021529	Orthologs	N
+GM.5.0.bZIP.0002	h1SMcG0010609	Orthologs	N
+GM.5.0.bZIP.0002	h1SMcG0017602	Orthologs	N
+GM.5.0.bZIP.0002	h1SMcG0004816	Orthologs	N
+GM.5.0.bZIP.0002	h1SMcG0008373	Orthologs	N
+GM.5.0.IRF.0001	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.bHLH.0002	h1SMcG0001531	Orthologs	N
+GM.5.0.bHLH.0002	h1SMcG0016956	Orthologs	N
+GM.5.0.Nuclear_receptor.0003	h1SMcG0015595	Orthologs	N
+GM.5.0.bZIP.0003	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.bHLH.0003	h1SMcG0010890	Orthologs	N
+GM.5.0.bHLH.0003	h1SMcG0006375	Orthologs	N
+GM.5.0.bHLH.0003	h1SMcG0016533	Orthologs	N
+GM.5.0.HSF.0001	h1SMcG0015958	Orthologs	N
+GM.5.0.HSF.0001	h1SMcG0002678	Orthologs	N
+GM.5.0.HSF.0001	h1SMcG0006379	Orthologs	N
+GM.5.0.Homeodomain.0003	h1SMcG0007041	Orthologs	N
+GM.5.0.Homeodomain.0003	h1SMcG0009117	Orthologs	N
+GM.5.0.Homeodomain.0003	h1SMcG0008090	Orthologs	N
+GM.5.0.C2H2_ZF.0003	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.ARID_BRIGHT.0001	h1SMcG0003882	Orthologs	N
+GM.5.0.Homeodomain_POU.0001	h1SMcG0008833	Orthologs	N
+GM.5.0.C2H2_ZF.0004	h1SMcG0015343	Orthologs	N
+GM.5.0.C2H2_ZF.0004	h1SMcG0022224	Orthologs	N
+GM.5.0.Homeodomain.0004	h1SMcG0010817	Orthologs	N
+GM.5.0.Homeodomain.0004	>h1SMcG0018696	Orthologs	N
+GM.5.0.Nuclear_receptor.0004	h1SMcG0019688	Orthologs	N
+GM.5.0.Sox.0002	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.DM.0001	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.bHLH.0004	h1SMcG0006375	Orthologs	N
+GM.5.0.bHLH.0004	h1SMcG0011310	Orthologs	N
+GM.5.0.bHLH.0004	h1SMcG0009686	Orthologs	N
+GM.5.0.bHLH.0004	h1SMcG0001531	Orthologs	N
+GM.5.0.bZIP.0004	h1SMcG0021004	Orthologs	N
+GM.5.0.bZIP.0004	h1SMcG0021003	Orthologs	N
+GM.5.0.T-box.0001	h1SMcG0010122	Orthologs	N
+GM.5.0.T-box.0001	h1SMcG0022768	Orthologs	N
+GM.5.0.T-box.0001	h1SMcG0007448	Orthologs	N
+GM.5.0.bHLH.0005	h1SMnG0000744	Orthologs	N
+GM.5.0.bHLH.0005	h1SMcG0001531	Orthologs	N
+GM.5.0.bHLH.0005	h1SMcG0013330	Orthologs	N
+GM.5.0.Homeodomain.0005	h1SMcG0012776	Orthologs	N
+GM.5.0.Homeodomain.0005	h1SMcG0002883	Orthologs	N
+GM.5.0.Homeodomain.0005	h1SMcG0022849	Orthologs	N
+GM.5.0.Homeodomain.0005	h1SMcG0006514	Orthologs	N
+GM.5.0.GATA.0002	h1SMcG0009369	Orthologs	N
+GM.5.0.RFX.0001	h1SMcG0011556	Orthologs	N
+GM.5.0.RFX.0001	h1SMcG0022918	Orthologs	N
+GM.5.0.RFX.0001	h1SMcG0020741	Orthologs	N
+GM.5.0.RFX.0001	h1SMcG0015193	Orthologs	N
+GM.5.0.bHLH.0006	h1SMcG0009326	Orthologs	N
+GM.5.0.bHLH.0006	h1SMcG0004651	Orthologs	N
+GM.5.0.bHLH.0006	h1SMcG0004451	Orthologs	N
+GM.5.0.bHLH.0006	h1SMcG0009369	Orthologs	N
+GM.5.0.DM.0002	h1SMcG0022046	Orthologs	N
+GM.5.0.bHLH.0007	h1SMcG0022832	Orthologs	N
+GM.5.0.bHLH.0007	h1SMcG0007018	Orthologs	N
+GM.5.0.bHLH.0007	h1SMcG0004651	Orthologs	N
+GM.5.0.bHLH.0007	h1SMcG0004451	Orthologs	N
+GM.5.0.bHLH.0007	h1SMcG0001531	Orthologs	N
+GM.5.0.Rel.0001	h1SMcG0012454	Orthologs	N
+GM.5.0.Rel.0001	h1SMcG0003436	Orthologs	N
+GM.5.0.Rel.0001	h1SMcG0009582	Orthologs	N
+GM.5.0.Ets.0002	h1SMcG0014619	Orthologs	N
+GM.5.0.Paired_box.0001	h1SMcG0008441	Orthologs	N
+GM.5.0.Sox.0003	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Forkhead.0001	h1SMcG0009963	Orthologs	N
+GM.5.0.Forkhead.0001	h1SMcG0013875	Orthologs	N
+GM.5.0.Forkhead.0001	h1SMcG0022769	Orthologs	N
+GM.5.0.Forkhead.0001	h1SMcG0007447	Orthologs	N
+GM.5.0.Forkhead.0001	h1SMnG0012538	Orthologs	N
+GM.5.0.Forkhead.0001	h1SMcG0022770	Orthologs	N
+GM.5.0.Forkhead.0001	h1SMcG0000287	Orthologs	N
+GM.5.0.Forkhead.0001	h1SMcG0012074	Orthologs	N
+GM.5.0.Forkhead.0001	h1SMcG0008308	Orthologs	N
+GM.5.0.Forkhead.0001	h1SMcG0008907	Orthologs	N
+GM.5.0.Forkhead.0001	h1SMcG0010789	Orthologs	N
+GM.5.0.Forkhead.0001	h1SMcG0015283	Orthologs	N
+GM.5.0.Forkhead.0001	h1SMcG0016730	Orthologs	N
+GM.5.0.Forkhead.0001	h1SMcG0007411	Orthologs	N
+GM.5.0.MADS_box.0001	h1SMcG0000971	Orthologs	N
+GM.5.0.bHLH.0008	h1SMcG0021295	Orthologs	N
+GM.5.0.Homeodomain.0006	h1SMcG0003727	Orthologs	N
+GM.5.0.Homeodomain.0006	h1SMcG0002883	Orthologs	N
+GM.5.0.Homeodomain.0006	h1SMcG0022849	Orthologs	N
+GM.5.0.Homeodomain.0006	h1SMcG0002500	Orthologs	N
+GM.5.0.Homeodomain.0006	h1SMcG0003685	Orthologs	N
+GM.5.0.Homeodomain.0006	h1SMcG0007474	Orthologs	N
+GM.5.0.Homeodomain.0006	h1SMcG0008475	Orthologs	N
+GM.5.0.Homeodomain.0006	h1SMcG0018916	Orthologs	N
+GM.5.0.Homeodomain.0006	h1SMcG0016366	Orthologs	N
+GM.5.0.Homeodomain.0006	h1SMcG0017394	Orthologs	N
+GM.5.0.Homeodomain.0006	h1SMcG0003793	Orthologs	N
+GM.5.0.Homeodomain.0006	h1SMcG0000761	Orthologs	N
+GM.5.0.Homeodomain.0006	h1SMcG0022016	Orthologs	N
+GM.5.0.Homeodomain.0006	h1SMcG0020634	Orthologs	N
+GM.5.0.Homeodomain.0007	h1SMcG0003130	Orthologs	N
+GM.5.0.Homeodomain.0007	h1SMcG0010609	Orthologs	N
+GM.5.0.Homeodomain.0007	h1SMcG0017602	Orthologs	N
+GM.5.0.Homeodomain.0007	h1SMcG0004816	Orthologs	N
+GM.5.0.SMAD.0001	h1SMcG0006347	Orthologs	N
+GM.5.0.SMAD.0001	h1SMcG0023128	Orthologs	N
+GM.5.0.SMAD.0001	h1SMcG0004687	Orthologs	N
+GM.5.0.Ets.0003	h1SMcG0011654	Orthologs	N
+GM.5.0.Ets.0003	h1SMcG0000267	Orthologs	N
+GM.5.0.Ets.0003	h1SMcG0014005	Orthologs	N
+GM.5.0.Ets.0003	h1SMnG0022954	Orthologs	N
+GM.5.0.Ets.0003	h1SMcG0021529	Orthologs	N
+GM.5.0.Nuclear_receptor.0005	h1SMcG0015595	Orthologs	N
+GM.5.0.Nuclear_receptor.0005	h1SMcG0011606	Orthologs	N
+GM.5.0.C2H2_ZF.0005	h1SMcG0013330	Orthologs	N
+GM.5.0.C2H2_ZF.0005	h1SMcG0015508	Orthologs	N
+GM.5.0.Nuclear_receptor.0006	h1SMcG0004476	Orthologs	N
+GM.5.0.Ets.0004	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.E2F.0001	h1SMnG0017612	Orthologs	N
+GM.5.0.E2F.0001	h1SMcG0010707	Orthologs	N
+GM.5.0.Nuclear_receptor.0007	h1SMcG0005673	Orthologs	N
+GM.5.0.Runt.0001	h1SMcG0016472	Orthologs	N
+GM.5.0.C2H2_ZF.0006	h1SMcG0010076	Orthologs	N
+GM.5.0.C2H2_ZF.0006	h1SMcG0001434	Orthologs	N
+GM.5.0.C2H2_ZF.0006	h1SMcG0003130	Orthologs	N
+GM.5.0.C2H2_ZF.0006	>h1SMcG0005177	Orthologs	N
+GM.5.0.SAND.0001	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.T-box.0002	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Homeodomain.0008	h1SMcG0013158	Orthologs	N
+GM.5.0.Homeodomain.0008	h1SMcG0022494	Orthologs	N
+GM.5.0.Homeodomain.0008	h1SMcG0014295	Orthologs	N
+GM.5.0.GCM.0001	h1SMcG0013982	Orthologs	N
+GM.5.0.Homeodomain_POU.0002	h1SMcG0002614	Orthologs	N
+GM.5.0.Homeodomain_POU.0002	h1SMcG0008833	Orthologs	N
+GM.5.0.bZIP.0005	h1SMcG0008340	Orthologs	N
+GM.5.0.bZIP.0005	h1SMcG0012645	Orthologs	N
+GM.5.0.Homeodomain.0009	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Sox.0004	h1SMcG0008523	Orthologs	N
+GM.5.0.Mixed.0003	h1SMcG0007969	Orthologs	N
+GM.5.0.Mixed.0003	h1SMcG0019688	Orthologs	N
+GM.5.0.C2H2_ZF.0007	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Homeodomain.0010	h1SMcG0006684	Orthologs	N
+GM.5.0.SAND.0002	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Homeodomain_POU.0003	h1SMcG0008833	Orthologs	N
+GM.5.0.Nuclear_receptor.0008	h1SMcG0015595	Orthologs	N
+GM.5.0.Nuclear_receptor.0008	h1SMcG0017823	Orthologs	N
+GM.5.0.Homeodomain.0011	h1SMcG0008090	Orthologs	N
+GM.5.0.Homeodomain.0011	h1SMcG0021271	Orthologs	N
+GM.5.0.Homeodomain.0011	h1SMcG0006855	Orthologs	N
+GM.5.0.Homeodomain.0011	h1SMcG0002500	Orthologs	N
+GM.5.0.Homeodomain.0011	h1SMcG0006497	Orthologs	N
+GM.5.0.GATA.0003	h1SMcG0009369	Orthologs	N
+GM.5.0.GATA.0003	h1SMcG0004888	Orthologs	N
+GM.5.0.Mixed.0004	h1SMcG0010990	Orthologs	N
+GM.5.0.Rel.0002	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.bHLH.0009	h1SMcG0011310	Orthologs	N
+GM.5.0.bHLH.0009	h1SMcG0009686	Orthologs	N
+GM.5.0.Forkhead.0002	h1SMcG0020478	Orthologs	N
+GM.5.0.Forkhead.0002	h1SMcG0009963	Orthologs	N
+GM.5.0.Forkhead.0002	h1SMcG0000287	Orthologs	N
+GM.5.0.Forkhead.0002	h1SMcG0012074	Orthologs	N
+GM.5.0.Forkhead.0002	h1SMcG0008308	Orthologs	N
+GM.5.0.Forkhead.0002	h1SMcG0006261	Orthologs	N
+GM.5.0.Forkhead.0002	h1SMcG0013875	Orthologs	N
+GM.5.0.Forkhead.0002	h1SMcG0015283	Orthologs	N
+GM.5.0.Forkhead.0002	h1SMcG0007411	Orthologs	N
+GM.5.0.E2F.0002	h1SMcG0016376	Orthologs	N
+GM.5.0.E2F.0002	h1SMnG0017612	Orthologs	N
+GM.5.0.E2F.0002	h1SMcG0010707	Orthologs	N
+GM.5.0.bZIP.0006	h1SMcG0017653	Orthologs	N
+GM.5.0.Homeodomain.0012	h1SMcG0003298	Orthologs	N
+GM.5.0.Homeodomain.0012	h1SMcG0019014	Orthologs	N
+GM.5.0.Forkhead.0003	h1SMcG0009963	Orthologs	N
+GM.5.0.Forkhead.0003	h1SMcG0013875	Orthologs	N
+GM.5.0.Forkhead.0003	h1SMcG0000287	Orthologs	N
+GM.5.0.Forkhead.0003	h1SMcG0012074	Orthologs	N
+GM.5.0.Forkhead.0003	h1SMcG0008308	Orthologs	N
+GM.5.0.Forkhead.0003	h1SMcG0015283	Orthologs	N
+GM.5.0.Forkhead.0003	h1SMcG0007411	Orthologs	N
+GM.5.0.Homeodomain.0013	h1SMcG0022072	Orthologs	N
+GM.5.0.Homeodomain.0013	h1SMcG0011535	Orthologs	N
+GM.5.0.Homeodomain.0013	h1SMcG0002883	Orthologs	N
+GM.5.0.Homeodomain.0013	h1SMcG0022849	Orthologs	N
+GM.5.0.Homeodomain.0013	h1SMcG0007041	Orthologs	N
+GM.5.0.Homeodomain.0013	h1SMcG0008090	Orthologs	N
+GM.5.0.Homeodomain.0013	h1SMcG0016366	Orthologs	N
+GM.5.0.Homeodomain.0013	h1SMcG0006497	Orthologs	N
+GM.5.0.C2H2_ZF.0008	h1SMcG0015343	Orthologs	N
+GM.5.0.C2H2_ZF.0008	h1SMcG0022224	Orthologs	N
+GM.5.0.C2H2_ZF.0009	h1SMcG0001434	Orthologs	N
+GM.5.0.Mixed.0005	h1SMcG0003882	Orthologs	N
+GM.5.0.Mixed.0005	h1SMcG0002883	Orthologs	N
+GM.5.0.Mixed.0005	h1SMcG0022849	Orthologs	N
+GM.5.0.bHLH.0010	h1SMcG0004651	Orthologs	N
+GM.5.0.bHLH.0010	h1SMcG0012768	Orthologs	N
+GM.5.0.SMAD.0002	h1SMcG0001098	Orthologs	N
+GM.5.0.SMAD.0002	h1SMcG0018284	Orthologs	N
+GM.5.0.SMAD.0002	h1SMcG0020557	Orthologs	N
+GM.5.0.SMAD.0002	h1SMcG0006281	Orthologs	N
+GM.5.0.Runt.0002	h1SMcG0016472	Orthologs	N
+GM.5.0.Forkhead.0004	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Nuclear_receptor.0009	h1SMcG0004476	Orthologs	N
+GM.5.0.Ets.0005	h1SMcG0000267	Orthologs	N
+GM.5.0.bHLH.0011	>h1SMcG0018894	Orthologs	N
+GM.5.0.Mixed.0006	h1SMcG0015595	Orthologs	N
+GM.5.0.Mixed.0006	h1SMcG0001531	Orthologs	N
+GM.5.0.C2H2_ZF.0010	h1SMcG0015508	Orthologs	N
+GM.5.0.bZIP.0007	h1SMcG0006635	Orthologs	N
+GM.5.0.bZIP.0007	h1SMcG0001259	Orthologs	N
+GM.5.0.bZIP.0007	h1SMcG0010592	Orthologs	N
+GM.5.0.bZIP.0007	h1SMcG0004981	Orthologs	N
+GM.5.0.bZIP.0007	h1SMcG0008503	Orthologs	N
+GM.5.0.bZIP.0007	h1SMcG0004904	Orthologs	N
+GM.5.0.bZIP.0008	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.C2H2_ZF.0011	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Mixed.0007	h1SMcG0020760	Orthologs	N
+GM.5.0.Mixed.0007	h1SMcG0010451	Orthologs	N
+GM.5.0.Mixed.0007	h1SMcG0010448	Orthologs	N
+GM.5.0.C2H2_ZF.0012	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Nuclear_receptor.0010	h1SMcG0019688	Orthologs	N
+GM.5.0.CUT_Homeodomain.0001	>h1SMcG0000889	Orthologs	N
+GM.5.0.CUT_Homeodomain.0001	h1SMcG0023033	Orthologs	N
+GM.5.0.CUT_Homeodomain.0001	h1SMcG0011844	Orthologs	N
+GM.5.0.Sox.0005	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Homeodomain.0014	h1SMcG0007041	Orthologs	N
+GM.5.0.Homeodomain.0014	h1SMcG0008090	Orthologs	N
+GM.5.0.C2H2_ZF.0013	h1SMcG0015400	Orthologs	N
+GM.5.0.C2H2_ZF.0013	h1SMcG0001434	Orthologs	N
+GM.5.0.MADS_box.0002	h1SMcG0007933	Orthologs	N
+GM.5.0.MADS_box.0002	h1SMcG0008246	Orthologs	N
+GM.5.0.bHLH.0012	h1SMcG0016003	Orthologs	N
+GM.5.0.bHLH.0012	h1SMnG0025958	Orthologs	N
+GM.5.0.bHLH.0013	h1SMnG0012616	Orthologs	N
+GM.5.0.Homeodomain_Paired_box.0001	h1SMcG0018062	Orthologs	N
+GM.5.0.bHLH.0014	h1SMcG0013330	Orthologs	N
+GM.5.0.bHLH.0014	h1SMcG0001531	Orthologs	N
+GM.5.0.C2H2_ZF.0014	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.bHLH.0015	h1SMcG0009326	Orthologs	N
+GM.5.0.bHLH.0015	h1SMcG0018400	Orthologs	N
+GM.5.0.bHLH.0015	h1SMcG0001334	Orthologs	N
+GM.5.0.bHLH.0015	h1SMcG0021180	Orthologs	N
+GM.5.0.bHLH.0015	h1SMcG0013330	Orthologs	N
+GM.5.0.Homeodomain.0015	h1SMcG0008090	Orthologs	N
+GM.5.0.Homeodomain.0015	h1SMcG0002500	Orthologs	N
+GM.5.0.Homeodomain.0015	h1SMcG0007041	Orthologs	N
+GM.5.0.Homeodomain.0015	h1SMcG0021059	Orthologs	N
+GM.5.0.Mixed.0008	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Homeodomain.0016	h1SMcG0017394	Orthologs	N
+GM.5.0.Homeodomain.0016	h1SMcG0003882	Orthologs	N
+GM.5.0.C2H2_ZF.0015	h1SMcG0010990	Orthologs	N
+GM.5.0.C2H2_ZF.0015	h1SMcG0011310	Orthologs	N
+GM.5.0.C2H2_ZF.0015	h1SMcG0009686	Orthologs	N
+GM.5.0.C2H2_ZF.0015	h1SMcG0006042	Orthologs	N
+GM.5.0.C2H2_ZF.0015	h1SMcG0018295	Orthologs	N
+GM.5.0.C2H2_ZF.0015	h1SMcG0018294	Orthologs	N
+GM.5.0.Nuclear_receptor.0011	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Homeodomain.0017	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.GATA.0004	h1SMcG0009369	Orthologs	N
+GM.5.0.Sox.0006	h1SMcG0016676	Orthologs	N
+GM.5.0.C2H2_ZF.0016	h1SMcG0001477	Orthologs	N
+GM.5.0.C2H2_ZF.0016	h1SMcG0005497	Orthologs	N
+GM.5.0.bHLH.0016	h1SMcG0020144	Orthologs	N
+GM.5.0.bHLH.0016	h1SMcG0006375	Orthologs	N
+GM.5.0.bHLH.0016	h1SMcG0010990	Orthologs	N
+GM.5.0.Homeodomain_POU.0004	h1SMcG0010076	Orthologs	N
+GM.5.0.Homeodomain_POU.0004	h1SMcG0008833	Orthologs	N
+GM.5.0.Mixed.0009	h1SMcG0020144	Orthologs	N
+GM.5.0.Mixed.0010	h1SMcG0014015	Orthologs	N
+GM.5.0.Ets.0006	h1SMcG0004713	Orthologs	N
+GM.5.0.Ets.0006	h1SMcG0000267	Orthologs	N
+GM.5.0.Ets.0006	h1SMcG0014005	Orthologs	N
+GM.5.0.Ets.0006	h1SMnG0022954	Orthologs	N
+GM.5.0.Ets.0006	h1SMcG0021529	Orthologs	N
+GM.5.0.C2H2_ZF.0017	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Unknown.0001	h1SMcG0020760	Orthologs	N
+GM.5.0.Unknown.0001	h1SMcG0010451	Orthologs	N
+GM.5.0.Unknown.0001	h1SMcG0010448	Orthologs	N
+GM.5.0.Rel.0003	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Homeodomain.0018	h1SMcG0008090	Orthologs	N
+GM.5.0.Homeodomain.0018	h1SMcG0007474	Orthologs	N
+GM.5.0.Homeodomain.0018	h1SMcG0007041	Orthologs	N
+GM.5.0.Homeodomain.0018	h1SMcG0001722	Orthologs	N
+GM.5.0.Homeodomain.0019	h1SMcG0017394	Orthologs	N
+GM.5.0.Homeodomain.0019	h1SMcG0003727	Orthologs	N
+GM.5.0.Homeodomain.0020	h1SMcG0008090	Orthologs	N
+GM.5.0.Homeodomain.0020	h1SMcG0006855	Orthologs	N
+GM.5.0.Homeodomain.0020	h1SMcG0007041	Orthologs	N
+GM.5.0.Homeodomain.0020	h1SMcG0021059	Orthologs	N
+GM.5.0.Ets.0007	h1SMcG0011654	Orthologs	N
+GM.5.0.Ets.0007	h1SMcG0000267	Orthologs	N
+GM.5.0.Ets.0007	h1SMcG0014005	Orthologs	N
+GM.5.0.Ets.0007	h1SMnG0022954	Orthologs	N
+GM.5.0.Ets.0007	h1SMcG0021529	Orthologs	N
+GM.5.0.Nuclear_receptor.0012	h1SMcG0016703	Orthologs	N
+GM.5.0.Nuclear_receptor.0012	h1SMcG0015595	Orthologs	N
+GM.5.0.Homeodomain.0021	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.AP-2.0001	h1SMcG0006465	Orthologs	N
+GM.5.0.DP_E2F.0001	h1SMcG0016376	Orthologs	N
+GM.5.0.bZIP.0009	h1SMcG0007969	Orthologs	N
+GM.5.0.Myb_SANT.0002	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.bZIP.0010	h1SMcG0008373	Orthologs	N
+GM.5.0.bZIP.0010	h1SMcG0001975	Orthologs	N
+GM.5.0.bZIP.0010	h1SMcG0015595	Orthologs	N
+GM.5.0.bZIP.0010	h1SMcG0001531	Orthologs	N
+GM.5.0.Homeodomain.0022	h1SMcG0008090	Orthologs	N
+GM.5.0.Homeodomain.0022	h1SMcG0016366	Orthologs	N
+GM.5.0.Homeodomain.0022	h1SMcG0003727	Orthologs	N
+GM.5.0.Homeodomain.0022	h1SMcG0003793	Orthologs	N
+GM.5.0.Homeodomain.0022	h1SMcG0007041	Orthologs	N
+GM.5.0.Homeodomain.0022	h1SMcG0002883	Orthologs	N
+GM.5.0.Homeodomain.0022	h1SMcG0022849	Orthologs	N
+GM.5.0.Homeodomain.0022	h1SMcG0022016	Orthologs	N
+GM.5.0.bHLH.0017	h1SMcG0023005	Orthologs	N
+GM.5.0.bHLH.0017	h1SMcG0004307	Orthologs	N
+GM.5.0.E2F.0003	h1SMnG0017612	Orthologs	N
+GM.5.0.E2F.0003	h1SMcG0010707	Orthologs	N
+GM.5.0.E2F.0003	h1SMcG0016376	Orthologs	N
+GM.5.0.C2H2_ZF.0018	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.THAP_finger.0001	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Homeodomain_POU.0005	h1SMcG0010663	Orthologs	N
+GM.5.0.bZIP.0011	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.C2H2_ZF.0019	h1SMcG0001434	Orthologs	N
+GM.5.0.C2H2_ZF.0019	>h1SMcG0005177	Orthologs	N
+GM.5.0.Nuclear_receptor.0013	h1SMcG0001020	Orthologs	N
+GM.5.0.Nuclear_receptor.0013	h1SMcG0019688	Orthologs	N
+GM.5.0.Nuclear_receptor.0013	h1SMcG0015595	Orthologs	N
+GM.5.0.Ets.0008	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.E2F.0004	h1SMnG0017612	Orthologs	N
+GM.5.0.E2F.0004	h1SMcG0010707	Orthologs	N
+GM.5.0.CSL.0001	h1SMcG0018959	Orthologs	N
+GM.5.0.Myb_SANT.0003	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Homeodomain.0023	h1SMcG0010817	Orthologs	N
+GM.5.0.Homeodomain.0023	>h1SMcG0018696	Orthologs	N
+GM.5.0.C2H2_ZF.0020	h1SMcG0000656	Orthologs	N
+GM.5.0.bHLH.0018	h1SMcG0008163	Orthologs	N
+GM.5.0.T-box.0003	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.bZIP.0012	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Myb_SANT.0004	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Mixed.0011	h1SMcG0000267	Orthologs	N
+GM.5.0.Mixed.0011	h1SMcG0007329	Orthologs	N
+GM.5.0.Mixed.0011	h1SMcG0007325	Orthologs	N
+GM.5.0.bHLH.0019	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.bHLH.0020	h1SMnG0012616	Orthologs	N
+GM.5.0.bHLH.0020	h1SMcG0013330	Orthologs	N
+GM.5.0.Forkhead.0005	h1SMcG0009963	Orthologs	N
+GM.5.0.Forkhead.0005	h1SMcG0004888	Orthologs	N
+GM.5.0.Forkhead.0005	h1SMcG0013875	Orthologs	N
+GM.5.0.Forkhead.0005	h1SMcG0000287	Orthologs	N
+GM.5.0.Forkhead.0005	h1SMcG0012074	Orthologs	N
+GM.5.0.Forkhead.0005	h1SMcG0008308	Orthologs	N
+GM.5.0.Forkhead.0005	h1SMcG0015283	Orthologs	N
+GM.5.0.Forkhead.0005	h1SMcG0007411	Orthologs	N
+GM.5.0.Homeodomain.0024	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.bZIP.0013	h1SMcG0013594	Orthologs	N
+GM.5.0.bZIP.0013	h1SMcG0010609	Orthologs	N
+GM.5.0.bZIP.0013	h1SMcG0017602	Orthologs	N
+GM.5.0.bZIP.0013	h1SMcG0004816	Orthologs	N
+GM.5.0.bZIP.0013	h1SMcG0004713	Orthologs	N
+GM.5.0.bZIP.0013	h1SMcG0008373	Orthologs	N
+GM.5.0.bZIP.0013	h1SMcG0003269	Orthologs	N
+GM.5.0.bZIP.0013	h1SMnG0005364	Orthologs	N
+GM.5.0.Mixed.0012	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.E2F.0005	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.C2H2_ZF.0021	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.bHLH.0021	h1SMnG0012616	Orthologs	N
+GM.5.0.bHLH.0021	h1SMcG0001531	Orthologs	N
+GM.5.0.C2H2_ZF.0022	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Homeodomain.0025	h1SMcG0008090	Orthologs	N
+GM.5.0.Homeodomain.0025	h1SMcG0006855	Orthologs	N
+GM.5.0.Homeodomain.0025	h1SMcG0002500	Orthologs	N
+GM.5.0.Homeodomain.0025	h1SMcG0003727	Orthologs	N
+GM.5.0.Homeodomain.0025	h1SMcG0007041	Orthologs	N
+GM.5.0.Homeodomain.0025	h1SMcG0009117	Orthologs	N
+GM.5.0.Homeodomain.0025	h1SMcG0021059	Orthologs	N
+GM.5.0.Homeodomain.0025	h1SMcG0001296	Orthologs	N
+GM.5.0.Homeodomain.0025	h1SMcG0013730	Orthologs	N
+GM.5.0.C2H2_ZF.0023	h1SMcG0015595	Orthologs	N
+GM.5.0.SMAD.0003	h1SMcG0001098	Orthologs	N
+GM.5.0.SMAD.0003	h1SMcG0018284	Orthologs	N
+GM.5.0.SMAD.0003	h1SMcG0020557	Orthologs	N
+GM.5.0.bHLH.0022	h1SMcG0009326	Orthologs	N
+GM.5.0.bHLH.0022	h1SMcG0007969	Orthologs	N
+GM.5.0.bHLH.0022	h1SMcG0022543	Orthologs	N
+GM.5.0.bHLH.0022	h1SMcG0006102	Orthologs	N
+GM.5.0.bHLH.0022	h1SMcG0001531	Orthologs	N
+GM.5.0.bHLH.0022	h1SMcG0007143	Orthologs	N
+GM.5.0.Forkhead.0006	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Sox.0007	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Runt.0003	h1SMcG0016472	Orthologs	N
+GM.5.0.Homeodomain.0026	h1SMcG0003727	Orthologs	N
+GM.5.0.Homeodomain.0026	h1SMcG0016884	Orthologs	N
+GM.5.0.Homeodomain.0026	h1SMcG0015572	Orthologs	N
+GM.5.0.Homeodomain.0026	h1SMcG0009835	Orthologs	N
+GM.5.0.Homeodomain.0026	h1SMcG0000548	Orthologs	N
+GM.5.0.Homeodomain.0026	h1SMcG0021059	Orthologs	N
+GM.5.0.Homeodomain.0027	h1SMcG0003130	Orthologs	N
+GM.5.0.SMAD.0004	h1SMcG0001098	Orthologs	N
+GM.5.0.SMAD.0004	h1SMcG0018284	Orthologs	N
+GM.5.0.SMAD.0004	h1SMcG0020557	Orthologs	N
+GM.5.0.C2H2_ZF.0024	h1SMcG0021295	Orthologs	N
+GM.5.0.C2H2_ZF.0024	h1SMcG0020760	Orthologs	N
+GM.5.0.C2H2_ZF.0024	h1SMcG0010451	Orthologs	N
+GM.5.0.C2H2_ZF.0024	h1SMcG0010448	Orthologs	N
+GM.5.0.Homeodomain.0028	h1SMcG0008090	Orthologs	N
+GM.5.0.Homeodomain.0028	h1SMcG0007041	Orthologs	N
+GM.5.0.Homeodomain.0028	h1SMcG0003130	Orthologs	N
+GM.5.0.Paired_box.0002	h1SMcG0008441	Orthologs	N
+GM.5.0.Homeodomain.0029	h1SMcG0009369	Orthologs	N
+GM.5.0.E2F.0006	h1SMcG0016376	Orthologs	N
+GM.5.0.E2F.0006	h1SMnG0017612	Orthologs	N
+GM.5.0.E2F.0006	h1SMcG0010707	Orthologs	N
+GM.5.0.Mixed.0013	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Sox.0008	h1SMcG0016676	Orthologs	N
+GM.5.0.bHLH.0023	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Homeodomain.0030	h1SMcG0008090	Orthologs	N
+GM.5.0.C2H2_ZF.0025	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.STAT.0001	h1SMcG0013474	Orthologs	N
+GM.5.0.STAT.0001	h1SMcG0004146	Orthologs	N
+GM.5.0.STAT.0001	h1SMcG0007329	Orthologs	N
+GM.5.0.STAT.0001	h1SMcG0007325	Orthologs	N
+GM.5.0.CSL.0002	h1SMcG0018959	Orthologs	N
+GM.5.0.Unknown.0002	h1SMcG0006042	Orthologs	N
+GM.5.0.Homeodomain.0031	h1SMcG0008090	Orthologs	N
+GM.5.0.Homeodomain.0031	h1SMcG0022072	Orthologs	N
+GM.5.0.Homeodomain.0031	h1SMcG0007041	Orthologs	N
+GM.5.0.Homeodomain.0031	h1SMcG0002614	Orthologs	N
+GM.5.0.Homeodomain.0031	h1SMcG0016366	Orthologs	N
+GM.5.0.Homeodomain.0032	h1SMcG0007474	Orthologs	N
+GM.5.0.Homeodomain.0032	h1SMcG0018916	Orthologs	N
+GM.5.0.C2H2_ZF.0026	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.bZIP.0014	h1SMcG0012645	Orthologs	N
+GM.5.0.C2H2_ZF.0027	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.bZIP.0015	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.C2H2_ZF.0028	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Sox.0009	h1SMcG0013594	Orthologs	N
+GM.5.0.Forkhead.0007	h1SMcG0009963	Orthologs	N
+GM.5.0.Forkhead.0007	h1SMcG0020478	Orthologs	N
+GM.5.0.Forkhead.0007	h1SMcG0013875	Orthologs	N
+GM.5.0.Forkhead.0007	h1SMcG0000287	Orthologs	N
+GM.5.0.Forkhead.0007	h1SMcG0012074	Orthologs	N
+GM.5.0.Forkhead.0007	h1SMcG0008308	Orthologs	N
+GM.5.0.Forkhead.0007	h1SMcG0015283	Orthologs	N
+GM.5.0.Forkhead.0007	h1SMcG0007411	Orthologs	N
+GM.5.0.Ets.0009	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.C2H2_ZF.0029	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Nuclear_receptor.0014	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Unknown.0003	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Homeodomain.0033	h1SMcG0003298	Orthologs	N
+GM.5.0.Sox.0010	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.bHLH.0024	h1SMcG0020191	Orthologs	N
+GM.5.0.bHLH.0024	h1SMcG0011688	Orthologs	N
+GM.5.0.bZIP.0016	h1SMcG0006635	Orthologs	N
+GM.5.0.Homeodomain.0034	h1SMcG0012776	Orthologs	N
+GM.5.0.Homeodomain.0034	h1SMcG0006514	Orthologs	N
+GM.5.0.bHLH.0025	h1SMcG0016003	Orthologs	N
+GM.5.0.bHLH.0025	h1SMnG0025958	Orthologs	N
+GM.5.0.Forkhead.0008	h1SMcG0013594	Orthologs	N
+GM.5.0.Forkhead.0008	h1SMcG0007411	Orthologs	N
+GM.5.0.Forkhead.0008	h1SMcG0009963	Orthologs	N
+GM.5.0.Forkhead.0008	h1SMcG0000287	Orthologs	N
+GM.5.0.Forkhead.0008	h1SMcG0012074	Orthologs	N
+GM.5.0.Forkhead.0008	h1SMcG0008308	Orthologs	N
+GM.5.0.Forkhead.0008	h1SMcG0001531	Orthologs	N
+GM.5.0.Forkhead.0008	h1SMcG0015595	Orthologs	N
+GM.5.0.Forkhead.0008	h1SMcG0003032	Orthologs	N
+GM.5.0.Forkhead.0008	h1SMcG0013875	Orthologs	N
+GM.5.0.Forkhead.0008	h1SMcG0015283	Orthologs	N
+GM.5.0.Forkhead.0008	h1SMcG0009369	Orthologs	N
+GM.5.0.C2H2_ZF.0030	h1SMcG0021523	Orthologs	N
+GM.5.0.Nuclear_receptor.0015	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.bHLH.0026	h1SMcG0020191	Orthologs	N
+GM.5.0.bHLH.0026	h1SMcG0021295	Orthologs	N
+GM.5.0.bHLH.0026	h1SMcG0016219	Orthologs	N
+GM.5.0.bHLH.0027	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.GATA.0005	h1SMcG0009369	Orthologs	N
+GM.5.0.bZIP.0017	h1SMcG0007329	Orthologs	N
+GM.5.0.bZIP.0017	h1SMcG0007325	Orthologs	N
+GM.5.0.bZIP.0017	h1SMcG0006465	Orthologs	N
+GM.5.0.bZIP.0017	h1SMcG0009369	Orthologs	N
+GM.5.0.bZIP.0017	h1SMcG0010609	Orthologs	N
+GM.5.0.bZIP.0017	h1SMcG0017602	Orthologs	N
+GM.5.0.bZIP.0017	h1SMcG0004816	Orthologs	N
+GM.5.0.bZIP.0017	h1SMcG0008373	Orthologs	N
+GM.5.0.bZIP.0017	h1SMcG0021295	Orthologs	N
+GM.5.0.bZIP.0017	h1SMcG0000267	Orthologs	N
+GM.5.0.Homeodomain_Paired_box.0002	h1SMcG0018062	Orthologs	N
+GM.5.0.C2H2_ZF.0031	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.bZIP.0018	h1SMcG0006635	Orthologs	N
+GM.5.0.MADS_box.0003	h1SMcG0007933	Orthologs	N
+GM.5.0.C2H2_ZF.0032	h1SMcG0001034	Orthologs	N
+GM.5.0.Mixed.0014	h1SMcG0010990	Orthologs	N
+GM.5.0.Mixed.0014	h1SMcG0006042	Orthologs	N
+GM.5.0.C2H2_ZF.0033	h1SMcG0001477	Orthologs	N
+GM.5.0.C2H2_ZF.0033	h1SMcG0005497	Orthologs	N
+GM.5.0.Forkhead.0009	h1SMcG0009963	Orthologs	N
+GM.5.0.Forkhead.0009	h1SMcG0013875	Orthologs	N
+GM.5.0.Forkhead.0009	h1SMcG0000287	Orthologs	N
+GM.5.0.Forkhead.0009	h1SMcG0012074	Orthologs	N
+GM.5.0.Forkhead.0009	h1SMcG0008308	Orthologs	N
+GM.5.0.Forkhead.0009	h1SMcG0015283	Orthologs	N
+GM.5.0.Forkhead.0009	h1SMcG0007411	Orthologs	N
+GM.5.0.T-box.0004	h1SMcG0022768	Orthologs	N
+GM.5.0.T-box.0004	h1SMcG0007448	Orthologs	N
+GM.5.0.Nuclear_receptor.0016	h1SMcG0015595	Orthologs	N
+GM.5.0.Nuclear_receptor.0016	h1SMcG0019688	Orthologs	N
+GM.5.0.C2H2_ZF.0034	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Nuclear_receptor.0017	h1SMcG0015595	Orthologs	N
+GM.5.0.DM.0003	h1SMcG0022046	Orthologs	N
+GM.5.0.Nuclear_receptor.0018	h1SMcG0011606	Orthologs	N
+GM.5.0.Nuclear_receptor.0018	h1SMcG0021496	Orthologs	N
+GM.5.0.bHLH.0028	h1SMcG0004451	Orthologs	N
+GM.5.0.bHLH.0028	h1SMcG0022832	Orthologs	N
+GM.5.0.bHLH.0028	h1SMcG0007018	Orthologs	N
+GM.5.0.Nuclear_receptor.0019	h1SMcG0001020	Orthologs	N
+GM.5.0.Nuclear_receptor.0019	h1SMcG0015595	Orthologs	N
+GM.5.0.Sox.0011	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.STAT.0002	h1SMcG0007329	Orthologs	N
+GM.5.0.STAT.0002	h1SMcG0007325	Orthologs	N
+GM.5.0.Forkhead.0010	h1SMcG0013875	Orthologs	N
+GM.5.0.Forkhead.0010	h1SMcG0000287	Orthologs	N
+GM.5.0.Forkhead.0010	h1SMcG0012074	Orthologs	N
+GM.5.0.Forkhead.0010	h1SMcG0008308	Orthologs	N
+GM.5.0.Forkhead.0010	h1SMcG0015283	Orthologs	N
+GM.5.0.Forkhead.0010	h1SMcG0007411	Orthologs	N
+GM.5.0.C2H2_ZF.0035	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Nuclear_receptor.0020	h1SMcG0015595	Orthologs	N
+GM.5.0.bHLH.0029	h1SMcG0022451	Orthologs	N
+GM.5.0.Myb_SANT.0005	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.RFX.0002	h1SMcG0015193	Orthologs	N
+GM.5.0.Homeodomain.0035	h1SMcG0021332	Orthologs	N
+GM.5.0.Homeodomain.0035	h1SMcG0014159	Orthologs	N
+GM.5.0.Homeodomain.0035	h1SMcG0004695	Orthologs	N
+GM.5.0.Homeodomain.0035	h1SMcG0011242	Orthologs	N
+GM.5.0.bHLH.0030	h1SMcG0020191	Orthologs	N
+GM.5.0.bHLH.0030	>h1SMcG0018894	Orthologs	N
+GM.5.0.bHLH.0030	h1SMcG0011310	Orthologs	N
+GM.5.0.bHLH.0030	h1SMcG0009686	Orthologs	N
+GM.5.0.bHLH.0030	h1SMcG0021295	Orthologs	N
+GM.5.0.bHLH.0030	h1SMnG0000744	Orthologs	N
+GM.5.0.bHLH.0030	h1SMcG0000079	Orthologs	N
+GM.5.0.Mixed.0015	h1SMcG0006042	Orthologs	N
+GM.5.0.Homeodomain.0036	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.C2H2_ZF.0036	h1SMcG0008373	Orthologs	N
+GM.5.0.Homeodomain_POU.0006	h1SMcG0008833	Orthologs	N
+GM.5.0.Forkhead.0011	h1SMcG0009963	Orthologs	N
+GM.5.0.Forkhead.0011	h1SMcG0020478	Orthologs	N
+GM.5.0.Forkhead.0011	h1SMcG0013875	Orthologs	N
+GM.5.0.Forkhead.0011	h1SMcG0000287	Orthologs	N
+GM.5.0.Forkhead.0011	h1SMcG0012074	Orthologs	N
+GM.5.0.Forkhead.0011	h1SMcG0008308	Orthologs	N
+GM.5.0.Forkhead.0011	h1SMcG0015283	Orthologs	N
+GM.5.0.Forkhead.0011	h1SMcG0007411	Orthologs	N
+GM.5.0.bZIP.0019	h1SMcG0010609	Orthologs	N
+GM.5.0.bZIP.0019	h1SMcG0017602	Orthologs	N
+GM.5.0.bZIP.0019	h1SMcG0004816	Orthologs	N
+GM.5.0.bZIP.0019	h1SMcG0004713	Orthologs	N
+GM.5.0.bZIP.0019	h1SMcG0008373	Orthologs	N
+GM.5.0.Forkhead.0012	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.C2H2_ZF.0037	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Mixed.0016	h1SMcG0020144	Orthologs	N
+GM.5.0.Mixed.0016	h1SMcG0010990	Orthologs	N
+GM.5.0.Mixed.0017	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.bHLH.0031	h1SMnG0012616	Orthologs	N
+GM.5.0.bHLH.0031	h1SMcG0001060	Orthologs	N
+GM.5.0.Homeodomain_POU.0007	h1SMcG0006102	Orthologs	N
+GM.5.0.DM.0004	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.bHLH.0032	h1SMcG0013330	Orthologs	N
+GM.5.0.Homeodomain.0037	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.GATA.0006	h1SMcG0009369	Orthologs	N
+GM.5.0.p53.0001	h1SMcG0006508	Orthologs	N
+GM.5.0.p53.0001	>h1SMcG0016868	Orthologs	N
+GM.5.0.bHLH.0033	h1SMcG0016843	Orthologs	N
+GM.5.0.bHLH.0033	h1SMnG0027242	Orthologs	N
+GM.5.0.Sox.0012	h1SMcG0016676	Orthologs	N
+GM.5.0.C2H2_ZF.0038	h1SMcG0005026	Orthologs	N
+GM.5.0.C2H2_ZF.0038	h1SMcG0006102	Orthologs	N
+GM.5.0.Ets.0010	h1SMcG0001975	Orthologs	N
+GM.5.0.C2H2_ZF.0039	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.AP-2.0002	h1SMcG0006465	Orthologs	N
+GM.5.0.Ets.0011	h1SMcG0000267	Orthologs	N
+GM.5.0.C2H2_ZF.0040	h1SMcG0020144	Orthologs	N
+GM.5.0.RFX.0003	h1SMcG0020741	Orthologs	N
+GM.5.0.RFX.0003	h1SMcG0015193	Orthologs	N
+GM.5.0.Mixed.0018	h1SMcG0006042	Orthologs	N
+GM.5.0.C2H2_ZF.0041	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Grainyhead.0001	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Unknown.0004	h1SMcG0010412	Orthologs	N
+GM.5.0.Homeodomain.0038	h1SMcG0020740	Orthologs	N
+GM.5.0.C2H2_ZF.0042	h1SMcG0006102	Orthologs	N
+GM.5.0.Nuclear_receptor.0021	h1SMcG0015595	Orthologs	N
+GM.5.0.bZIP.0020	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Homeodomain.0039	h1SMcG0001722	Orthologs	N
+GM.5.0.Homeodomain.0040	h1SMcG0008090	Orthologs	N
+GM.5.0.RFX.0004	h1SMcG0011556	Orthologs	N
+GM.5.0.RFX.0004	h1SMcG0022918	Orthologs	N
+GM.5.0.RFX.0004	h1SMcG0020741	Orthologs	N
+GM.5.0.RFX.0004	h1SMcG0015193	Orthologs	N
+GM.5.0.Homeodomain.0041	h1SMcG0008090	Orthologs	N
+GM.5.0.bZIP.0021	h1SMcG0008373	Orthologs	N
+GM.5.0.bHLH.0034	h1SMcG0016219	Orthologs	N
+GM.5.0.Nuclear_receptor.0022	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Rel.0004	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.bHLH.0035	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Forkhead.0013	h1SMcG0009963	Orthologs	N
+GM.5.0.Forkhead.0013	h1SMcG0013875	Orthologs	N
+GM.5.0.Forkhead.0013	h1SMcG0000287	Orthologs	N
+GM.5.0.Forkhead.0013	h1SMcG0012074	Orthologs	N
+GM.5.0.Forkhead.0013	h1SMcG0008308	Orthologs	N
+GM.5.0.Forkhead.0013	h1SMcG0015283	Orthologs	N
+GM.5.0.Forkhead.0013	h1SMcG0007411	Orthologs	N
+GM.5.0.bHLH.0036	h1SMcG0004651	Orthologs	N
+GM.5.0.Homeodomain.0042	h1SMcG0007253	Orthologs	N
+GM.5.0.Homeodomain.0042	h1SMcG0002883	Orthologs	N
+GM.5.0.Homeodomain.0042	h1SMcG0022849	Orthologs	N
+GM.5.0.Homeodomain.0042	h1SMcG0016366	Orthologs	N
+GM.5.0.C2H2_ZF_Homeodomain.0001	h1SMcG0006102	Orthologs	N
+GM.5.0.Nuclear_receptor.0023	h1SMcG0015595	Orthologs	N
+GM.5.0.AP-2.0003	h1SMcG0006465	Orthologs	N
+GM.5.0.C2H2_ZF.0043	h1SMcG0000656	Orthologs	N
+GM.5.0.Homeodomain.0043	h1SMcG0007474	Orthologs	N
+GM.5.0.Homeodomain.0043	h1SMcG0018062	Orthologs	N
+GM.5.0.Homeodomain.0043	h1SMcG0022016	Orthologs	N
+GM.5.0.Homeodomain.0043	h1SMcG0003793	Orthologs	N
+GM.5.0.Homeodomain.0043	h1SMcG0007253	Orthologs	N
+GM.5.0.Homeodomain.0043	h1SMcG0000761	Orthologs	N
+GM.5.0.Homeodomain.0043	h1SMcG0002883	Orthologs	N
+GM.5.0.Homeodomain.0043	h1SMcG0022849	Orthologs	N
+GM.5.0.Homeodomain.0043	h1SMcG0015394	Orthologs	N
+GM.5.0.Homeodomain.0043	h1SMcG0018916	Orthologs	N
+GM.5.0.Homeodomain.0043	h1SMcG0003685	Orthologs	N
+GM.5.0.Forkhead.0014	h1SMcG0009963	Orthologs	N
+GM.5.0.Forkhead.0014	h1SMcG0000287	Orthologs	N
+GM.5.0.Forkhead.0014	h1SMcG0012074	Orthologs	N
+GM.5.0.Forkhead.0014	h1SMcG0008308	Orthologs	N
+GM.5.0.Forkhead.0014	h1SMcG0013875	Orthologs	N
+GM.5.0.Forkhead.0014	h1SMcG0015283	Orthologs	N
+GM.5.0.Forkhead.0014	h1SMcG0007411	Orthologs	N
+GM.5.0.Rel.0005	h1SMcG0012454	Orthologs	N
+GM.5.0.Rel.0005	h1SMcG0003436	Orthologs	N
+GM.5.0.Rel.0005	h1SMcG0009582	Orthologs	N
+GM.5.0.Homeodomain.0044	h1SMcG0006684	Orthologs	N
+GM.5.0.Mixed.0019	h1SMcG0017653	Orthologs	N
+GM.5.0.C2H2_ZF.0044	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Homeodomain.0045	h1SMcG0007474	Orthologs	N
+GM.5.0.Homeodomain.0045	h1SMcG0003793	Orthologs	N
+GM.5.0.C2H2_ZF.0045	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Sox.0013	h1SMcG0001531	Orthologs	N
+GM.5.0.Sox.0013	h1SMcG0013594	Orthologs	N
+GM.5.0.C2H2_ZF.0046	h1SMcG0011808	Orthologs	N
+GM.5.0.C2H2_ZF.0046	h1SMcG0014387	Orthologs	N
+GM.5.0.C2H2_ZF.0046	h1SMcG0018872	Orthologs	N
+GM.5.0.T-box.0005	h1SMcG0010122	Orthologs	N
+GM.5.0.T-box.0005	h1SMcG0022768	Orthologs	N
+GM.5.0.T-box.0005	h1SMcG0007448	Orthologs	N
+GM.5.0.T-box.0005	h1SMcG0010860	Orthologs	N
+GM.5.0.Nuclear_receptor.0024	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Forkhead.0015	h1SMcG0009963	Orthologs	N
+GM.5.0.Forkhead.0015	h1SMcG0013875	Orthologs	N
+GM.5.0.Forkhead.0015	h1SMcG0000287	Orthologs	N
+GM.5.0.Forkhead.0015	h1SMcG0012074	Orthologs	N
+GM.5.0.Forkhead.0015	h1SMcG0008308	Orthologs	N
+GM.5.0.Forkhead.0015	h1SMcG0015283	Orthologs	N
+GM.5.0.Forkhead.0015	h1SMcG0007411	Orthologs	N
+GM.5.0.Homeodomain.0046	h1SMcG0010817	Orthologs	N
+GM.5.0.Homeodomain.0046	>h1SMcG0018696	Orthologs	N
+GM.5.0.Unknown.0005	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.SMAD.0005	h1SMcG0006347	Orthologs	N
+GM.5.0.SMAD.0005	h1SMcG0023128	Orthologs	N
+GM.5.0.SMAD.0005	h1SMcG0004687	Orthologs	N
+GM.5.0.RFX.0005	h1SMcG0020741	Orthologs	N
+GM.5.0.RFX.0005	h1SMcG0015193	Orthologs	N
+GM.5.0.Homeodomain.0047	h1SMcG0013158	Orthologs	N
+GM.5.0.Homeodomain.0047	h1SMcG0022494	Orthologs	N
+GM.5.0.Homeodomain.0047	h1SMcG0014295	Orthologs	N
+GM.5.0.Homeodomain.0047	h1SMcG0009369	Orthologs	N
+GM.5.0.Ets.0012	h1SMcG0014619	Orthologs	N
+GM.5.0.Ets.0012	h1SMcG0014005	Orthologs	N
+GM.5.0.Ets.0012	h1SMnG0022954	Orthologs	N
+GM.5.0.Ets.0012	h1SMcG0021529	Orthologs	N
+GM.5.0.Ets.0012	h1SMcG0011654	Orthologs	N
+GM.5.0.Homeodomain.0048	h1SMcG0008090	Orthologs	N
+GM.5.0.Homeodomain.0048	h1SMcG0007474	Orthologs	N
+GM.5.0.Homeodomain.0048	h1SMcG0003727	Orthologs	N
+GM.5.0.Homeodomain.0048	h1SMcG0003793	Orthologs	N
+GM.5.0.Homeodomain.0048	h1SMcG0021059	Orthologs	N
+GM.5.0.CBF_NF-Y.0001	h1SMcG0006375	Orthologs	N
+GM.5.0.CBF_NF-Y.0001	h1SMcG0006281	Orthologs	N
+GM.5.0.Homeodomain.0049	h1SMcG0012776	Orthologs	N
+GM.5.0.Homeodomain.0050	h1SMcG0008090	Orthologs	N
+GM.5.0.Homeodomain.0050	h1SMcG0007041	Orthologs	N
+GM.5.0.Homeodomain.0051	h1SMcG0000941	Orthologs	N
+GM.5.0.Homeodomain.0052	h1SMcG0003130	Orthologs	N
+GM.5.0.Homeodomain.0052	h1SMcG0004695	Orthologs	N
+GM.5.0.T-box.0006	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Mixed.0020	h1SMcG0001975	Orthologs	N
+GM.5.0.Homeodomain.0053	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Homeodomain.0054	h1SMcG0003298	Orthologs	N
+GM.5.0.Homeodomain.0054	h1SMcG0015960	Orthologs	N
+GM.5.0.Homeodomain.0054	h1SMcG0002676	Orthologs	N
+GM.5.0.Homeodomain.0055	h1SMcG0008090	Orthologs	N
+GM.5.0.Homeodomain.0055	h1SMcG0022072	Orthologs	N
+GM.5.0.Homeodomain.0055	h1SMcG0007041	Orthologs	N
+GM.5.0.IRF.0002	h1SMcG0015655	Orthologs	N
+GM.5.0.C2H2_ZF.0047	h1SMcG0010990	Orthologs	N
+GM.5.0.C2H2_ZF.0047	h1SMcG0018295	Orthologs	N
+GM.5.0.C2H2_ZF.0047	h1SMcG0018294	Orthologs	N
+GM.5.0.T-box.0007	h1SMcG0010122	Orthologs	N
+GM.5.0.C2H2_ZF.0048	h1SMcG0020144	Orthologs	N
+GM.5.0.Homeodomain.0056	h1SMcG0014159	Orthologs	N
+GM.5.0.bZIP.0022	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.SMAD.0006	h1SMcG0005673	Orthologs	N
+GM.5.0.SMAD.0006	h1SMcG0001098	Orthologs	N
+GM.5.0.SMAD.0006	h1SMcG0018284	Orthologs	N
+GM.5.0.SMAD.0006	h1SMcG0020557	Orthologs	N
+GM.5.0.SMAD.0006	h1SMcG0020740	Orthologs	N
+GM.5.0.Homeodomain.0057	h1SMcG0008090	Orthologs	N
+GM.5.0.Nuclear_receptor.0025	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Myb_SANT.0006	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Mixed.0021	h1SMcG0010076	Orthologs	N
+GM.5.0.Nuclear_receptor.0026	h1SMcG0015595	Orthologs	N
+GM.5.0.Sox.0014	h1SMcG0016676	Orthologs	N
+GM.5.0.bHLH.0037	h1SMcG0020191	Orthologs	N
+GM.5.0.bHLH.0037	h1SMcG0021295	Orthologs	N
+GM.5.0.C2H2_ZF_Homeodomain.0002	h1SMcG0006102	Orthologs	N
+GM.5.0.Homeodomain.0058	h1SMcG0022072	Orthologs	N
+GM.5.0.Homeodomain.0058	h1SMcG0007041	Orthologs	N
+GM.5.0.Homeodomain.0058	h1SMcG0009117	Orthologs	N
+GM.5.0.Nuclear_receptor.0027	h1SMcG0015595	Orthologs	N
+GM.5.0.Nuclear_receptor.0028	h1SMcG0019688	Orthologs	N
+GM.5.0.Homeodomain.0059	h1SMcG0015960	Orthologs	N
+GM.5.0.Homeodomain.0059	h1SMcG0002676	Orthologs	N
+GM.5.0.Homeodomain.0059	h1SMcG0003298	Orthologs	N
+GM.5.0.C2H2_ZF.0049	h1SMcG0015343	Orthologs	N
+GM.5.0.C2H2_ZF.0049	h1SMcG0022224	Orthologs	N
+GM.5.0.bHLH.0038	h1SMcG0006375	Orthologs	N
+GM.5.0.bHLH.0039	h1SMcG0011310	Orthologs	N
+GM.5.0.bHLH.0039	h1SMcG0009686	Orthologs	N
+GM.5.0.Mixed.0022	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.C2H2_ZF.0050	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.IRF.0003	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Homeodomain.0060	h1SMcG0008090	Orthologs	N
+GM.5.0.Homeodomain.0060	h1SMcG0007041	Orthologs	N
+GM.5.0.Homeodomain.0060	h1SMcG0001296	Orthologs	N
+GM.5.0.C2H2_ZF.0051	h1SMcG0000013	Orthologs	N
+GM.5.0.bHLH.0040	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Sox.0015	h1SMcG0013594	Orthologs	N
+GM.5.0.Homeodomain_Paired_box.0003	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Sox.0016	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Nuclear_receptor.0029	h1SMcG0019688	Orthologs	N
+GM.5.0.Homeodomain.0061	h1SMcG0008090	Orthologs	N
+GM.5.0.Homeodomain.0061	h1SMcG0011535	Orthologs	N
+GM.5.0.Homeodomain.0061	h1SMcG0007041	Orthologs	N
+GM.5.0.bZIP.0023	h1SMcG0012645	Orthologs	N
+GM.5.0.AP-2.0004	h1SMcG0006465	Orthologs	N
+GM.5.0.C2H2_ZF.0052	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.C2H2_ZF.0053	h1SMcG0006548	Orthologs	N
+GM.5.0.C2H2_ZF.0053	h1SMcG0006193	Orthologs	N
+GM.5.0.C2H2_ZF.0053	h1SMcG0000267	Orthologs	N
+GM.5.0.CxC.0001	h1SMnG0017612	Orthologs	N
+GM.5.0.CxC.0001	h1SMcG0010707	Orthologs	N
+GM.5.0.CxC.0001	h1SMcG0008465	Orthologs	N
+GM.5.0.Homeodomain.0062	h1SMcG0012776	Orthologs	N
+GM.5.0.Forkhead.0016	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.C2H2_ZF.0054	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Ets.0013	h1SMcG0014619	Orthologs	N
+GM.5.0.Ets.0013	h1SMcG0011654	Orthologs	N
+GM.5.0.Ets.0013	h1SMcG0000267	Orthologs	N
+GM.5.0.Ets.0013	h1SMcG0014005	Orthologs	N
+GM.5.0.Ets.0013	h1SMnG0022954	Orthologs	N
+GM.5.0.Ets.0013	h1SMcG0021529	Orthologs	N
+GM.5.0.Grainyhead.0002	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.T-box.0008	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.CSL.0003	h1SMcG0018959	Orthologs	N
+GM.5.0.bHLH.0041	>h1SMcG0018894	Orthologs	N
+GM.5.0.bHLH.0041	h1SMcG0021295	Orthologs	N
+GM.5.0.STAT.0003	h1SMcG0007329	Orthologs	N
+GM.5.0.STAT.0003	h1SMcG0007325	Orthologs	N
+GM.5.0.Forkhead.0017	h1SMcG0009963	Orthologs	N
+GM.5.0.Forkhead.0017	h1SMcG0000287	Orthologs	N
+GM.5.0.Forkhead.0017	h1SMcG0012074	Orthologs	N
+GM.5.0.Forkhead.0017	h1SMcG0008308	Orthologs	N
+GM.5.0.Forkhead.0017	h1SMcG0013875	Orthologs	N
+GM.5.0.Forkhead.0017	h1SMcG0015283	Orthologs	N
+GM.5.0.Forkhead.0017	h1SMcG0007411	Orthologs	N
+GM.5.0.C2H2_ZF.0055	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.bHLH.0042	h1SMcG0004651	Orthologs	N
+GM.5.0.bHLH.0042	h1SMcG0012768	Orthologs	N
+GM.5.0.Sox.0017	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Nuclear_receptor.0030	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Homeodomain.0063	h1SMcG0018916	Orthologs	N
+GM.5.0.C2H2_ZF.0056	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Homeodomain.0064	h1SMcG0011535	Orthologs	N
+GM.5.0.Homeodomain_POU.0008	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.GATA.0007	h1SMcG0014619	Orthologs	N
+GM.5.0.GATA.0007	h1SMcG0009369	Orthologs	N
+GM.5.0.Homeodomain.0065	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Forkhead.0018	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Nuclear_receptor.0031	h1SMcG0021496	Orthologs	N
+GM.5.0.Unknown.0006	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Homeodomain.0066	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Mixed.0023	h1SMnG0017612	Orthologs	N
+GM.5.0.Mixed.0023	h1SMcG0010707	Orthologs	N
+GM.5.0.bHLH.0043	h1SMcG0016956	Orthologs	N
+GM.5.0.bHLH.0044	h1SMcG0001531	Orthologs	N
+GM.5.0.bHLH.0044	h1SMcG0001162	Orthologs	N
+GM.5.0.bHLH.0045	h1SMcG0004651	Orthologs	N
+GM.5.0.bHLH.0045	h1SMcG0012768	Orthologs	N
+GM.5.0.Nuclear_receptor.0032	h1SMcG0001020	Orthologs	N
+GM.5.0.bZIP.0024	h1SMcG0010609	Orthologs	N
+GM.5.0.bZIP.0024	h1SMcG0017602	Orthologs	N
+GM.5.0.bZIP.0024	h1SMcG0004816	Orthologs	N
+GM.5.0.bZIP.0024	h1SMcG0008373	Orthologs	N
+GM.5.0.C2H2_ZF.0057	h1SMcG0018872	Orthologs	N
+GM.5.0.C2H2_ZF.0057	>h1SMcG0005177	Orthologs	N
+GM.5.0.Unknown.0007	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.STAT.0004	h1SMcG0007329	Orthologs	N
+GM.5.0.STAT.0004	h1SMcG0007325	Orthologs	N
+GM.5.0.GATA.0008	h1SMcG0000267	Orthologs	N
+GM.5.0.GATA.0008	h1SMcG0009369	Orthologs	N
+GM.5.0.C2H2_ZF.0058	h1SMcG0002845	Orthologs	N
+GM.5.0.AT_hook.0001	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.bZIP.0025	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Ets.0014	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Unknown.0008	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.C2H2_ZF.0059	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.C2H2_ZF.0060	h1SMcG0019798	Orthologs	N
+GM.5.0.C2H2_ZF.0060	h1SMcG0019799	Orthologs	N
+GM.5.0.Forkhead.0019	h1SMcG0020478	Orthologs	N
+GM.5.0.Forkhead.0019	h1SMcG0009963	Orthologs	N
+GM.5.0.Forkhead.0019	h1SMcG0000287	Orthologs	N
+GM.5.0.Forkhead.0019	h1SMcG0012074	Orthologs	N
+GM.5.0.Forkhead.0019	h1SMcG0008308	Orthologs	N
+GM.5.0.Forkhead.0019	h1SMcG0013875	Orthologs	N
+GM.5.0.Forkhead.0019	h1SMcG0015283	Orthologs	N
+GM.5.0.Forkhead.0019	h1SMcG0007411	Orthologs	N
+GM.5.0.GATA.0009	h1SMcG0009369	Orthologs	N
+GM.5.0.TBP.0001	h1SMcG0020592	Orthologs	N
+GM.5.0.TBP.0001	h1SMcG0010290	Orthologs	N
+GM.5.0.TBP.0001	h1SMcG0010366	Orthologs	N
+GM.5.0.TBP.0001	h1SMcG0010076	Orthologs	N
+GM.5.0.TBP.0001	h1SMcG0006042	Orthologs	N
+GM.5.0.Homeodomain.0067	h1SMcG0014159	Orthologs	N
+GM.5.0.Homeodomain.0068	h1SMcG0001722	Orthologs	N
+GM.5.0.bHLH.0046	h1SMcG0013330	Orthologs	N
+GM.5.0.Nuclear_receptor.0033	h1SMcG0016703	Orthologs	N
+GM.5.0.Homeodomain_POU.0009	h1SMcG0008833	Orthologs	N
+GM.5.0.Homeodomain_POU.0009	h1SMcG0002614	Orthologs	N
+GM.5.0.TEA.0001	h1SMcG0015294	Orthologs	N
+GM.5.0.Nuclear_receptor.0034	h1SMcG0019688	Orthologs	N
+GM.5.0.HSF.0002	h1SMcG0006379	Orthologs	N
+GM.5.0.bZIP.0026	h1SMcG0012645	Orthologs	N
+GM.5.0.Mixed.0024	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.C2H2_ZF.0061	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.bHLH.0047	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.bHLH.0048	h1SMcG0018604	Orthologs	N
+GM.5.0.bHLH.0048	h1SMnG0012616	Orthologs	N
+GM.5.0.bHLH.0048	h1SMcG0022832	Orthologs	N
+GM.5.0.bHLH.0048	h1SMcG0007018	Orthologs	N
+GM.5.0.bHLH.0048	h1SMcG0001531	Orthologs	N
+GM.5.0.Mixed.0025	h1SMcG0020760	Orthologs	N
+GM.5.0.IRF.0004	h1SMcG0007329	Orthologs	N
+GM.5.0.IRF.0004	h1SMcG0007325	Orthologs	N
+GM.5.0.Ets.0015	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Sox.0018	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Mixed.0026	h1SMcG0016003	Orthologs	N
+GM.5.0.Mixed.0026	h1SMnG0025958	Orthologs	N
+GM.5.0.Homeodomain_POU.0010	h1SMcG0008833	Orthologs	N
+GM.5.0.STAT.0005	h1SMcG0007329	Orthologs	N
+GM.5.0.STAT.0005	h1SMcG0007325	Orthologs	N
+GM.5.0.Nuclear_receptor.0035	h1SMcG0001020	Orthologs	N
+GM.5.0.Nuclear_receptor.0035	h1SMcG0015595	Orthologs	N
+GM.5.0.Nuclear_receptor.0035	h1SMcG0019688	Orthologs	N
+GM.5.0.C2H2_ZF.0062	h1SMcG0001975	Orthologs	N
+GM.5.0.C2H2_ZF.0063	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Nuclear_receptor.0036	h1SMcG0001020	Orthologs	N
+GM.5.0.Homeodomain.0069	h1SMcG0006671	Orthologs	N
+GM.5.0.STAT.0006	h1SMcG0007329	Orthologs	N
+GM.5.0.STAT.0006	h1SMcG0007325	Orthologs	N
+GM.5.0.Nuclear_receptor.0037	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.C2H2_ZF.0064	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Forkhead.0020	h1SMcG0009963	Orthologs	N
+GM.5.0.Forkhead.0020	h1SMcG0013875	Orthologs	N
+GM.5.0.Forkhead.0020	h1SMcG0000287	Orthologs	N
+GM.5.0.Forkhead.0020	h1SMcG0012074	Orthologs	N
+GM.5.0.Forkhead.0020	h1SMcG0008308	Orthologs	N
+GM.5.0.Forkhead.0020	h1SMcG0015283	Orthologs	N
+GM.5.0.Forkhead.0020	h1SMcG0007411	Orthologs	N
+GM.5.0.Homeodomain.0070	h1SMcG0008090	Orthologs	N
+GM.5.0.Homeodomain.0070	h1SMcG0003298	Orthologs	N
+GM.5.0.Homeodomain.0070	h1SMcG0007041	Orthologs	N
+GM.5.0.CBF_NF-Y.0002	h1SMcG0015193	Orthologs	N
+GM.5.0.CBF_NF-Y.0002	h1SMcG0011310	Orthologs	N
+GM.5.0.CBF_NF-Y.0002	h1SMcG0009686	Orthologs	N
+GM.5.0.CBF_NF-Y.0002	h1SMcG0010609	Orthologs	N
+GM.5.0.CBF_NF-Y.0002	h1SMcG0017602	Orthologs	N
+GM.5.0.CBF_NF-Y.0002	h1SMcG0004816	Orthologs	N
+GM.5.0.CBF_NF-Y.0002	h1SMcG0008907	Orthologs	N
+GM.5.0.CBF_NF-Y.0002	h1SMcG0010789	Orthologs	N
+GM.5.0.CBF_NF-Y.0002	h1SMcG0006281	Orthologs	N
+GM.5.0.CBF_NF-Y.0002	h1SMcG0003130	Orthologs	N
+GM.5.0.CBF_NF-Y.0002	h1SMcG0016730	Orthologs	N
+GM.5.0.CBF_NF-Y.0002	h1SMnG0017612	Orthologs	N
+GM.5.0.CBF_NF-Y.0002	h1SMcG0010707	Orthologs	N
+GM.5.0.Mixed.0027	h1SMcG0001531	Orthologs	N
+GM.5.0.Mixed.0027	h1SMcG0001975	Orthologs	N
+GM.5.0.Homeodomain.0071	h1SMcG0014159	Orthologs	N
+GM.5.0.Homeodomain.0072	h1SMcG0008090	Orthologs	N
+GM.5.0.Homeodomain.0072	h1SMcG0018062	Orthologs	N
+GM.5.0.Homeodomain.0072	h1SMcG0007041	Orthologs	N
+GM.5.0.bHLH.0049	h1SMcG0021295	Orthologs	N
+GM.5.0.Sox.0019	h1SMcG0008523	Orthologs	N
+GM.5.0.Unknown.0009	h1SMcG0001531	Orthologs	N
+GM.5.0.Unknown.0009	h1SMcG0006042	Orthologs	N
+GM.5.0.C2H2_ZF.0065	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Forkhead.0021	h1SMcG0009963	Orthologs	N
+GM.5.0.Forkhead.0021	h1SMcG0006261	Orthologs	N
+GM.5.0.Forkhead.0021	h1SMcG0013875	Orthologs	N
+GM.5.0.Forkhead.0021	h1SMcG0000287	Orthologs	N
+GM.5.0.Forkhead.0021	h1SMcG0012074	Orthologs	N
+GM.5.0.Forkhead.0021	h1SMcG0008308	Orthologs	N
+GM.5.0.Forkhead.0021	h1SMcG0015283	Orthologs	N
+GM.5.0.Forkhead.0021	h1SMcG0007411	Orthologs	N
+GM.5.0.C2H2_ZF.0066	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.bZIP.0027	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.bZIP.0028	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Nuclear_receptor.0038	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Homeodomain.0073	h1SMcG0021271	Orthologs	N
+GM.5.0.Homeodomain.0073	h1SMcG0003685	Orthologs	N
+GM.5.0.C2H2_ZF.0067	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Unknown.0010	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Forkhead.0022	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.C2H2_ZF.0068	h1SMcG0015673	Orthologs	N
+GM.5.0.MADS_box.0004	h1SMcG0000971	Orthologs	N
+GM.5.0.Nuclear_receptor.0039	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Grainyhead.0003	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Forkhead.0023	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.C2H2_ZF.0069	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Forkhead.0024	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.MADS_box.0005	h1SMcG0015595	Orthologs	N
+GM.5.0.MADS_box.0005	h1SMcG0008441	Orthologs	N
+GM.5.0.C2H2_ZF.0070	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.p53.0002	>h1SMcG0016868	Orthologs	N
+GM.5.0.Nuclear_receptor.0040	h1SMcG0001020	Orthologs	N
+GM.5.0.Nuclear_receptor.0040	h1SMcG0021496	Orthologs	N
+GM.5.0.Nuclear_receptor.0040	h1SMcG0015595	Orthologs	N
+GM.5.0.T-box.0009	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.p53.0003	>h1SMcG0016868	Orthologs	N
+GM.5.0.IRF.0005	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Mixed.0028	h1SMcG0010990	Orthologs	N
+GM.5.0.C2H2_ZF.0071	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.C2H2_ZF.0072	h1SMcG0018872	Orthologs	N
+GM.5.0.C2H2_ZF.0072	>h1SMcG0005177	Orthologs	N
+GM.5.0.TEA.0002	h1SMcG0015294	Orthologs	N
+GM.5.0.Unknown.0011	h1SMcG0014251	Orthologs	N
+GM.5.0.Ets.0016	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.C2H2_ZF.0073	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.GATA.0010	h1SMcG0009369	Orthologs	N
+GM.5.0.HSF.0003	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Mixed.0029	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Rel.0006	h1SMcG0012454	Orthologs	N
+GM.5.0.Rel.0006	h1SMcG0003436	Orthologs	N
+GM.5.0.Rel.0006	h1SMcG0009582	Orthologs	N
+GM.5.0.THAP_finger.0002	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Nuclear_receptor.0041	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.C2H2_ZF.0074	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.bZIP.0029	h1SMcG0006635	Orthologs	N
+GM.5.0.MADS_box.0006	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Unknown.0012	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Nuclear_receptor.0042	h1SMcG0016703	Orthologs	N
+GM.5.0.Forkhead.0025	h1SMcG0009963	Orthologs	N
+GM.5.0.Forkhead.0025	h1SMcG0013875	Orthologs	N
+GM.5.0.Forkhead.0025	h1SMcG0000287	Orthologs	N
+GM.5.0.Forkhead.0025	h1SMcG0012074	Orthologs	N
+GM.5.0.Forkhead.0025	h1SMcG0008308	Orthologs	N
+GM.5.0.Forkhead.0025	h1SMcG0015283	Orthologs	N
+GM.5.0.Forkhead.0025	h1SMcG0007411	Orthologs	N
+GM.5.0.C2H2_ZF.0075	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.RFX.0006	h1SMcG0006375	Orthologs	N
+GM.5.0.RFX.0006	h1SMcG0020741	Orthologs	N
+GM.5.0.RFX.0006	h1SMcG0015193	Orthologs	N
+GM.5.0.CUT_Homeodomain.0002	>h1SMcG0000889	Orthologs	N
+GM.5.0.CUT_Homeodomain.0002	h1SMcG0023033	Orthologs	N
+GM.5.0.CUT_Homeodomain.0002	h1SMcG0011844	Orthologs	N
+GM.5.0.CENPB.0001	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Forkhead.0026	h1SMcG0009963	Orthologs	N
+GM.5.0.Forkhead.0026	h1SMcG0020478	Orthologs	N
+GM.5.0.Forkhead.0026	h1SMcG0013875	Orthologs	N
+GM.5.0.Forkhead.0026	h1SMcG0000287	Orthologs	N
+GM.5.0.Forkhead.0026	h1SMcG0012074	Orthologs	N
+GM.5.0.Forkhead.0026	h1SMcG0008308	Orthologs	N
+GM.5.0.Forkhead.0026	h1SMcG0015283	Orthologs	N
+GM.5.0.Forkhead.0026	h1SMcG0007411	Orthologs	N
+GM.5.0.GCM.0002	h1SMcG0013982	Orthologs	N
+GM.5.0.bZIP.0030	h1SMcG0010609	Orthologs	N
+GM.5.0.bZIP.0030	h1SMcG0017602	Orthologs	N
+GM.5.0.bZIP.0030	h1SMcG0004816	Orthologs	N
+GM.5.0.T-box.0010	h1SMcG0010860	Orthologs	N
+GM.5.0.Mixed.0030	h1SMcG0019798	Orthologs	N
+GM.5.0.Mixed.0030	h1SMcG0019799	Orthologs	N
+GM.5.0.Myb_SANT.0007	h1SMcG0021112	Orthologs	N
+GM.5.0.Unknown.0013	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.C2H2_ZF.0076	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.C2H2_ZF.0077	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.C2H2_ZF.0078	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Homeodomain.0074	h1SMcG0000941	Orthologs	N
+GM.5.0.Unknown.0014	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.MADS_box.0007	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Ets.0017	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.C2H2_ZF.0079	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.C2H2_ZF.0080	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.C2H2_ZF.0081	h1SMcG0001434	Orthologs	N
+GM.5.0.Paired_box.0003	h1SMcG0008441	Orthologs	N
+GM.5.0.Forkhead.0027	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Nuclear_receptor.0043	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.bZIP.0031	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Homeodomain.0075	h1SMcG0008090	Orthologs	N
+GM.5.0.Homeodomain.0075	h1SMcG0007041	Orthologs	N
+GM.5.0.Homeodomain.0075	h1SMcG0020634	Orthologs	N
+GM.5.0.Sox.0020	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Forkhead.0028	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.C2H2_ZF.0082	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Forkhead.0029	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.E2F.0007	h1SMnG0017612	Orthologs	N
+GM.5.0.E2F.0007	h1SMcG0010707	Orthologs	N
+GM.5.0.Homeodomain.0076	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.IRF.0006	h1SMcG0007329	Orthologs	N
+GM.5.0.IRF.0006	h1SMcG0007325	Orthologs	N
+GM.5.0.C2H2_ZF.0083	h1SMcG0018383	Orthologs	N
+GM.5.0.Mixed.0031	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Homeodomain.0077	h1SMcG0003298	Orthologs	N
+GM.5.0.EIN3.0001	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Homeodomain.0078	h1SMcG0012776	Orthologs	N
+GM.5.0.bZIP.0032	h1SMcG0008373	Orthologs	N
+GM.5.0.C2H2_ZF.0084	>h1SMcG0005177	Orthologs	N
+GM.5.0.Sox.0021	h1SMcG0016676	Orthologs	N
+GM.5.0.Forkhead.0030	h1SMcG0009963	Orthologs	N
+GM.5.0.Forkhead.0030	h1SMcG0019688	Orthologs	N
+GM.5.0.Forkhead.0030	h1SMcG0013875	Orthologs	N
+GM.5.0.Forkhead.0030	h1SMcG0000287	Orthologs	N
+GM.5.0.Forkhead.0030	h1SMcG0012074	Orthologs	N
+GM.5.0.Forkhead.0030	h1SMcG0008308	Orthologs	N
+GM.5.0.Forkhead.0030	h1SMcG0015283	Orthologs	N
+GM.5.0.Forkhead.0030	h1SMcG0007411	Orthologs	N
+GM.5.0.C2H2_ZF.0085	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.CSD.0001	h1SMcG0008270	Orthologs	N
+GM.5.0.C2H2_ZF_Homeodomain.0003	h1SMcG0006102	Orthologs	N
+GM.5.0.C2H2_ZF.0086	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.C2H2_ZF.0087	h1SMcG0015343	Orthologs	N
+GM.5.0.C2H2_ZF.0087	h1SMcG0022224	Orthologs	N
+GM.5.0.Nuclear_receptor.0044	h1SMcG0011606	Orthologs	N
+GM.5.0.C2H2_ZF.0088	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Nuclear_receptor.0045	h1SMcG0001020	Orthologs	N
+GM.5.0.Nuclear_receptor.0045	h1SMcG0021496	Orthologs	N
+GM.5.0.Unknown.0015	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.C2H2_ZF.0089	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Mixed.0032	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Homeodomain.0079	h1SMcG0003130	Orthologs	N
+GM.5.0.C2H2_ZF.0090	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Mixed.0033	h1SMcG0010190	Orthologs	N
+GM.5.0.Homeodomain.0080	h1SMcG0002883	Orthologs	N
+GM.5.0.Homeodomain.0080	h1SMcG0022849	Orthologs	N
+GM.5.0.Homeodomain.0080	h1SMcG0016366	Orthologs	N
+GM.5.0.STAT.0007	h1SMcG0007329	Orthologs	N
+GM.5.0.STAT.0007	h1SMcG0007325	Orthologs	N
+GM.5.0.C2H2_ZF.0091	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Mixed.0034	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Nuclear_receptor.0046	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.C2H2_ZF.0092	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Mixed.0035	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Mixed.0036	h1SMcG0008833	Orthologs	N
+GM.5.0.Mixed.0036	h1SMcG0002614	Orthologs	N
+GM.5.0.Mixed.0036	h1SMcG0013730	Orthologs	N
+GM.5.0.C2H2_ZF.0093	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Homeodomain.0081	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.CUT_Homeodomain.0003	h1SMcG0010220	Orthologs	N
+GM.5.0.CUT_Homeodomain.0003	h1SMcG0019233	Orthologs	N
+GM.5.0.CUT_Homeodomain.0003	>h1SMcG0000889	Orthologs	N
+GM.5.0.CUT_Homeodomain.0003	h1SMcG0023033	Orthologs	N
+GM.5.0.CUT_Homeodomain.0003	h1SMcG0011844	Orthologs	N
+GM.5.0.Ets.0018	h1SMcG0000267	Orthologs	N
+GM.5.0.Ets.0018	h1SMcG0011654	Orthologs	N
+GM.5.0.Ets.0018	h1SMcG0009369	Orthologs	N
+GM.5.0.C2H2_ZF.0094	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Unknown.0016	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Homeodomain.0082	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.bZIP.0033	h1SMcG0007969	Orthologs	N
+GM.5.0.C2H2_ZF.0095	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Unknown.0017	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Myb_SANT.0008	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Homeodomain.0083	h1SMcG0003130	Orthologs	N
+GM.5.0.Homeodomain.0084	h1SMcG0021332	Orthologs	N
+GM.5.0.Mixed.0037	h1SMcG0006548	Orthologs	N
+GM.5.0.Mixed.0037	h1SMcG0006193	Orthologs	N
+GM.5.0.C2H2_ZF.0096	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.TEA.0003	h1SMcG0015294	Orthologs	N
+GM.5.0.bHLH.0050	h1SMcG0018604	Orthologs	N
+GM.5.0.Grainyhead.0004	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.bHLH.0051	h1SMcG0011688	Orthologs	N
+GM.5.0.C2H2_ZF.0097	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.bHLH.0052	h1SMcG0021295	Orthologs	N
+GM.5.0.Homeodomain.0085	h1SMcG0014295	Orthologs	N
+GM.5.0.C2H2_ZF.0098	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Mixed.0038	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.MADS_box.0008	h1SMcG0000971	Orthologs	N
+GM.5.0.AP-2.0005	h1SMcG0006465	Orthologs	N
+GM.5.0.Sox.0022	h1SMcG0016676	Orthologs	N
+GM.5.0.STAT.0008	h1SMcG0007329	Orthologs	N
+GM.5.0.STAT.0008	h1SMcG0007325	Orthologs	N
+GM.5.0.Unknown.0018	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.bZIP.0034	h1SMcG0006635	Orthologs	N
+GM.5.0.Nuclear_receptor.0047	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Mixed.0039	h1SMcG0021295	Orthologs	N
+GM.5.0.Mixed.0040	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Homeodomain.0086	h1SMcG0020634	Orthologs	N
+GM.5.0.C2H2_ZF.0099	>h1SMcG0005177	Orthologs	N
+GM.5.0.Homeodomain.0087	h1SMcG0016366	Orthologs	N
+GM.5.0.Homeodomain.0087	h1SMcG0000827	Orthologs	N
+GM.5.0.Homeodomain.0087	h1SMcG0007253	Orthologs	N
+GM.5.0.Homeodomain.0087	h1SMcG0004103	Orthologs	N
+GM.5.0.Homeodomain.0087	h1SMcG0015394	Orthologs	N
+GM.5.0.Homeodomain.0087	h1SMcG0002883	Orthologs	N
+GM.5.0.Homeodomain.0087	h1SMcG0022849	Orthologs	N
+GM.5.0.Homeodomain.0087	h1SMcG0022016	Orthologs	N
+GM.5.0.Homeodomain.0088	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.bHLH.0053	h1SMcG0011310	Orthologs	N
+GM.5.0.bHLH.0053	h1SMcG0009686	Orthologs	N
+GM.5.0.bHLH.0053	h1SMcG0021295	Orthologs	N
+GM.5.0.Ets.0019	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Nuclear_receptor.0048	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.bHLH.0054	h1SMcG0001531	Orthologs	N
+GM.5.0.E2F.0008	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Homeodomain.0089	h1SMcG0003130	Orthologs	N
+GM.5.0.Runt.0004	h1SMcG0016472	Orthologs	N
+GM.5.0.C2H2_ZF.0100	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.C2H2_ZF.0101	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Sox.0023	h1SMcG0013594	Orthologs	N
+GM.5.0.bHLH.0055	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Runt.0005	h1SMcG0016472	Orthologs	N
+GM.5.0.Nuclear_receptor.0049	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Mixed.0041	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.STAT.0009	h1SMcG0007329	Orthologs	N
+GM.5.0.STAT.0009	h1SMcG0007325	Orthologs	N
+GM.5.0.Homeodomain.0090	h1SMcG0008090	Orthologs	N
+GM.5.0.Homeodomain.0091	h1SMcG0004695	Orthologs	N
+GM.5.0.Homeodomain.0091	h1SMcG0014159	Orthologs	N
+GM.5.0.Homeodomain.0091	h1SMcG0021332	Orthologs	N
+GM.5.0.Nuclear_receptor.0050	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Unknown.0019	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.bZIP.0035	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.C2H2_ZF.0102	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Mixed.0042	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.C2H2_ZF.0103	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Nuclear_receptor.0051	h1SMcG0001020	Orthologs	N
+GM.5.0.Homeodomain.0092	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.C2H2_ZF.0104	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Sox.0024	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Mixed.0043	h1SMcG0019798	Orthologs	N
+GM.5.0.Mixed.0043	h1SMcG0019799	Orthologs	N
+GM.5.0.MADS_box.0009	h1SMcG0000971	Orthologs	N
+GM.5.0.C2H2_ZF.0105	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Forkhead.0031	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Rel.0007	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Homeodomain.0093	h1SMcG0006684	Orthologs	N
+GM.5.0.bHLH.0056	h1SMnG0012616	Orthologs	N
+GM.5.0.C2H2_ZF.0106	h1SMcG0001477	Orthologs	N
+GM.5.0.C2H2_ZF.0106	h1SMcG0005497	Orthologs	N
+GM.5.0.Unknown.0020	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.CBF_NF-Y.0003	h1SMcG0016730	Orthologs	N
+GM.5.0.CBF_NF-Y.0003	h1SMcG0006281	Orthologs	N
+GM.5.0.CBF_NF-Y.0003	h1SMcG0008907	Orthologs	N
+GM.5.0.CBF_NF-Y.0003	h1SMcG0010789	Orthologs	N
+GM.5.0.C2H2_ZF.0107	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Homeodomain.0094	h1SMcG0000548	Orthologs	N
+GM.5.0.Homeodomain.0095	h1SMcG0012776	Orthologs	N
+GM.5.0.bHLH.0057	h1SMcG0020191	Orthologs	N
+GM.5.0.bHLH.0057	h1SMcG0011310	Orthologs	N
+GM.5.0.bHLH.0057	h1SMcG0009686	Orthologs	N
+GM.5.0.Homeodomain.0096	h1SMcG0003130	Orthologs	N
+GM.5.0.Ets.0020	h1SMcG0014005	Orthologs	N
+GM.5.0.Ets.0020	h1SMnG0022954	Orthologs	N
+GM.5.0.Ets.0020	h1SMcG0021529	Orthologs	N
+GM.5.0.Ets.0020	h1SMcG0000267	Orthologs	N
+GM.5.0.Homeodomain.0097	h1SMcG0002883	Orthologs	N
+GM.5.0.Homeodomain.0097	h1SMcG0022849	Orthologs	N
+GM.5.0.SMAD.0007	h1SMcG0006347	Orthologs	N
+GM.5.0.SMAD.0007	h1SMcG0023128	Orthologs	N
+GM.5.0.Homeodomain.0098	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Runt.0006	h1SMcG0016472	Orthologs	N
+GM.5.0.Mixed.0044	h1SMcG0009273	Orthologs	N
+GM.5.0.Mixed.0044	h1SMcG0006379	Orthologs	N
+GM.5.0.C2H2_ZF.0108	h1SMcG0015343	Orthologs	N
+GM.5.0.C2H2_ZF.0108	h1SMcG0022224	Orthologs	N
+GM.5.0.Sox.0025	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Nuclear_receptor.0052	h1SMcG0004476	Orthologs	N
+GM.5.0.C2H2_ZF.0109	h1SMcG0011808	Orthologs	N
+GM.5.0.C2H2_ZF.0109	h1SMcG0014387	Orthologs	N
+GM.5.0.C2H2_ZF.0109	h1SMcG0008441	Orthologs	N
+GM.5.0.bZIP.0036	h1SMcG0008373	Orthologs	N
+GM.5.0.C2H2_ZF.0110	h1SMcG0016472	Orthologs	N
+GM.5.0.C2H2_ZF.0110	h1SMcG0018383	Orthologs	N
+GM.5.0.Homeodomain.0099	h1SMcG0001722	Orthologs	N
+GM.5.0.C2H2_ZF.0111	h1SMcG0015343	Orthologs	N
+GM.5.0.C2H2_ZF.0111	h1SMcG0022224	Orthologs	N
+GM.5.0.T-box.0011	h1SMcG0022768	Orthologs	N
+GM.5.0.T-box.0011	h1SMcG0007448	Orthologs	N
+GM.5.0.Homeodomain.0100	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.AP-2.0006	h1SMcG0006465	Orthologs	N
+GM.5.0.Rel.0008	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Homeodomain_POU.0011	h1SMcG0008833	Orthologs	N
+GM.5.0.Unknown.0021	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Homeodomain.0101	h1SMcG0021271	Orthologs	N
+GM.5.0.Homeodomain.0101	h1SMcG0002500	Orthologs	N
+GM.5.0.C2H2_ZF.0112	h1SMcG0013509	Orthologs	N
+GM.5.0.Mixed.0045	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.bZIP.0037	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.T-box.0012	h1SMcG0010860	Orthologs	N
+GM.5.0.C2H2_ZF.0113	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Rel.0009	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Homeodomain.0102	h1SMcG0022072	Orthologs	N
+GM.5.0.bZIP.0038	h1SMcG0007969	Orthologs	N
+GM.5.0.T-box.0013	h1SMcG0010860	Orthologs	N
+GM.5.0.Mixed.0046	h1SMcG0001975	Orthologs	N
+GM.5.0.E2F.0009	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.bHLH.0058	h1SMcG0021295	Orthologs	N
+GM.5.0.Rel.0010	h1SMcG0006315	Orthologs	N
+GM.5.0.STAT.0010	h1SMcG0007329	Orthologs	N
+GM.5.0.STAT.0010	h1SMcG0007325	Orthologs	N
+GM.5.0.Unknown.0022	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Homeodomain.0103	h1SMcG0022072	Orthologs	N
+GM.5.0.Nuclear_receptor.0053	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Grainyhead.0005	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.C2H2_ZF.0114	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.bZIP.0039	h1SMcG0007969	Orthologs	N
+GM.5.0.bZIP.0039	h1SMcG0006379	Orthologs	N
+GM.5.0.CUT_Homeodomain.0004	h1SMcG0010220	Orthologs	N
+GM.5.0.CUT_Homeodomain.0004	h1SMcG0019233	Orthologs	N
+GM.5.0.Nuclear_receptor.0054	h1SMcG0011606	Orthologs	N
+GM.5.0.Homeodomain.0104	h1SMcG0019014	Orthologs	N
+GM.5.0.Sox.0026	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Sox.0027	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Unknown.0023	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Homeodomain.0105	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.T-box.0014	h1SMcG0010860	Orthologs	N
+GM.5.0.Homeodomain.0106	h1SMcG0003685	Orthologs	N
+GM.5.0.Ets.0021	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.GCM.0003	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Homeodomain.0107	h1SMcG0016366	Orthologs	N
+GM.5.0.bZIP.0040	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.bHLH.0059	h1SMcG0006375	Orthologs	N
+GM.5.0.Paired_box.0004	h1SMcG0008441	Orthologs	N
+GM.5.0.Paired_box.0004	h1SMcG0018062	Orthologs	N
+GM.5.0.C2H2_ZF.0115	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.bZIP.0041	h1SMcG0021266	Orthologs	N
+GM.5.0.bZIP.0041	h1SMcG0000285	Orthologs	N
+GM.5.0.bZIP.0041	h1SMcG0001750	Orthologs	N
+GM.5.0.Paired_box.0005	h1SMcG0008441	Orthologs	N
+GM.5.0.C2H2_ZF.0116	h1SMcG0010990	Orthologs	N
+GM.5.0.Homeodomain.0108	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.SMAD.0008	h1SMcG0006347	Orthologs	N
+GM.5.0.SMAD.0008	h1SMcG0023128	Orthologs	N
+GM.5.0.Paired_box.0006	h1SMcG0008441	Orthologs	N
+GM.5.0.Homeodomain.0109	h1SMcG0003727	Orthologs	N
+GM.5.0.bZIP.0042	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Unknown.0024	h1SMcG0006831	Orthologs	N
+GM.5.0.Rel.0011	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.HSF.0004	h1SMcG0006379	Orthologs	N
+GM.5.0.C2H2_ZF.0117	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.C2H2_ZF.0118	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Homeodomain.0110	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Unknown.0025	h1SMcG0002696	Orthologs	N
+GM.5.0.C2H2_ZF.0119	h1SMcG0001728	Orthologs	N
+GM.5.0.C2H2_ZF.0119	h1SMcG0017255	Orthologs	N
+GM.5.0.Forkhead.0032	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.E2F.0010	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.C2H2_ZF.0120	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.IRF.0007	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Homeodomain_Paired_box.0004	h1SMcG0008441	Orthologs	N
+GM.5.0.C2H2_ZF.0121	h1SMcG0001728	Orthologs	N
+GM.5.0.C2H2_ZF.0121	h1SMcG0017255	Orthologs	N
+GM.5.0.Homeodomain.0111	h1SMcG0000941	Orthologs	N
+GM.5.0.DM.0005	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.C2H2_ZF.0122	h1SMcG0016472	Orthologs	N
+GM.5.0.C2H2_ZF.0122	h1SMcG0018383	Orthologs	N
+GM.5.0.HSF.0005	h1SMcG0006379	Orthologs	N
+GM.5.0.bHLH.0060	h1SMcG0001531	Orthologs	N
+GM.5.0.bHLH.0060	h1SMcG0013330	Orthologs	N
+GM.5.0.C2H2_ZF.0123	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.CUT_Homeodomain.0005	h1SMcG0010220	Orthologs	N
+GM.5.0.CUT_Homeodomain.0005	h1SMcG0019233	Orthologs	N
+GM.5.0.CUT_Homeodomain.0005	>h1SMcG0000889	Orthologs	N
+GM.5.0.CUT_Homeodomain.0005	h1SMcG0023033	Orthologs	N
+GM.5.0.CUT_Homeodomain.0005	h1SMcG0011844	Orthologs	N
+GM.5.0.E2F.0011	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.bHLH.0061	h1SMcG0004451	Orthologs	N
+GM.5.0.Nuclear_receptor.0055	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Ets.0022	h1SMcG0014005	Orthologs	N
+GM.5.0.Ets.0022	h1SMnG0022954	Orthologs	N
+GM.5.0.Ets.0022	h1SMcG0021529	Orthologs	N
+GM.5.0.C2H2_ZF.0124	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.bHLH.0062	h1SMnG0012616	Orthologs	N
+GM.5.0.C2H2_ZF.0125	h1SMcG0001434	Orthologs	N
+GM.5.0.MADS_box.0010	h1SMcG0008373	Orthologs	N
+GM.5.0.bHLH.0063	h1SMcG0004651	Orthologs	N
+GM.5.0.bHLH.0063	h1SMcG0001531	Orthologs	N
+GM.5.0.T-box.0015	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Homeodomain.0112	h1SMcG0004713	Orthologs	N
+GM.5.0.C2H2_ZF.0126	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.bZIP.0043	h1SMcG0007969	Orthologs	N
+GM.5.0.C2H2_ZF.0127	h1SMcG0017838	Orthologs	N
+GM.5.0.C2H2_ZF.0127	h1SMcG0017837	Orthologs	N
+GM.5.0.C2H2_ZF.0127	h1SMcG0004249	Orthologs	N
+GM.5.0.C2H2_ZF.0127	h1SMcG0019502	Orthologs	N
+GM.5.0.C2H2_ZF.0127	h1SMcG0004250	Orthologs	N
+GM.5.0.C2H2_ZF.0127	h1SMcG0002845	Orthologs	N
+GM.5.0.E2F.0012	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Grainyhead.0006	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Nuclear_receptor.0056	h1SMcG0019688	Orthologs	N
+GM.5.0.bZIP.0044	h1SMcG0007969	Orthologs	N
+GM.5.0.bZIP.0045	h1SMcG0006635	Orthologs	N
+GM.5.0.Unknown.0026	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Nuclear_receptor.0057	h1SMcG0021496	Orthologs	N
+GM.5.0.C2H2_ZF.0128	h1SMcG0016472	Orthologs	N
+GM.5.0.C2H2_ZF.0128	h1SMcG0018383	Orthologs	N
+GM.5.0.bZIP.0046	h1SMcG0022769	Orthologs	N
+GM.5.0.bZIP.0046	h1SMcG0007447	Orthologs	N
+GM.5.0.bZIP.0046	h1SMnG0012538	Orthologs	N
+GM.5.0.bZIP.0046	h1SMcG0022770	Orthologs	N
+GM.5.0.SMAD.0009	h1SMcG0006347	Orthologs	N
+GM.5.0.SMAD.0009	h1SMcG0023128	Orthologs	N
+GM.5.0.C2H2_ZF.0129	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Unknown.0027	h1SMcG0010451	Orthologs	N
+GM.5.0.Unknown.0027	h1SMcG0010448	Orthologs	N
+GM.5.0.Mixed.0047	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.bHLH.0064	h1SMcG0006375	Orthologs	N
+GM.5.0.E2F.0013	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.bZIP.0047	h1SMcG0012645	Orthologs	N
+GM.5.0.Ets.0023	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.C2H2_ZF.0130	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.bZIP.0048	h1SMcG0006635	Orthologs	N
+GM.5.0.Sox.0028	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Nuclear_receptor.0058	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Paired_box.0007	h1SMcG0008441	Orthologs	N
+GM.5.0.SAND.0003	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Nuclear_receptor.0059	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.STAT.0011	h1SMcG0007329	Orthologs	N
+GM.5.0.STAT.0011	h1SMcG0007325	Orthologs	N
+GM.5.0.Homeodomain.0113	h1SMcG0003130	Orthologs	N
+GM.5.0.Unknown.0028	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.bZIP.0049	h1SMcG0021266	Orthologs	N
+GM.5.0.bZIP.0049	h1SMcG0000285	Orthologs	N
+GM.5.0.bZIP.0049	h1SMcG0001750	Orthologs	N
+GM.5.0.Mixed.0048	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.bZIP.0050	h1SMcG0008373	Orthologs	N
+GM.5.0.bZIP.0050	h1SMcG0010609	Orthologs	N
+GM.5.0.bZIP.0050	h1SMcG0017602	Orthologs	N
+GM.5.0.bZIP.0050	h1SMcG0004816	Orthologs	N
+GM.5.0.Homeodomain.0114	h1SMcG0001722	Orthologs	N
+GM.5.0.Ets.0024	h1SMcG0000267	Orthologs	N
+GM.5.0.Ets.0024	h1SMcG0014005	Orthologs	N
+GM.5.0.Ets.0024	h1SMnG0022954	Orthologs	N
+GM.5.0.Ets.0024	h1SMcG0021529	Orthologs	N
+GM.5.0.Nuclear_receptor.0060	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Homeodomain.0115	h1SMcG0021332	Orthologs	N
+GM.5.0.Ets.0025	h1SMcG0000267	Orthologs	N
+GM.5.0.Ets.0025	h1SMcG0014005	Orthologs	N
+GM.5.0.Ets.0025	h1SMnG0022954	Orthologs	N
+GM.5.0.Ets.0025	h1SMcG0021529	Orthologs	N
+GM.5.0.C2H2_ZF.0131	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Homeodomain.0116	h1SMcG0012941	Orthologs	N
+GM.5.0.Homeodomain.0116	h1SMcG0020740	Orthologs	N
+GM.5.0.Sox.0029	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Rel.0012	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Nuclear_receptor.0061	h1SMcG0015595	Orthologs	N
+GM.5.0.C2H2_ZF.0132	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.GATA.0011	h1SMcG0009369	Orthologs	N
+GM.5.0.Unknown.0029	h1SMcG0011310	Orthologs	N
+GM.5.0.Unknown.0029	h1SMcG0009686	Orthologs	N
+GM.5.0.bHLH.0065	h1SMcG0018604	Orthologs	N
+GM.5.0.Homeodomain.0117	h1SMcG0011535	Orthologs	N
+GM.5.0.Homeodomain.0118	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Nuclear_receptor.0062	h1SMcG0001020	Orthologs	N
+GM.5.0.Unknown.0030	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.SAND.0004	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Homeodomain.0119	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Rel.0013	h1SMcG0006315	Orthologs	N
+GM.5.0.Homeodomain.0120	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Ets.0026	h1SMcG0010990	Orthologs	N
+GM.5.0.Ets.0026	h1SMcG0014619	Orthologs	N
+GM.5.0.Ets.0026	h1SMcG0011654	Orthologs	N
+GM.5.0.Ets.0026	h1SMcG0000267	Orthologs	N
+GM.5.0.Ets.0026	h1SMcG0014005	Orthologs	N
+GM.5.0.Ets.0026	h1SMnG0022954	Orthologs	N
+GM.5.0.Ets.0026	h1SMcG0021529	Orthologs	N
+GM.5.0.Homeodomain.0121	h1SMcG0008090	Orthologs	N
+GM.5.0.Homeodomain.0121	h1SMcG0007474	Orthologs	N
+GM.5.0.Homeodomain.0121	h1SMcG0016366	Orthologs	N
+GM.5.0.Homeodomain.0121	h1SMcG0003793	Orthologs	N
+GM.5.0.Homeodomain.0121	h1SMcG0011535	Orthologs	N
+GM.5.0.Homeodomain.0121	h1SMcG0007041	Orthologs	N
+GM.5.0.Homeodomain.0121	h1SMcG0002883	Orthologs	N
+GM.5.0.Homeodomain.0121	h1SMcG0022849	Orthologs	N
+GM.5.0.Homeodomain.0121	h1SMcG0003685	Orthologs	N
+GM.5.0.IRF.0008	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.C2H2_ZF.0133	h1SMcG0006102	Orthologs	N
+GM.5.0.Nuclear_receptor.0063	h1SMcG0021496	Orthologs	N
+GM.5.0.Ets.0027	h1SMcG0014619	Orthologs	N
+GM.5.0.Ets.0027	h1SMcG0000267	Orthologs	N
+GM.5.0.Rel.0014	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Homeodomain_POU.0012	h1SMcG0008833	Orthologs	N
+GM.5.0.MADS_box.0011	h1SMcG0008373	Orthologs	N
+GM.5.0.Nuclear_receptor.0064	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Mixed.0049	h1SMcG0021295	Orthologs	N
+GM.5.0.IRF.0009	h1SMcG0001975	Orthologs	N
+GM.5.0.Rel.0015	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.SMAD.0010	h1SMcG0006347	Orthologs	N
+GM.5.0.SMAD.0010	h1SMcG0023128	Orthologs	N
+GM.5.0.Homeodomain.0122	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.bHLH.0066	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Nuclear_receptor.0065	h1SMcG0011606	Orthologs	N
+GM.5.0.C2H2_ZF.0134	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Nuclear_receptor.0066	h1SMcG0019688	Orthologs	N
+GM.5.0.Mixed.0050	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Nuclear_receptor.0067	h1SMcG0006379	Orthologs	N
+GM.5.0.Mixed.0051	h1SMcG0014005	Orthologs	N
+GM.5.0.Mixed.0051	h1SMnG0022954	Orthologs	N
+GM.5.0.Mixed.0051	h1SMcG0021529	Orthologs	N
+GM.5.0.Nuclear_receptor.0068	h1SMcG0019688	Orthologs	N
+GM.5.0.C2H2_ZF.0135	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.bZIP.0051	h1SMcG0021266	Orthologs	N
+GM.5.0.bZIP.0051	h1SMcG0017653	Orthologs	N
+GM.5.0.bZIP.0051	h1SMcG0000285	Orthologs	N
+GM.5.0.bZIP.0051	h1SMcG0001750	Orthologs	N
+GM.5.0.Nuclear_receptor.0069	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.CxxC.0001	h1SMcG0012632	Orthologs	N
+GM.5.0.Rel.0016	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.bHLH.0067	h1SMcG0004451	Orthologs	N
+GM.5.0.bHLH.0067	h1SMcG0022832	Orthologs	N
+GM.5.0.bHLH.0067	h1SMcG0007018	Orthologs	N
+GM.5.0.Nuclear_receptor.0070	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.C2H2_ZF.0136	>h1SMcG0005177	Orthologs	N
+GM.5.0.C2H2_ZF.0137	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Nuclear_receptor.0071	h1SMcG0005673	Orthologs	N
+GM.5.0.Paired_box.0008	h1SMcG0008441	Orthologs	N
+GM.5.0.C2H2_ZF.0138	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.p53.0004	>h1SMcG0016868	Orthologs	N
+GM.5.0.bZIP.0052	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Unknown.0031	h1SMnG0017612	Orthologs	N
+GM.5.0.Unknown.0031	h1SMcG0010707	Orthologs	N
+GM.5.0.Forkhead.0033	h1SMcG0009963	Orthologs	N
+GM.5.0.Forkhead.0033	h1SMcG0013875	Orthologs	N
+GM.5.0.Forkhead.0033	h1SMcG0000287	Orthologs	N
+GM.5.0.Forkhead.0033	h1SMcG0012074	Orthologs	N
+GM.5.0.Forkhead.0033	h1SMcG0008308	Orthologs	N
+GM.5.0.Forkhead.0033	h1SMcG0015283	Orthologs	N
+GM.5.0.Forkhead.0033	h1SMcG0007411	Orthologs	N
+GM.5.0.bHLH.0068	h1SMcG0011310	Orthologs	N
+GM.5.0.bHLH.0068	h1SMcG0009686	Orthologs	N
+GM.5.0.bHLH.0068	h1SMcG0021295	Orthologs	N
+GM.5.0.bHLH.0069	h1SMcG0001531	Orthologs	N
+GM.5.0.Unknown.0032	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Unknown.0033	h1SMcG0010451	Orthologs	N
+GM.5.0.Unknown.0033	h1SMcG0010448	Orthologs	N
+GM.5.0.C2H2_ZF.0139	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Homeodomain.0123	h1SMcG0008090	Orthologs	N
+GM.5.0.Homeodomain.0123	h1SMcG0016366	Orthologs	N
+GM.5.0.Homeodomain.0123	h1SMcG0021271	Orthologs	N
+GM.5.0.Homeodomain.0123	h1SMcG0007041	Orthologs	N
+GM.5.0.Homeodomain.0123	h1SMcG0016884	Orthologs	N
+GM.5.0.Homeodomain.0123	h1SMcG0015572	Orthologs	N
+GM.5.0.Homeodomain.0123	h1SMcG0009835	Orthologs	N
+GM.5.0.Homeodomain.0123	h1SMcG0003685	Orthologs	N
+GM.5.0.Unknown.0034	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Homeodomain.0124	h1SMcG0015960	Orthologs	N
+GM.5.0.Homeodomain.0124	h1SMcG0002676	Orthologs	N
+GM.5.0.Homeodomain.0124	h1SMcG0019014	Orthologs	N
+GM.5.0.C2H2_ZF.0140	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.bZIP.0053	h1SMcG0012645	Orthologs	N
+GM.5.0.C2H2_ZF.0141	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Homeodomain.0125	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.bHLH.0070	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Homeodomain.0126	h1SMcG0022072	Orthologs	N
+GM.5.0.Mixed.0052	h1SMcG0020760	Orthologs	N
+GM.5.0.Mixed.0052	h1SMcG0010451	Orthologs	N
+GM.5.0.Mixed.0052	h1SMcG0010448	Orthologs	N
+GM.5.0.Myb_SANT.0009	h1SMcG0021112	Orthologs	N
+GM.5.0.C2H2_ZF.0142	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.GATA.0012	h1SMcG0009369	Orthologs	N
+GM.5.0.Homeodomain.0127	h1SMcG0008090	Orthologs	N
+GM.5.0.Homeodomain.0127	h1SMcG0022072	Orthologs	N
+GM.5.0.Homeodomain.0127	h1SMcG0007041	Orthologs	N
+GM.5.0.bHLH.0071	h1SMcG0009326	Orthologs	N
+GM.5.0.bHLH.0071	h1SMcG0018400	Orthologs	N
+GM.5.0.bHLH.0071	h1SMcG0001334	Orthologs	N
+GM.5.0.bHLH.0071	h1SMcG0021180	Orthologs	N
+GM.5.0.bHLH.0072	h1SMcG0013330	Orthologs	N
+GM.5.0.Homeodomain.0128	h1SMcG0008090	Orthologs	N
+GM.5.0.Unknown.0035	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.bHLH.0073	h1SMnG0012616	Orthologs	N
+GM.5.0.C2H2_ZF.0143	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.bHLH.0074	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.E2F.0014	h1SMnG0017612	Orthologs	N
+GM.5.0.E2F.0014	h1SMcG0010707	Orthologs	N
+GM.5.0.bZIP.0054	h1SMcG0012645	Orthologs	N
+GM.5.0.Nuclear_receptor.0072	h1SMcG0015595	Orthologs	N
+GM.5.0.bHLH.0075	h1SMcG0001531	Orthologs	N
+GM.5.0.Homeodomain.0129	h1SMcG0020634	Orthologs	N
+GM.5.0.Homeodomain.0129	h1SMcG0000941	Orthologs	N
+GM.5.0.Mixed.0053	h1SMcG0021295	Orthologs	N
+GM.5.0.GATA.0013	h1SMcG0009369	Orthologs	N
+GM.5.0.Homeodomain.0130	h1SMcG0019014	Orthologs	N
+GM.5.0.IRF.0010	h1SMcG0001975	Orthologs	N
+GM.5.0.Mixed.0054	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.IRF.0011	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Homeodomain.0131	h1SMcG0003685	Orthologs	N
+GM.5.0.C2H2_ZF.0144	h1SMcG0001434	Orthologs	N
+GM.5.0.Homeodomain.0132	h1SMcG0008090	Orthologs	N
+GM.5.0.Homeodomain.0132	h1SMcG0007041	Orthologs	N
+GM.5.0.Nuclear_receptor.0073	h1SMcG0015595	Orthologs	N
+GM.5.0.Mixed.0055	h1SMcG0020592	Orthologs	N
+GM.5.0.Mixed.0055	h1SMcG0010290	Orthologs	N
+GM.5.0.Mixed.0055	h1SMcG0010366	Orthologs	N
+GM.5.0.Mixed.0055	h1SMcG0010076	Orthologs	N
+GM.5.0.Mixed.0055	h1SMcG0006042	Orthologs	N
+GM.5.0.Nuclear_receptor.0074	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Nuclear_receptor.0075	h1SMcG0016703	Orthologs	N
+GM.5.0.C2H2_ZF.0145	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Mixed.0056	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Mixed.0057	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.IRF.0012	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Forkhead.0034	h1SMcG0009963	Orthologs	N
+GM.5.0.Forkhead.0034	h1SMcG0013875	Orthologs	N
+GM.5.0.Forkhead.0034	h1SMcG0000287	Orthologs	N
+GM.5.0.Forkhead.0034	h1SMcG0012074	Orthologs	N
+GM.5.0.Forkhead.0034	h1SMcG0008308	Orthologs	N
+GM.5.0.Forkhead.0034	h1SMcG0015283	Orthologs	N
+GM.5.0.Forkhead.0034	h1SMcG0007411	Orthologs	N
+GM.5.0.Sox.0030	h1SMcG0016676	Orthologs	N
+GM.5.0.AP-2.0007	h1SMcG0006465	Orthologs	N
+GM.5.0.C2H2_ZF.0146	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Nuclear_receptor.0076	h1SMcG0015595	Orthologs	N
+GM.5.0.Nuclear_receptor.0076	h1SMcG0001020	Orthologs	N
+GM.5.0.C2H2_ZF.0147	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Mixed.0058	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Nuclear_receptor.0077	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.p53.0005	>h1SMcG0016868	Orthologs	N
+GM.5.0.C2H2_ZF.0148	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Homeodomain.0133	h1SMcG0008090	Orthologs	N
+GM.5.0.Paired_box.0009	h1SMcG0008441	Orthologs	N
+GM.5.0.bZIP.0055	h1SMcG0008408	Orthologs	N
+GM.5.0.C2H2_ZF.0149	h1SMcG0010990	Orthologs	N
+GM.5.0.THAP_finger.0003	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.bZIP.0056	h1SMcG0006635	Orthologs	N
+GM.5.0.AP-2.0008	h1SMcG0006465	Orthologs	N
+GM.5.0.T-box.0016	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Unknown.0036	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Homeodomain_POU.0013	h1SMcG0013730	Orthologs	N
+GM.5.0.C2H2_ZF.0150	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.T-box.0017	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.bZIP.0057	h1SMcG0012645	Orthologs	N
+GM.5.0.Pipsqueak.0001	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Unknown.0037	h1SMcG0022769	Orthologs	N
+GM.5.0.Unknown.0037	h1SMcG0007447	Orthologs	N
+GM.5.0.Unknown.0037	h1SMnG0012538	Orthologs	N
+GM.5.0.Unknown.0037	h1SMcG0022770	Orthologs	N
+GM.5.0.Homeodomain.0134	h1SMcG0020740	Orthologs	N
+GM.5.0.AT_hook.0002	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Unknown.0038	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Nuclear_receptor.0078	h1SMcG0011606	Orthologs	N
+GM.5.0.Unknown.0039	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Nuclear_receptor.0079	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.GATA.0014	h1SMcG0009369	Orthologs	N
+GM.5.0.GATA.0015	h1SMcG0009369	Orthologs	N
+GM.5.0.Myb_SANT.0010	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.C2H2_ZF.0151	h1SMcG0000013	Orthologs	N
+GM.5.0.Nuclear_receptor.0080	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.C2H2_ZF.0152	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Homeodomain.0135	h1SMcG0008090	Orthologs	N
+GM.5.0.Rel.0017	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Ets.0028	h1SMcG0000267	Orthologs	N
+GM.5.0.RFX.0007	h1SMcG0015193	Orthologs	N
+GM.5.0.Nuclear_receptor.0081	h1SMcG0015595	Orthologs	N
+GM.5.0.bZIP.0058	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.bZIP.0059	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Nuclear_receptor.0082	h1SMcG0019688	Orthologs	N
+GM.5.0.C2H2_ZF.0153	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.ARID_BRIGHT.0002	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.bZIP.0060	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Rel.0018	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.bZIP.0061	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Nuclear_receptor.0083	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.C2H2_ZF.0154	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Mixed.0059	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Unknown.0040	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Unknown.0041	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Unknown.0042	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Unknown.0043	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.C2H2_ZF.0155	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.C2H2_ZF.0156	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.E2F.0015	h1SMnG0017612	Orthologs	N
+GM.5.0.E2F.0015	h1SMcG0010707	Orthologs	N
+GM.5.0.Mixed.0060	h1SMcG0007329	Orthologs	N
+GM.5.0.Mixed.0060	h1SMcG0007325	Orthologs	N
+GM.5.0.bZIP.0062	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.C2H2_ZF.0157	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.IRF.0013	h1SMcG0001975	Orthologs	N
+GM.5.0.Homeodomain.0136	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Unknown.0044	h1SMcG0006465	Orthologs	N
+GM.5.0.C2H2_ZF.0158	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.bHLH.0076	h1SMcG0022451	Orthologs	N
+GM.5.0.GCM.0004	h1SMcG0013982	Orthologs	N
+GM.5.0.CUT_Homeodomain.0006	h1SMcG0010220	Orthologs	N
+GM.5.0.CUT_Homeodomain.0006	h1SMcG0019233	Orthologs	N
+GM.5.0.STAT.0012	h1SMcG0007329	Orthologs	N
+GM.5.0.STAT.0012	h1SMcG0007325	Orthologs	N
+GM.5.0.bZIP.0063	h1SMcG0008373	Orthologs	N
+GM.5.0.STAT.0013	h1SMcG0007329	Orthologs	N
+GM.5.0.STAT.0013	h1SMcG0007325	Orthologs	N
+GM.5.0.IRF.0014	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.MADS_box.0012	h1SMcG0008246	Orthologs	N
+GM.5.0.Unknown.0045	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Unknown.0046	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Unknown.0047	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.MADS_box.0013	h1SMcG0008246	Orthologs	N
+GM.5.0.Unknown.0048	h1SMcG0017995	Orthologs	N
+GM.5.0.bZIP.0064	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.bHLH.0077	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.C2H2_ZF.0159	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.T-box.0018	h1SMcG0010122	Orthologs	N
+GM.5.0.C2H2_ZF.0160	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.C2H2_ZF.0161	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Grainyhead.0007	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Unknown.0049	h1SMcG0015958	Orthologs	N
+GM.5.0.Unknown.0049	h1SMcG0002678	Orthologs	N
+GM.5.0.T-box.0019	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.bZIP.0065	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.C2H2_ZF.0162	h1SMcG0010990	Orthologs	N
+GM.5.0.C2H2_ZF.0162	h1SMcG0018295	Orthologs	N
+GM.5.0.C2H2_ZF.0162	h1SMcG0018294	Orthologs	N
+GM.5.0.bHLH.0078	h1SMcG0009326	Orthologs	N
+GM.5.0.Unknown.0050	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Homeodomain.0137	h1SMcG0008090	Orthologs	N
+GM.5.0.Homeodomain.0137	h1SMcG0002500	Orthologs	N
+GM.5.0.Homeodomain.0137	h1SMcG0007041	Orthologs	N
+GM.5.0.Forkhead.0035	h1SMcG0003032	Orthologs	N
+GM.5.0.C2H2_ZF.0163	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.C2H2_ZF.0164	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.TEA.0004	h1SMcG0015294	Orthologs	N
+GM.5.0.Forkhead.0036	h1SMcG0009963	Orthologs	N
+GM.5.0.Forkhead.0036	h1SMcG0013875	Orthologs	N
+GM.5.0.Forkhead.0036	h1SMcG0000287	Orthologs	N
+GM.5.0.Forkhead.0036	h1SMcG0012074	Orthologs	N
+GM.5.0.Forkhead.0036	h1SMcG0008308	Orthologs	N
+GM.5.0.Forkhead.0036	h1SMcG0015283	Orthologs	N
+GM.5.0.Forkhead.0036	h1SMcG0007411	Orthologs	N
+GM.5.0.Mixed.0061	h1SMcG0009273	Orthologs	N
+GM.5.0.Unknown.0051	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.bHLH.0079	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.AP-2.0009	h1SMcG0006465	Orthologs	N
+GM.5.0.RFX.0008	h1SMcG0015193	Orthologs	N
+GM.5.0.Mixed.0062	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Unknown.0052	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Unknown.0053	h1SMnG0003206	Orthologs	N
+GM.5.0.Unknown.0053	h1SMcG0001963	Orthologs	N
+GM.5.0.Unknown.0054	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.GATA.0016	h1SMcG0009369	Orthologs	N
+GM.5.0.C2H2_ZF.0165	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Unknown.0055	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.C2H2_ZF.0166	>h1SMcG0005177	Orthologs	N
+GM.5.0.C2H2_ZF.0167	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.C2H2_ZF.0168	h1SMcG0011808	Orthologs	N
+GM.5.0.C2H2_ZF.0168	h1SMcG0014387	Orthologs	N
+GM.5.0.Paired_box.0010	h1SMcG0008441	Orthologs	N
+GM.5.0.C2H2_ZF.0169	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.bHLH.0080	h1SMcG0020191	Orthologs	N
+GM.5.0.Unknown.0056	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.C2H2_ZF.0170	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Homeodomain.0138	h1SMcG0021059	Orthologs	N
+GM.5.0.bHLH.0081	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Forkhead.0037	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Unknown.0057	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Homeodomain.0139	h1SMcG0003130	Orthologs	N
+GM.5.0.C2H2_ZF.0171	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Sox.0031	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Unknown.0058	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.bHLH.0082	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.bHLH.0083	h1SMcG0022451	Orthologs	N
+GM.5.0.bZIP.0066	h1SMcG0010609	Orthologs	N
+GM.5.0.bZIP.0066	h1SMcG0017602	Orthologs	N
+GM.5.0.bZIP.0066	h1SMcG0004816	Orthologs	N
+GM.5.0.Mixed.0063	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Homeodomain.0140	h1SMcG0013158	Orthologs	N
+GM.5.0.Homeodomain.0140	h1SMcG0022494	Orthologs	N
+GM.5.0.Unknown.0059	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Unknown.0060	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Ets.0029	h1SMcG0000267	Orthologs	N
+GM.5.0.Ets.0029	h1SMcG0014005	Orthologs	N
+GM.5.0.Ets.0029	h1SMnG0022954	Orthologs	N
+GM.5.0.Ets.0029	h1SMcG0021529	Orthologs	N
+GM.5.0.C2H2_ZF.0172	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.C2H2_ZF.0173	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.GATA.0017	h1SMcG0009369	Orthologs	N
+GM.5.0.bHLH.0084	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Rel.0019	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.MADS_box.0014	h1SMcG0008246	Orthologs	N
+GM.5.0.C2H2_ZF.0174	>h1SMcG0005177	Orthologs	N
+GM.5.0.C2H2_ZF.0175	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.AT_hook.0003	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Homeodomain.0141	h1SMcG0021332	Orthologs	N
+GM.5.0.bZIP.0067	h1SMcG0006635	Orthologs	N
+GM.5.0.Homeodomain.0142	h1SMcG0003298	Orthologs	N
+GM.5.0.Zinc_cluster.0001	h1SMcG0022412	Orthologs	N
+GM.5.0.T-box.0020	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.THAP_finger.0004	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.C2H2_ZF.0176	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Forkhead.0038	h1SMcG0009963	Orthologs	N
+GM.5.0.Forkhead.0038	h1SMcG0013875	Orthologs	N
+GM.5.0.Forkhead.0038	h1SMcG0000287	Orthologs	N
+GM.5.0.Forkhead.0038	h1SMcG0012074	Orthologs	N
+GM.5.0.Forkhead.0038	h1SMcG0008308	Orthologs	N
+GM.5.0.Forkhead.0038	h1SMcG0015283	Orthologs	N
+GM.5.0.Forkhead.0038	h1SMcG0007411	Orthologs	N
+GM.5.0.Nuclear_receptor.0084	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Unknown.0061	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Ets.0030	h1SMcG0000267	Orthologs	N
+GM.5.0.Unknown.0062	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Unknown.0063	h1SMcG0004888	Orthologs	N
+GM.5.0.C2H2_ZF.0177	h1SMcG0015343	Orthologs	N
+GM.5.0.C2H2_ZF.0177	h1SMcG0022224	Orthologs	N
+GM.5.0.Nuclear_receptor.0085	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Ets.0031	h1SMcG0000267	Orthologs	N
+GM.5.0.Unknown.0064	h1SMcG0004888	Orthologs	N
+GM.5.0.p53.0006	>h1SMcG0016868	Orthologs	N
+GM.5.0.Homeodomain.0143	h1SMcG0007041	Orthologs	N
+GM.5.0.Nuclear_receptor.0086	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Unknown.0065	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.bZIP.0068	h1SMcG0006635	Orthologs	N
+GM.5.0.Unknown.0066	h1SMcG0010451	Orthologs	N
+GM.5.0.Unknown.0066	h1SMcG0010448	Orthologs	N
+GM.5.0.C2H2_ZF.0178	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Mixed.0064	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Paired_box.0011	h1SMcG0008441	Orthologs	N
+GM.5.0.RFX.0009	h1SMcG0015193	Orthologs	N
+GM.5.0.Rel.0020	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Unknown.0067	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Mixed.0065	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.C2H2_ZF.0179	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Unknown.0068	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.GTF2I-like.0001	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Mixed.0066	h1SMcG0008833	Orthologs	N
+GM.5.0.Mixed.0066	h1SMcG0002614	Orthologs	N
+GM.5.0.Mixed.0066	h1SMcG0013730	Orthologs	N
+GM.5.0.Mixed.0067	h1SMcG0018062	Orthologs	N
+GM.5.0.C2H2_ZF.0180	h1SMcG0011808	Orthologs	N
+GM.5.0.C2H2_ZF.0180	h1SMcG0014387	Orthologs	N
+GM.5.0.STAT.0014	h1SMcG0007329	Orthologs	N
+GM.5.0.STAT.0014	h1SMcG0007325	Orthologs	N
+GM.5.0.E2F.0016	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.C2H2_ZF.0181	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.SMAD.0011	h1SMcG0001098	Orthologs	N
+GM.5.0.SMAD.0011	h1SMcG0018284	Orthologs	N
+GM.5.0.SMAD.0011	h1SMcG0020557	Orthologs	N
+GM.5.0.Nuclear_receptor.0087	h1SMcG0016703	Orthologs	N
+GM.5.0.C2H2_ZF.0182	h1SMcG0000656	Orthologs	N
+GM.5.0.Unknown.0069	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.MBD.0001	h1SMcG0014015	Orthologs	N
+GM.5.0.Mixed.0068	h1SMcG0021295	Orthologs	N
+GM.5.0.bHLH.0085	h1SMcG0016956	Orthologs	N
+GM.5.0.Myb_SANT.0011	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.C2H2_ZF.0183	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.C2H2_ZF.0184	h1SMcG0010990	Orthologs	N
+GM.5.0.C2H2_ZF.0184	h1SMcG0018295	Orthologs	N
+GM.5.0.C2H2_ZF.0184	h1SMcG0018294	Orthologs	N
+GM.5.0.Unknown.0070	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.IRF.0015	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Forkhead.0039	h1SMcG0009963	Orthologs	N
+GM.5.0.Forkhead.0039	h1SMcG0013875	Orthologs	N
+GM.5.0.Forkhead.0039	h1SMcG0000287	Orthologs	N
+GM.5.0.Forkhead.0039	h1SMcG0012074	Orthologs	N
+GM.5.0.Forkhead.0039	h1SMcG0008308	Orthologs	N
+GM.5.0.Forkhead.0039	h1SMcG0015283	Orthologs	N
+GM.5.0.Forkhead.0039	h1SMcG0007411	Orthologs	N
+GM.5.0.MADS_box.0015	h1SMcG0000971	Orthologs	N
+GM.5.0.Unknown.0071	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.bZIP.0069	h1SMcG0022769	Orthologs	N
+GM.5.0.bZIP.0069	h1SMcG0007447	Orthologs	N
+GM.5.0.bZIP.0069	h1SMnG0012538	Orthologs	N
+GM.5.0.bZIP.0069	h1SMcG0022770	Orthologs	N
+GM.5.0.Ets.0032	h1SMcG0014005	Orthologs	N
+GM.5.0.Ets.0032	h1SMnG0022954	Orthologs	N
+GM.5.0.Ets.0032	h1SMcG0021529	Orthologs	N
+GM.5.0.Ets.0032	h1SMcG0000267	Orthologs	N
+GM.5.0.STAT.0015	h1SMcG0007329	Orthologs	N
+GM.5.0.STAT.0015	h1SMcG0007325	Orthologs	N
+GM.5.0.Mixed.0069	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.SMAD.0012	h1SMcG0006347	Orthologs	N
+GM.5.0.SMAD.0012	h1SMcG0023128	Orthologs	N
+GM.5.0.TBP.0002	h1SMcG0010076	Orthologs	N
+GM.5.0.C2H2_ZF.0185	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Unknown.0072	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.TBP.0003	h1SMcG0010076	Orthologs	N
+GM.5.0.Homeodomain.0144	h1SMcG0012941	Orthologs	N
+GM.5.0.Homeodomain.0144	h1SMcG0020740	Orthologs	N
+GM.5.0.Paired_box.0012	h1SMcG0008441	Orthologs	N
+GM.5.0.C2H2_ZF.0186	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Unknown.0073	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Nuclear_receptor.0088	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Homeodomain.0145	h1SMcG0014159	Orthologs	N
+GM.5.0.SMAD.0013	h1SMcG0006347	Orthologs	N
+GM.5.0.SMAD.0013	h1SMcG0023128	Orthologs	N
+GM.5.0.E2F.0017	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Mixed.0070	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Unknown.0074	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Forkhead.0040	h1SMcG0003032	Orthologs	N
+GM.5.0.p53.0007	>h1SMcG0016868	Orthologs	N
+GM.5.0.Nuclear_receptor.0089	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Homeodomain.0146	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.C2H2_ZF.0187	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Unknown.0075	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Unknown.0076	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Unknown.0077	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Unknown.0078	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.E2F.0018	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Unknown.0079	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.bHLH.0086	h1SMcG0012768	Orthologs	N
+GM.5.0.bZIP.0070	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.SMAD.0014	h1SMcG0001098	Orthologs	N
+GM.5.0.SMAD.0014	h1SMcG0018284	Orthologs	N
+GM.5.0.SMAD.0014	h1SMcG0020557	Orthologs	N
+GM.5.0.STAT.0016	h1SMcG0007329	Orthologs	N
+GM.5.0.STAT.0016	h1SMcG0007325	Orthologs	N
+GM.5.0.Mixed.0071	h1SMcG0006042	Orthologs	N
+GM.5.0.Mixed.0071	h1SMcG0022451	Orthologs	N
+GM.5.0.Nuclear_receptor.0090	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Myb_SANT.0012	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.SAND.0005	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.C2H2_ZF.0188	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Homeodomain.0147	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.SMAD.0015	h1SMcG0004687	Orthologs	N
+GM.5.0.Homeodomain.0148	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.MADS_box.0016	h1SMcG0000971	Orthologs	N
+GM.5.0.Nuclear_receptor.0091	h1SMcG0016703	Orthologs	N
+GM.5.0.Mixed.0072	h1SMcG0020592	Orthologs	N
+GM.5.0.Mixed.0072	h1SMcG0010290	Orthologs	N
+GM.5.0.Mixed.0072	h1SMcG0010366	Orthologs	N
+GM.5.0.Mixed.0072	h1SMcG0010076	Orthologs	N
+GM.5.0.Mixed.0072	h1SMcG0006042	Orthologs	N
+GM.5.0.Myb_SANT.0013	h1SMcG0013177	Orthologs	N
+GM.5.0.Myb_SANT.0013	h1SMcG0013178	Orthologs	N
+GM.5.0.Myb_SANT.0013	h1SMcG0013179	Orthologs	N
+GM.5.0.Myb_SANT.0013	h1SMcG0013166	Orthologs	N
+GM.5.0.Myb_SANT.0013	h1SMcG0013163	Orthologs	N
+GM.5.0.Unknown.0080	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Unknown.0081	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Nuclear_receptor.0092	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Mixed.0073	h1SMcG0010220	Orthologs	N
+GM.5.0.Mixed.0073	h1SMcG0019233	Orthologs	N
+GM.5.0.bZIP.0071	h1SMcG0017653	Orthologs	N
+GM.5.0.Nuclear_receptor.0093	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Unknown.0082	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Paired_box.0013	h1SMcG0008441	Orthologs	N
+GM.5.0.Paired_box.0014	h1SMcG0008441	Orthologs	N
+GM.5.0.Homeodomain.0149	h1SMcG0003130	Orthologs	N
+GM.5.0.Mixed.0074	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.CUT_Homeodomain.0007	h1SMcG0010220	Orthologs	N
+GM.5.0.CUT_Homeodomain.0007	h1SMcG0019233	Orthologs	N
+GM.5.0.C2H2_ZF.0189	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.C2H2_ZF.0190	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.CUT_Homeodomain.0008	h1SMcG0010220	Orthologs	N
+GM.5.0.CUT_Homeodomain.0008	h1SMcG0019233	Orthologs	N
+GM.5.0.C2H2_ZF.0191	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.bZIP.0072	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Homeodomain.0150	h1SMcG0000267	Orthologs	N
+GM.5.0.C2H2_ZF.0192	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.TBP.0004	h1SMcG0010076	Orthologs	N
+GM.5.0.Unknown.0083	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Homeodomain.0151	h1SMcG0011535	Orthologs	N
+GM.5.0.Nuclear_receptor.0094	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.C2H2_ZF.0193	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Unknown.0084	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Homeodomain.0152	h1SMcG0021059	Orthologs	N
+GM.5.0.SAND.0006	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Homeodomain.0153	h1SMcG0003298	Orthologs	N
+GM.5.0.Nuclear_receptor.0095	h1SMcG0011606	Orthologs	N
+GM.5.0.Unknown.0085	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Nuclear_receptor.0096	h1SMcG0019688	Orthologs	N
+GM.5.0.Nuclear_receptor.0097	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Nuclear_receptor.0098	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.C2H2_ZF.0194	h1SMcG0006156	Orthologs	N
+GM.5.0.C2H2_ZF.0195	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.SAND.0007	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Nuclear_receptor.0099	h1SMcG0019688	Orthologs	N
+GM.5.0.bHLH.0087	h1SMcG0022832	Orthologs	N
+GM.5.0.bHLH.0087	h1SMcG0007018	Orthologs	N
+GM.5.0.Nuclear_receptor.0100	h1SMcG0019688	Orthologs	N
+GM.5.0.Unknown.0086	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Homeodomain.0154	h1SMcG0008090	Orthologs	N
+GM.5.0.Homeodomain.0154	h1SMcG0007041	Orthologs	N
+GM.5.0.Nuclear_receptor.0101	h1SMcG0019688	Orthologs	N
+GM.5.0.Mixed.0075	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.bZIP.0073	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Unknown.0087	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.GATA.0018	h1SMcG0009369	Orthologs	N
+GM.5.0.C2H2_ZF.0196	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Nuclear_receptor.0102	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Unknown.0088	h1SMcG0011310	Orthologs	N
+GM.5.0.Unknown.0088	h1SMcG0009686	Orthologs	N
+GM.5.0.bZIP.0074	h1SMcG0012645	Orthologs	N
+GM.5.0.Unknown.0089	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.C2H2_ZF.0197	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.C2H2_ZF.0198	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Unknown.0090	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Homeodomain.0155	h1SMcG0021271	Orthologs	N
+GM.5.0.Homeodomain.0156	h1SMcG0011535	Orthologs	N
+GM.5.0.Homeodomain.0156	h1SMcG0020740	Orthologs	N
+GM.5.0.C2H2_ZF.0199	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.bHLH.0088	h1SMcG0011688	Orthologs	N
+GM.5.0.E2F.0019	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Unknown.0091	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Unknown.0092	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Unknown.0093	h1SMcG0020144	Orthologs	N
+GM.5.0.Forkhead.0041	h1SMcG0009963	Orthologs	N
+GM.5.0.Forkhead.0041	h1SMcG0013875	Orthologs	N
+GM.5.0.Forkhead.0041	h1SMcG0000287	Orthologs	N
+GM.5.0.Forkhead.0041	h1SMcG0012074	Orthologs	N
+GM.5.0.Forkhead.0041	h1SMcG0008308	Orthologs	N
+GM.5.0.Forkhead.0041	h1SMcG0015283	Orthologs	N
+GM.5.0.Forkhead.0041	h1SMcG0007411	Orthologs	N
+GM.5.0.Homeodomain.0157	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Ets.0033	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.STAT.0017	h1SMcG0007329	Orthologs	N
+GM.5.0.STAT.0017	h1SMcG0007325	Orthologs	N
+GM.5.0.Homeodomain.0158	h1SMcG0011535	Orthologs	N
+GM.5.0.Homeodomain.0158	h1SMcG0008475	Orthologs	N
+GM.5.0.Homeodomain.0158	h1SMcG0018916	Orthologs	N
+GM.5.0.Homeodomain.0158	h1SMcG0003685	Orthologs	N
+GM.5.0.C2H2_ZF.0200	h1SMcG0016472	Orthologs	N
+GM.5.0.C2H2_ZF.0200	h1SMcG0018383	Orthologs	N
+GM.5.0.Mixed.0076	h1SMcG0008441	Orthologs	N
+GM.5.0.Unknown.0094	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.bZIP.0075	h1SMcG0010609	Orthologs	N
+GM.5.0.bZIP.0075	h1SMcG0017602	Orthologs	N
+GM.5.0.bZIP.0075	h1SMcG0004816	Orthologs	N
+GM.5.0.Unknown.0095	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.HSF.0006	h1SMcG0006379	Orthologs	N
+GM.5.0.Ets.0034	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Unknown.0096	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Unknown.0097	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.TEA.0005	h1SMcG0015294	Orthologs	N
+GM.5.0.bHLH.0089	h1SMcG0001531	Orthologs	N
+GM.5.0.bHLH.0089	h1SMcG0004651	Orthologs	N
+GM.5.0.Unknown.0098	h1SMcG0019014	Orthologs	N
+GM.5.0.SMAD.0016	h1SMcG0006347	Orthologs	N
+GM.5.0.SMAD.0016	h1SMcG0023128	Orthologs	N
+GM.5.0.Forkhead.0042	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Mixed.0077	h1SMcG0019798	Orthologs	N
+GM.5.0.Mixed.0077	h1SMcG0019799	Orthologs	N
+GM.5.0.STAT.0018	h1SMcG0007329	Orthologs	N
+GM.5.0.STAT.0018	h1SMcG0007325	Orthologs	N
+GM.5.0.CUT_Homeodomain.0009	h1SMcG0010220	Orthologs	N
+GM.5.0.CUT_Homeodomain.0009	h1SMcG0019233	Orthologs	N
+GM.5.0.bHLH.0090	h1SMcG0001531	Orthologs	N
+GM.5.0.MBD.0002	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Nuclear_receptor.0103	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.bHLH.0091	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.C2H2_ZF.0201	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.C2H2_ZF.0202	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.C2H2_ZF.0203	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Homeodomain_POU.0014	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.SMAD.0017	h1SMcG0006347	Orthologs	N
+GM.5.0.SMAD.0017	h1SMcG0023128	Orthologs	N
+GM.5.0.Nuclear_receptor.0104	h1SMcG0015595	Orthologs	N
+GM.5.0.Unknown.0099	h1SMcG0006347	Orthologs	N
+GM.5.0.Unknown.0099	h1SMcG0023128	Orthologs	N
+GM.5.0.Unknown.0099	h1SMcG0004687	Orthologs	N
+GM.5.0.C2H2_ZF.0204	>h1SMcG0005177	Orthologs	N
+GM.5.0.Homeodomain_POU.0015	h1SMcG0008833	Orthologs	N
+GM.5.0.Nuclear_receptor.0105	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Forkhead.0043	h1SMcG0009963	Orthologs	N
+GM.5.0.Forkhead.0043	h1SMcG0013875	Orthologs	N
+GM.5.0.Forkhead.0043	h1SMcG0000287	Orthologs	N
+GM.5.0.Forkhead.0043	h1SMcG0012074	Orthologs	N
+GM.5.0.Forkhead.0043	h1SMcG0008308	Orthologs	N
+GM.5.0.Forkhead.0043	h1SMcG0015283	Orthologs	N
+GM.5.0.Forkhead.0043	h1SMcG0007411	Orthologs	N
+GM.5.0.Mixed.0078	h1SMcG0009273	Orthologs	N
+GM.5.0.Nuclear_receptor.0106	h1SMcG0001020	Orthologs	N
+GM.5.0.bZIP.0076	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.GATA.0019	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Unknown.0100	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Myb_SANT.0014	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.GATA.0020	h1SMcG0009369	Orthologs	N
+GM.5.0.bHLH.0092	h1SMcG0013330	Orthologs	N
+GM.5.0.SMAD.0018	h1SMcG0004687	Orthologs	N
+GM.5.0.C2H2_ZF.0205	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Unknown.0101	h1SMcG0010451	Orthologs	N
+GM.5.0.Unknown.0101	h1SMcG0010448	Orthologs	N
+GM.5.0.THAP_finger.0005	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Nuclear_receptor.0107	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Nuclear_receptor.0108	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.GATA.0021	h1SMcG0009369	Orthologs	N
+GM.5.0.C2H2_ZF.0206	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Homeodomain.0159	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.C2H2_ZF.0207	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Mixed.0079	h1SMcG0020760	Orthologs	N
+GM.5.0.Mixed.0079	h1SMcG0010451	Orthologs	N
+GM.5.0.Mixed.0079	h1SMcG0010448	Orthologs	N
+GM.5.0.bZIP.0077	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Unknown.0102	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Unknown.0103	h1SMcG0020760	Orthologs	N
+GM.5.0.C2H2_ZF.0208	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Unknown.0104	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Paired_box.0015	h1SMcG0008441	Orthologs	N
+GM.5.0.bHLH.0093	h1SMcG0016003	Orthologs	N
+GM.5.0.bHLH.0093	h1SMnG0025958	Orthologs	N
+GM.5.0.Ets.0035	h1SMcG0000267	Orthologs	N
+GM.5.0.STAT.0019	h1SMcG0007329	Orthologs	N
+GM.5.0.STAT.0019	h1SMcG0007325	Orthologs	N
+GM.5.0.bHLH.0094	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.DM.0006	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Unknown.0105	h1SMcG0015958	Orthologs	N
+GM.5.0.Unknown.0105	h1SMcG0002678	Orthologs	N
+GM.5.0.Homeodomain.0160	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Unknown.0106	h1SMcG0003839	Orthologs	N
+GM.5.0.Unknown.0106	h1SMnG0006331	Orthologs	N
+GM.5.0.Unknown.0107	h1SMcG0020144	Orthologs	N
+GM.5.0.Nuclear_receptor.0109	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Paired_box.0016	h1SMcG0008441	Orthologs	N
+GM.5.0.C2H2_ZF.0209	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Nuclear_receptor.0110	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.MADS_box.0017	h1SMcG0009353	Orthologs	N
+GM.5.0.MADS_box.0017	h1SMcG0009220	Orthologs	N
+GM.5.0.Unknown.0108	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Unknown.0109	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Unknown.0110	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.bHLH.0095	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Forkhead.0044	h1SMcG0009963	Orthologs	N
+GM.5.0.Forkhead.0044	h1SMcG0013875	Orthologs	N
+GM.5.0.Forkhead.0044	h1SMcG0000287	Orthologs	N
+GM.5.0.Forkhead.0044	h1SMcG0012074	Orthologs	N
+GM.5.0.Forkhead.0044	h1SMcG0008308	Orthologs	N
+GM.5.0.Forkhead.0044	h1SMcG0015283	Orthologs	N
+GM.5.0.Forkhead.0044	h1SMcG0007411	Orthologs	N
+GM.5.0.bZIP.0078	h1SMcG0008373	Orthologs	N
+GM.5.0.CUT_Homeodomain.0010	>h1SMcG0000889	Orthologs	N
+GM.5.0.CUT_Homeodomain.0010	h1SMcG0023033	Orthologs	N
+GM.5.0.CUT_Homeodomain.0010	h1SMcG0011844	Orthologs	N
+GM.5.0.bHLH.0096	h1SMcG0006375	Orthologs	N
+GM.5.0.Sox.0032	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.C2H2_ZF.0210	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.ARID_BRIGHT.0003	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Nuclear_receptor.0111	h1SMcG0016703	Orthologs	N
+GM.5.0.Nuclear_receptor.0112	h1SMcG0016703	Orthologs	N
+GM.5.0.C2H2_ZF.0211	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Mixed.0080	h1SMcG0008441	Orthologs	N
+GM.5.0.bZIP.0079	h1SMcG0010609	Orthologs	N
+GM.5.0.bZIP.0079	h1SMcG0017602	Orthologs	N
+GM.5.0.bZIP.0079	h1SMcG0004816	Orthologs	N
+GM.5.0.Unknown.0111	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Unknown.0112	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Homeodomain.0161	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.GATA.0022	h1SMcG0009369	Orthologs	N
+GM.5.0.Ets.0036	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.bHLH.0097	h1SMcG0021295	Orthologs	N
+GM.5.0.Homeodomain_POU.0016	h1SMcG0008833	Orthologs	N
+GM.5.0.Nuclear_receptor.0113	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Rel.0021	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.GATA.0023	h1SMcG0009369	Orthologs	N
+GM.5.0.IRF.0016	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Unknown.0113	h1SMcG0015958	Orthologs	N
+GM.5.0.Unknown.0113	h1SMcG0002678	Orthologs	N
+GM.5.0.bHLH.0098	h1SMcG0018604	Orthologs	N
+GM.5.0.bHLH.0098	h1SMcG0022832	Orthologs	N
+GM.5.0.bHLH.0098	h1SMcG0007018	Orthologs	N
+GM.5.0.bZIP.0080	h1SMcG0006635	Orthologs	N
+GM.5.0.Ets.0037	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Ets.0038	h1SMcG0014005	Orthologs	N
+GM.5.0.Ets.0038	h1SMnG0022954	Orthologs	N
+GM.5.0.Ets.0038	h1SMcG0021529	Orthologs	N
+GM.5.0.Ets.0038	h1SMcG0011654	Orthologs	N
+GM.5.0.Ets.0038	h1SMcG0000267	Orthologs	N
+GM.5.0.Forkhead.0045	h1SMcG0009963	Orthologs	N
+GM.5.0.Forkhead.0045	h1SMcG0013875	Orthologs	N
+GM.5.0.Forkhead.0045	h1SMcG0000287	Orthologs	N
+GM.5.0.Forkhead.0045	h1SMcG0012074	Orthologs	N
+GM.5.0.Forkhead.0045	h1SMcG0008308	Orthologs	N
+GM.5.0.Forkhead.0045	h1SMcG0015283	Orthologs	N
+GM.5.0.Forkhead.0045	h1SMcG0007411	Orthologs	N
+GM.5.0.Homeodomain.0162	h1SMcG0007041	Orthologs	N
+GM.5.0.Homeodomain.0162	h1SMcG0009117	Orthologs	N
+GM.5.0.Homeodomain.0162	h1SMcG0008090	Orthologs	N
+GM.5.0.Sox.0033	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.C2H2_ZF.0212	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Rel.0022	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Homeodomain.0163	h1SMcG0008090	Orthologs	N
+GM.5.0.Homeodomain.0163	h1SMcG0007041	Orthologs	N
+GM.5.0.Homeodomain.0164	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Homeodomain.0165	h1SMcG0007253	Orthologs	N
+GM.5.0.Forkhead.0046	h1SMcG0009963	Orthologs	N
+GM.5.0.Forkhead.0046	h1SMcG0013875	Orthologs	N
+GM.5.0.Forkhead.0046	h1SMcG0000287	Orthologs	N
+GM.5.0.Forkhead.0046	h1SMcG0012074	Orthologs	N
+GM.5.0.Forkhead.0046	h1SMcG0008308	Orthologs	N
+GM.5.0.Forkhead.0046	h1SMcG0015283	Orthologs	N
+GM.5.0.Forkhead.0046	h1SMcG0007411	Orthologs	N
+GM.5.0.THAP_finger.0006	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Unknown.0114	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.bHLH.0099	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.MADS_box.0018	h1SMcG0000971	Orthologs	N
+GM.5.0.Prospero.0001	h1SMcG0002578	Orthologs	N
+GM.5.0.C2H2_ZF.0213	h1SMcG0001434	Orthologs	N
+GM.5.0.IRF.0017	h1SMcG0001975	Orthologs	N
+GM.5.0.Mixed.0081	h1SMcG0013594	Orthologs	N
+GM.5.0.bHLH.0100	h1SMcG0000079	Orthologs	N
+GM.5.0.p53.0008	>h1SMcG0016868	Orthologs	N
+GM.5.0.Forkhead.0047	h1SMcG0009963	Orthologs	N
+GM.5.0.Forkhead.0047	h1SMcG0013875	Orthologs	N
+GM.5.0.Forkhead.0047	h1SMcG0000287	Orthologs	N
+GM.5.0.Forkhead.0047	h1SMcG0012074	Orthologs	N
+GM.5.0.Forkhead.0047	h1SMcG0008308	Orthologs	N
+GM.5.0.Forkhead.0047	h1SMcG0015283	Orthologs	N
+GM.5.0.Forkhead.0047	h1SMcG0007411	Orthologs	N
+GM.5.0.Ets.0039	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Unknown.0115	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Unknown.0116	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Unknown.0117	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Unknown.0118	h1SMcG0004888	Orthologs	N
+GM.5.0.Ets.0040	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.bZIP.0081	h1SMcG0007969	Orthologs	N
+GM.5.0.Unknown.0119	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.bHLH.0101	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Unknown.0120	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.HSF.0007	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.SMAD.0019	h1SMcG0006347	Orthologs	N
+GM.5.0.SMAD.0019	h1SMcG0023128	Orthologs	N
+GM.5.0.Mixed.0082	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.C2H2_ZF.0214	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.C2H2_ZF.0215	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Unknown.0121	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.bZIP.0082	h1SMcG0008373	Orthologs	N
+GM.5.0.Unknown.0122	h1SMcG0003130	Orthologs	N
+GM.5.0.Unknown.0122	h1SMcG0004695	Orthologs	N
+GM.5.0.C2H2_ZF.0216	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.bHLH.0102	h1SMcG0009326	Orthologs	N
+GM.5.0.bHLH.0102	h1SMcG0018400	Orthologs	N
+GM.5.0.bHLH.0102	h1SMcG0001334	Orthologs	N
+GM.5.0.bHLH.0102	h1SMcG0021180	Orthologs	N
+GM.5.0.Homeodomain.0166	h1SMcG0004695	Orthologs	N
+GM.5.0.Forkhead.0048	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.bZIP.0083	h1SMcG0022769	Orthologs	N
+GM.5.0.bZIP.0083	h1SMcG0007447	Orthologs	N
+GM.5.0.bZIP.0083	h1SMnG0012538	Orthologs	N
+GM.5.0.bZIP.0083	h1SMcG0022770	Orthologs	N
+GM.5.0.Mixed.0083	h1SMcG0008441	Orthologs	N
+GM.5.0.C2H2_ZF.0217	h1SMcG0002845	Orthologs	N
+GM.5.0.Homeodomain.0167	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Unknown.0123	h1SMcG0010451	Orthologs	N
+GM.5.0.Unknown.0123	h1SMcG0010448	Orthologs	N
+GM.5.0.bZIP.0084	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Unknown.0124	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Unknown.0125	h1SMcG0013474	Orthologs	N
+GM.5.0.Unknown.0125	h1SMcG0004146	Orthologs	N
+GM.5.0.Unknown.0126	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Paired_box.0017	h1SMcG0008441	Orthologs	N
+GM.5.0.Mixed.0084	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Mixed.0085	h1SMcG0013730	Orthologs	N
+GM.5.0.Unknown.0127	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Forkhead.0049	h1SMcG0009963	Orthologs	N
+GM.5.0.Forkhead.0049	h1SMcG0013875	Orthologs	N
+GM.5.0.Forkhead.0049	h1SMcG0000287	Orthologs	N
+GM.5.0.Forkhead.0049	h1SMcG0012074	Orthologs	N
+GM.5.0.Forkhead.0049	h1SMcG0008308	Orthologs	N
+GM.5.0.Forkhead.0049	h1SMcG0015283	Orthologs	N
+GM.5.0.Forkhead.0049	h1SMcG0007411	Orthologs	N
+GM.5.0.C2H2_ZF.0218	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Nuclear_receptor.0114	h1SMcG0001020	Orthologs	N
+GM.5.0.Nuclear_receptor.0115	h1SMcG0001020	Orthologs	N
+GM.5.0.Grainyhead.0008	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.bHLH.0103	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Mixed.0086	h1SMcG0020592	Orthologs	N
+GM.5.0.Mixed.0086	h1SMcG0010290	Orthologs	N
+GM.5.0.Mixed.0086	h1SMcG0010366	Orthologs	N
+GM.5.0.Mixed.0086	h1SMcG0010076	Orthologs	N
+GM.5.0.Mixed.0086	h1SMcG0006042	Orthologs	N
+GM.5.0.Mixed.0087	h1SMcG0020760	Orthologs	N
+GM.5.0.Mixed.0087	h1SMcG0010451	Orthologs	N
+GM.5.0.Mixed.0087	h1SMcG0010448	Orthologs	N
+GM.5.0.Rel.0023	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Myb_SANT.0015	h1SMcG0013177	Orthologs	N
+GM.5.0.Myb_SANT.0015	h1SMcG0013178	Orthologs	N
+GM.5.0.Myb_SANT.0015	h1SMcG0013179	Orthologs	N
+GM.5.0.Myb_SANT.0015	h1SMcG0013166	Orthologs	N
+GM.5.0.Myb_SANT.0015	h1SMcG0013163	Orthologs	N
+GM.5.0.Homeodomain.0168	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Nuclear_receptor.0116	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.bHLH.0104	h1SMcG0011310	Orthologs	N
+GM.5.0.bHLH.0104	h1SMcG0009686	Orthologs	N
+GM.5.0.STAT.0020	h1SMcG0007329	Orthologs	N
+GM.5.0.STAT.0020	h1SMcG0007325	Orthologs	N
+GM.5.0.RFX.0010	h1SMcG0020741	Orthologs	N
+GM.5.0.RFX.0010	h1SMcG0015193	Orthologs	N
+GM.5.0.Nuclear_receptor.0117	h1SMcG0021496	Orthologs	N
+GM.5.0.Nuclear_receptor.0118	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Unknown.0128	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.IRF.0018	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.RFX.0011	h1SMcG0020741	Orthologs	N
+GM.5.0.C2H2_ZF.0219	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Unknown.0129	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.bHLH.0105	h1SMcG0011310	Orthologs	N
+GM.5.0.bHLH.0105	h1SMcG0009686	Orthologs	N
+GM.5.0.Unknown.0130	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Nuclear_receptor.0119	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Sox.0034	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Unknown.0131	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.STAT.0021	h1SMcG0007329	Orthologs	N
+GM.5.0.STAT.0021	h1SMcG0007325	Orthologs	N
+GM.5.0.bZIP.0085	h1SMcG0010609	Orthologs	N
+GM.5.0.bZIP.0085	h1SMcG0017602	Orthologs	N
+GM.5.0.bZIP.0085	h1SMcG0004816	Orthologs	N
+GM.5.0.Homeodomain.0169	h1SMcG0007474	Orthologs	N
+GM.5.0.Homeodomain.0169	h1SMcG0003793	Orthologs	N
+GM.5.0.RFX.0012	h1SMcG0015193	Orthologs	N
+GM.5.0.C2H2_ZF.0220	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.bHLH.0106	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Unknown.0132	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Unknown.0133	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.C2H2_ZF.0221	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Unknown.0134	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.C2H2_ZF.0222	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.C2H2_ZF_Homeodomain.0004	h1SMcG0001531	Orthologs	N
+GM.5.0.C2H2_ZF_Homeodomain.0004	h1SMcG0006102	Orthologs	N
+GM.5.0.bHLH.0107	h1SMcG0011688	Orthologs	N
+GM.5.0.bHLH.0107	h1SMcG0020191	Orthologs	N
+GM.5.0.bHLH.0108	h1SMcG0009326	Orthologs	N
+GM.5.0.bHLH.0108	h1SMcG0018400	Orthologs	N
+GM.5.0.bHLH.0108	h1SMcG0001334	Orthologs	N
+GM.5.0.bHLH.0108	h1SMcG0021180	Orthologs	N
+GM.5.0.C2H2_ZF.0223	h1SMcG0000656	Orthologs	N
+GM.5.0.bZIP.0086	h1SMcG0012645	Orthologs	N
+GM.5.0.Unknown.0135	h1SMcG0001034	Orthologs	N
+GM.5.0.C2H2_ZF.0224	h1SMcG0010990	Orthologs	N
+GM.5.0.C2H2_ZF.0224	h1SMcG0018295	Orthologs	N
+GM.5.0.C2H2_ZF.0224	h1SMcG0018294	Orthologs	N
+GM.5.0.bHLH.0109	h1SMcG0016003	Orthologs	N
+GM.5.0.bHLH.0109	h1SMnG0025958	Orthologs	N
+GM.5.0.Paired_box.0018	h1SMcG0008441	Orthologs	N
+GM.5.0.bHLH.0110	h1SMcG0016956	Orthologs	N
+GM.5.0.C2H2_ZF.0225	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.C2H2_ZF.0226	>h1SMcG0005177	Orthologs	N
+GM.5.0.Unknown.0136	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Sox.0035	h1SMcG0016676	Orthologs	N
+GM.5.0.Unknown.0137	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.bHLH.0111	h1SMcG0011688	Orthologs	N
+GM.5.0.bHLH.0111	h1SMcG0020191	Orthologs	N
+GM.5.0.Ets.0041	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Unknown.0138	h1SMcG0009000	Orthologs	N
+GM.5.0.Unknown.0138	h1SMcG0013344	Orthologs	N
+GM.5.0.C2H2_ZF.0227	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.bHLH.0112	h1SMcG0016003	Orthologs	N
+GM.5.0.bHLH.0112	h1SMnG0025958	Orthologs	N
+GM.5.0.bHLH.0113	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.HSF.0008	h1SMcG0006379	Orthologs	N
+GM.5.0.CUT_Homeodomain.0011	h1SMcG0010220	Orthologs	N
+GM.5.0.CUT_Homeodomain.0011	h1SMcG0019233	Orthologs	N
+GM.5.0.Mixed.0088	h1SMcG0010451	Orthologs	N
+GM.5.0.Mixed.0088	h1SMcG0010448	Orthologs	N
+GM.5.0.Ets.0042	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Homeodomain.0170	h1SMcG0018916	Orthologs	N
+GM.5.0.Homeodomain.0171	h1SMcG0003685	Orthologs	N
+GM.5.0.C2H2_ZF.0228	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Homeodomain.0172	h1SMcG0003298	Orthologs	N
+GM.5.0.T-box.0021	h1SMcG0010122	Orthologs	N
+GM.5.0.C2H2_ZF.0229	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Nuclear_receptor.0120	h1SMcG0016703	Orthologs	N
+GM.5.0.Nuclear_receptor.0121	h1SMcG0005026	Orthologs	N
+GM.5.0.Nuclear_receptor.0121	h1SMnG0004601	Orthologs	N
+GM.5.0.Nuclear_receptor.0121	h1SMcG0018383	Orthologs	N
+GM.5.0.Nuclear_receptor.0121	h1SMcG0000782	Orthologs	N
+GM.5.0.bHLH.0114	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.C2H2_ZF.0230	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Nuclear_receptor.0122	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.GATA.0024	h1SMcG0009369	Orthologs	N
+GM.5.0.Unknown.0139	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.bHLH.0115	h1SMcG0018604	Orthologs	N
+GM.5.0.bHLH.0115	h1SMcG0022832	Orthologs	N
+GM.5.0.bHLH.0115	h1SMcG0007018	Orthologs	N
+GM.5.0.bHLH.0115	h1SMcG0012768	Orthologs	N
+GM.5.0.C2H2_ZF.0231	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Unknown.0140	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.C2H2_ZF.0232	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.C2H2_ZF.0233	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.bZIP.0087	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Homeodomain.0173	h1SMcG0022072	Orthologs	N
+GM.5.0.C2H2_ZF.0234	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.bHLH.0116	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.C2H2_ZF.0235	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Homeodomain.0174	h1SMcG0004695	Orthologs	N
+GM.5.0.Homeodomain.0174	h1SMcG0014159	Orthologs	N
+GM.5.0.Homeodomain.0174	h1SMcG0021332	Orthologs	N
+GM.5.0.p53.0009	>h1SMcG0016868	Orthologs	N
+GM.5.0.GATA.0025	h1SMcG0009369	Orthologs	N
+GM.5.0.Unknown.0141	h1SMcG0014111	Orthologs	N
+GM.5.0.C2H2_ZF.0236	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Nuclear_receptor.0123	h1SMcG0019688	Orthologs	N
+GM.5.0.bHLH.0117	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.MADS_box.0019	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.C2H2_ZF.0237	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.bZIP.0088	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.ARID_BRIGHT.0004	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.C2H2_ZF.0238	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.C2H2_ZF.0239	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Unknown.0142	h1SMcG0021078	Orthologs	N
+GM.5.0.C2H2_ZF.0240	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Paired_box.0019	h1SMcG0008441	Orthologs	N
+GM.5.0.MADS_box.0020	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.C2H2_ZF.0241	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.bHLH.0118	h1SMcG0022832	Orthologs	N
+GM.5.0.bHLH.0118	h1SMcG0007018	Orthologs	N
+GM.5.0.bHLH.0118	h1SMnG0012616	Orthologs	N
+GM.5.0.Unknown.0143	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Forkhead.0050	h1SMcG0009963	Orthologs	N
+GM.5.0.Forkhead.0050	h1SMcG0013875	Orthologs	N
+GM.5.0.Forkhead.0050	h1SMcG0000287	Orthologs	N
+GM.5.0.Forkhead.0050	h1SMcG0012074	Orthologs	N
+GM.5.0.Forkhead.0050	h1SMcG0008308	Orthologs	N
+GM.5.0.Forkhead.0050	h1SMcG0015283	Orthologs	N
+GM.5.0.Forkhead.0050	h1SMcG0007411	Orthologs	N
+GM.5.0.Mixed.0089	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Unknown.0144	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.STAT.0022	h1SMcG0007329	Orthologs	N
+GM.5.0.STAT.0022	h1SMcG0007325	Orthologs	N
+GM.5.0.Homeodomain.0175	h1SMcG0013158	Orthologs	N
+GM.5.0.Homeodomain.0175	h1SMcG0022494	Orthologs	N
+GM.5.0.Homeodomain.0175	h1SMcG0014295	Orthologs	N
+GM.5.0.Unknown.0145	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.C2H2_ZF.0242	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Unknown.0146	h1SMcG0022624	Orthologs	N
+GM.5.0.C2H2_ZF.0243	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.RFX.0013	h1SMcG0020741	Orthologs	N
+GM.5.0.RFX.0013	h1SMcG0015193	Orthologs	N
+GM.5.0.C2H2_ZF.0244	h1SMcG0010990	Orthologs	N
+GM.5.0.C2H2_ZF.0244	h1SMcG0018295	Orthologs	N
+GM.5.0.C2H2_ZF.0244	h1SMcG0018294	Orthologs	N
+GM.5.0.bHLH.0119	h1SMcG0006375	Orthologs	N
+GM.5.0.Forkhead.0051	h1SMcG0009963	Orthologs	N
+GM.5.0.Forkhead.0051	h1SMcG0013875	Orthologs	N
+GM.5.0.Forkhead.0051	h1SMcG0000287	Orthologs	N
+GM.5.0.Forkhead.0051	h1SMcG0012074	Orthologs	N
+GM.5.0.Forkhead.0051	h1SMcG0008308	Orthologs	N
+GM.5.0.Forkhead.0051	h1SMcG0015283	Orthologs	N
+GM.5.0.Forkhead.0051	h1SMcG0007411	Orthologs	N
+GM.5.0.Unknown.0147	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Mixed.0090	h1SMcG0010220	Orthologs	N
+GM.5.0.Mixed.0090	h1SMcG0019233	Orthologs	N
+GM.5.0.ARID_BRIGHT.0005	h1SMcG0003882	Orthologs	N
+GM.5.0.C2H2_ZF.0245	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.C2H2_ZF.0246	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Homeodomain.0176	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Forkhead.0052	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.MBD.0003	h1SMcG0010265	Orthologs	N
+GM.5.0.bHLH.0120	h1SMcG0001531	Orthologs	N
+GM.5.0.C2H2_ZF.0247	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Mixed.0091	h1SMcG0010220	Orthologs	N
+GM.5.0.Mixed.0091	h1SMcG0019233	Orthologs	N
+GM.5.0.Ets.0043	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Mixed.0092	h1SMcG0013594	Orthologs	N
+GM.5.0.Unknown.0148	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Unknown.0149	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Homeodomain.0177	h1SMcG0003298	Orthologs	N
+GM.5.0.C2H2_ZF.0248	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Mixed.0093	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.C2H2_ZF.0249	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.bZIP.0089	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.bHLH.0121	h1SMcG0004651	Orthologs	N
+GM.5.0.STAT.0023	h1SMcG0007329	Orthologs	N
+GM.5.0.STAT.0023	h1SMcG0007325	Orthologs	N
+GM.5.0.Unknown.0150	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.C2H2_ZF.0250	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.bHLH.0122	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Unknown.0151	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.C2H2_ZF.0251	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.bHLH.0123	h1SMcG0013330	Orthologs	N
+GM.5.0.C2H2_ZF.0252	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.TEA.0006	h1SMcG0015294	Orthologs	N
+GM.5.0.Unknown.0152	h1SMcG0001180	Orthologs	N
+GM.5.0.Unknown.0152	>h1SMcG0003104	Orthologs	N
+GM.5.0.Unknown.0152	h1SMcG0006666	Orthologs	N
+GM.5.0.bZIP.0090	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Homeodomain.0178	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.C2H2_ZF.0253	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Homeodomain_POU.0017	h1SMcG0013730	Orthologs	N
+GM.5.0.bZIP.0091	h1SMcG0012645	Orthologs	N
+GM.5.0.Homeodomain.0179	h1SMcG0020740	Orthologs	N
+GM.5.0.Homeodomain.0180	h1SMcG0008090	Orthologs	N
+GM.5.0.Homeodomain.0180	h1SMcG0014159	Orthologs	N
+GM.5.0.Mixed.0094	h1SMcG0020592	Orthologs	N
+GM.5.0.Mixed.0094	h1SMcG0010290	Orthologs	N
+GM.5.0.Mixed.0094	h1SMcG0010366	Orthologs	N
+GM.5.0.Mixed.0094	h1SMcG0010076	Orthologs	N
+GM.5.0.Mixed.0094	h1SMcG0006042	Orthologs	N
+GM.5.0.Unknown.0153	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Unknown.0154	h1SMnG0026321	Orthologs	N
+GM.5.0.Unknown.0154	h1SMcG0016233	Orthologs	N
+GM.5.0.Ndt80_PhoG.0001	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Unknown.0155	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.IRF.0019	h1SMcG0001975	Orthologs	N
+GM.5.0.Unknown.0156	h1SMcG0006042	Orthologs	N
+GM.5.0.bHLH.0124	h1SMcG0001531	Orthologs	N
+GM.5.0.Unknown.0157	h1SMcG0004888	Orthologs	N
+GM.5.0.Paired_box.0020	h1SMcG0008441	Orthologs	N
+GM.5.0.Nuclear_receptor.0124	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.C2H2_ZF.0254	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.bZIP.0092	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Unknown.0158	h1SMcG0010451	Orthologs	N
+GM.5.0.Unknown.0158	h1SMcG0010448	Orthologs	N
+GM.5.0.Unknown.0159	h1SMcG0015958	Orthologs	N
+GM.5.0.Unknown.0159	h1SMcG0002678	Orthologs	N
+GM.5.0.bHLH.0125	h1SMcG0022451	Orthologs	N
+GM.5.0.GATA.0026	h1SMcG0009369	Orthologs	N
+GM.5.0.C2H2_ZF.0255	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.GATA.0027	h1SMcG0009369	Orthologs	N
+GM.5.0.C2H2_ZF.0256	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.bHLH.0126	h1SMcG0006375	Orthologs	N
+GM.5.0.Mixed.0095	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.T-box.0022	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Nuclear_receptor.0125	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.SAND.0008	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Nuclear_receptor.0126	h1SMcG0001020	Orthologs	N
+GM.5.0.Unknown.0160	h1SMcG0006465	Orthologs	N
+GM.5.0.Homeodomain.0181	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Unknown.0161	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.bHLH.0127	h1SMcG0006375	Orthologs	N
+GM.5.0.RFX.0014	h1SMcG0015193	Orthologs	N
+GM.5.0.E2F.0020	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.C2H2_ZF.0257	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Unknown.0162	h1SMcG0002696	Orthologs	N
+GM.5.0.C2H2_ZF.0258	h1SMcG0010990	Orthologs	N
+GM.5.0.Paired_box.0021	h1SMcG0008441	Orthologs	N
+GM.5.0.C2H2_ZF.0259	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.SAND.0009	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.C2H2_ZF.0260	h1SMcG0010990	Orthologs	N
+GM.5.0.C2H2_ZF.0261	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Unknown.0163	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.C2H2_ZF.0262	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.C2H2_ZF.0263	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Forkhead.0053	h1SMcG0006261	Orthologs	N
+GM.5.0.TEA.0007	h1SMcG0015294	Orthologs	N
+GM.5.0.C2H2_ZF.0264	h1SMcG0011808	Orthologs	N
+GM.5.0.C2H2_ZF.0264	h1SMcG0014387	Orthologs	N
+GM.5.0.C2H2_ZF.0265	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.C2H2_ZF.0266	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Unknown.0164	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.HSF.0009	h1SMcG0006379	Orthologs	N
+GM.5.0.Homeodomain.0182	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.AT_hook.0004	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Unknown.0165	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Unknown.0166	h1SMcG0008246	Orthologs	N
+GM.5.0.C2H2_ZF.0267	h1SMnG0004601	Orthologs	N
+GM.5.0.Nuclear_receptor.0127	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Forkhead.0054	h1SMcG0009963	Orthologs	N
+GM.5.0.Forkhead.0054	h1SMcG0013875	Orthologs	N
+GM.5.0.Forkhead.0054	h1SMcG0000287	Orthologs	N
+GM.5.0.Forkhead.0054	h1SMcG0012074	Orthologs	N
+GM.5.0.Forkhead.0054	h1SMcG0008308	Orthologs	N
+GM.5.0.Forkhead.0054	h1SMcG0015283	Orthologs	N
+GM.5.0.Forkhead.0054	h1SMcG0007411	Orthologs	N
+GM.5.0.bHLH.0128	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.C2H2_ZF.0268	h1SMcG0001434	Orthologs	N
+GM.5.0.C2H2_ZF.0268	h1SMcG0015400	Orthologs	N
+GM.5.0.Mixed.0096	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.C2H2_ZF.0269	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.bHLH.0129	h1SMcG0020191	Orthologs	N
+GM.5.0.bZIP.0093	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.C2H2_ZF.0270	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Homeodomain.0183	h1SMcG0003298	Orthologs	N
+GM.5.0.Mixed.0097	h1SMcG0009273	Orthologs	N
+GM.5.0.Mixed.0098	h1SMcG0006548	Orthologs	N
+GM.5.0.Mixed.0098	h1SMcG0006193	Orthologs	N
+GM.5.0.Forkhead.0055	h1SMcG0013875	Orthologs	N
+GM.5.0.Forkhead.0055	h1SMcG0000287	Orthologs	N
+GM.5.0.Forkhead.0055	h1SMcG0012074	Orthologs	N
+GM.5.0.Forkhead.0055	h1SMcG0008308	Orthologs	N
+GM.5.0.Homeodomain_POU.0018	h1SMcG0008833	Orthologs	N
+GM.5.0.Homeodomain_POU.0018	h1SMcG0001116	Orthologs	N
+GM.5.0.Homeodomain_POU.0018	h1SMcG0001113	Orthologs	N
+GM.5.0.Homeodomain_POU.0018	h1SMcG0001112	Orthologs	N
+GM.5.0.Mixed.0099	h1SMcG0013594	Orthologs	N
+GM.5.0.Forkhead.0056	h1SMcG0009963	Orthologs	N
+GM.5.0.Forkhead.0056	h1SMcG0013875	Orthologs	N
+GM.5.0.Forkhead.0056	h1SMcG0000287	Orthologs	N
+GM.5.0.Forkhead.0056	h1SMcG0012074	Orthologs	N
+GM.5.0.Forkhead.0056	h1SMcG0008308	Orthologs	N
+GM.5.0.Forkhead.0056	h1SMcG0015283	Orthologs	N
+GM.5.0.Forkhead.0056	h1SMcG0007411	Orthologs	N
+GM.5.0.Homeodomain.0184	h1SMcG0009117	Orthologs	N
+GM.5.0.RFX.0015	h1SMcG0011556	Orthologs	N
+GM.5.0.RFX.0015	h1SMcG0022918	Orthologs	N
+GM.5.0.RFX.0015	h1SMcG0015193	Orthologs	N
+GM.5.0.Homeodomain.0185	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.bHLH.0130	h1SMcG0018604	Orthologs	N
+GM.5.0.AT_hook.0005	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.GATA.0028	h1SMcG0009369	Orthologs	N
+GM.5.0.Nuclear_receptor.0128	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Forkhead.0057	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.C2H2_ZF.0271	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.C2H2_ZF.0272	h1SMcG0015673	Orthologs	N
+GM.5.0.Homeodomain.0186	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Homeodomain_POU.0019	h1SMcG0002614	Orthologs	N
+GM.5.0.Nuclear_receptor.0129	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.C2H2_ZF.0273	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Unknown.0167	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Homeodomain.0187	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Homeodomain.0188	h1SMcG0008090	Orthologs	N
+GM.5.0.Homeodomain.0188	h1SMcG0014159	Orthologs	N
+GM.5.0.Myb_SANT.0016	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.bZIP.0094	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.C2H2_ZF.0274	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Mixed.0100	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Homeodomain_POU.0020	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.C2H2_ZF.0275	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.C2H2_ZF.0276	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.GATA.0029	h1SMcG0009369	Orthologs	N
+GM.5.0.C2H2_ZF.0277	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.bHLH.0131	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.bHLH.0132	h1SMcG0016003	Orthologs	N
+GM.5.0.bHLH.0132	h1SMnG0025958	Orthologs	N
+GM.5.0.C2H2_ZF.0278	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.AT_hook.0006	h1SMcG0001229	Orthologs	N
+GM.5.0.C2H2_ZF.0279	h1SMcG0015621	Orthologs	N
+GM.5.0.bZIP.0095	h1SMcG0010609	Orthologs	N
+GM.5.0.bZIP.0095	h1SMcG0017602	Orthologs	N
+GM.5.0.bZIP.0095	h1SMcG0004816	Orthologs	N
+GM.5.0.C2H2_ZF.0280	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.C2H2_ZF.0281	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.IRF.0020	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Ets.0044	h1SMcG0000267	Orthologs	N
+GM.5.0.Nuclear_receptor.0130	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.DM.0007	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.C2H2_ZF.0282	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Nuclear_receptor.0131	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Nuclear_receptor.0132	h1SMcG0019688	Orthologs	N
+GM.5.0.Nuclear_receptor.0133	h1SMcG0019688	Orthologs	N
+GM.5.0.C2H2_ZF.0283	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Homeodomain.0189	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Unknown.0168	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.TBP.0005	h1SMcG0010076	Orthologs	N
+GM.5.0.bZIP.0096	h1SMcG0017653	Orthologs	N
+GM.5.0.bZIP.0096	h1SMcG0010609	Orthologs	N
+GM.5.0.bZIP.0096	h1SMcG0017602	Orthologs	N
+GM.5.0.bZIP.0096	h1SMcG0004816	Orthologs	N
+GM.5.0.bZIP.0096	h1SMcG0008373	Orthologs	N
+GM.5.0.bZIP.0096	h1SMcG0006635	Orthologs	N
+GM.5.0.bZIP.0096	h1SMcG0021266	Orthologs	N
+GM.5.0.C2H2_ZF.0284	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.C2H2_ZF.0285	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Unknown.0169	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.C2H2_ZF.0286	>h1SMcG0005177	Orthologs	N
+GM.5.0.C2H2_ZF.0287	h1SMcG0015343	Orthologs	N
+GM.5.0.C2H2_ZF.0287	h1SMcG0022224	Orthologs	N
+GM.5.0.Nuclear_receptor.0134	h1SMcG0019688	Orthologs	N
+GM.5.0.Homeodomain.0190	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Unknown.0170	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Mixed.0101	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.C2H2_ZF.0288	>h1SMcG0005177	Orthologs	N
+GM.5.0.Forkhead.0058	h1SMcG0009963	Orthologs	N
+GM.5.0.Forkhead.0058	h1SMcG0020478	Orthologs	N
+GM.5.0.Forkhead.0058	h1SMcG0013875	Orthologs	N
+GM.5.0.Forkhead.0058	h1SMcG0000287	Orthologs	N
+GM.5.0.Forkhead.0058	h1SMcG0012074	Orthologs	N
+GM.5.0.Forkhead.0058	h1SMcG0008308	Orthologs	N
+GM.5.0.Forkhead.0058	h1SMcG0015283	Orthologs	N
+GM.5.0.Forkhead.0058	h1SMcG0007411	Orthologs	N
+GM.5.0.HSF.0010	h1SMcG0006379	Orthologs	N
+GM.5.0.E2F.0021	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Nuclear_receptor.0135	h1SMcG0015595	Orthologs	N
+GM.5.0.Mixed.0102	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Unknown.0171	h1SMcG0010560	Orthologs	N
+GM.5.0.Unknown.0171	h1SMnG0017382	Orthologs	N
+GM.5.0.Nuclear_receptor.0136	h1SMcG0011606	Orthologs	N
+GM.5.0.Unknown.0172	h1SMcG0009369	Orthologs	N
+GM.5.0.Unknown.0173	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.C2H2_ZF.0289	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.MADS_box.0021	h1SMcG0008373	Orthologs	N
+GM.5.0.Homeodomain.0191	h1SMcG0008090	Orthologs	N
+GM.5.0.Homeodomain.0191	h1SMcG0007041	Orthologs	N
+GM.5.0.Unknown.0174	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Mixed.0103	h1SMcG0020760	Orthologs	N
+GM.5.0.Mixed.0103	h1SMcG0010451	Orthologs	N
+GM.5.0.Mixed.0103	h1SMcG0010448	Orthologs	N
+GM.5.0.bHLH.0133	h1SMcG0006375	Orthologs	N
+GM.5.0.Unknown.0175	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.C2H2_ZF.0290	h1SMcG0010990	Orthologs	N
+GM.5.0.Homeodomain_POU.0021	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.C2H2_ZF.0291	h1SMcG0015343	Orthologs	N
+GM.5.0.C2H2_ZF.0291	h1SMcG0022224	Orthologs	N
+GM.5.0.TBP.0006	h1SMcG0010076	Orthologs	N
+GM.5.0.Myb_SANT.0017	h1SMcG0013177	Orthologs	N
+GM.5.0.Myb_SANT.0017	h1SMcG0013178	Orthologs	N
+GM.5.0.Myb_SANT.0017	h1SMcG0013179	Orthologs	N
+GM.5.0.Myb_SANT.0017	h1SMcG0013166	Orthologs	N
+GM.5.0.Myb_SANT.0017	h1SMcG0013163	Orthologs	N
+GM.5.0.Paired_box.0022	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.C2H2_ZF.0292	h1SMcG0000656	Orthologs	N
+GM.5.0.p53.0010	>h1SMcG0016868	Orthologs	N
+GM.5.0.Homeodomain_POU.0022	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.C2HC_ZF.0001	h1SMcG0014257	Orthologs	N
+GM.5.0.C2HC_ZF.0001	h1SMcG0006743	Orthologs	N
+GM.5.0.C2HC_ZF.0001	h1SMcG0014518	Orthologs	N
+GM.5.0.Homeodomain.0192	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Homeodomain.0193	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.TEA.0008	h1SMcG0015294	Orthologs	N
+GM.5.0.Homeodomain.0194	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.bHLH.0134	h1SMcG0016956	Orthologs	N
+GM.5.0.Unknown.0176	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Nuclear_receptor.0137	h1SMcG0005673	Orthologs	N
+GM.5.0.Unknown.0177	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Unknown.0178	h1SMcG0017097	Orthologs	N
+GM.5.0.Grainyhead.0009	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Unknown.0179	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Nuclear_receptor.0138	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.C2H2_ZF.0293	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.T-box.0023	h1SMcG0010122	Orthologs	N
+GM.5.0.T-box.0023	h1SMcG0022768	Orthologs	N
+GM.5.0.T-box.0023	h1SMcG0007448	Orthologs	N
+GM.5.0.C2H2_ZF.0294	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.C2H2_ZF_Homeodomain.0005	h1SMcG0006102	Orthologs	N
+GM.5.0.Unknown.0180	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.C2H2_ZF.0295	h1SMcG0001477	Orthologs	N
+GM.5.0.C2H2_ZF.0295	h1SMcG0005497	Orthologs	N
+GM.5.0.RFX.0016	h1SMcG0020741	Orthologs	N
+GM.5.0.Sox.0036	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Unknown.0181	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Homeodomain.0195	h1SMcG0003130	Orthologs	N
+GM.5.0.bHLH.0135	h1SMcG0016956	Orthologs	N
+GM.5.0.Unknown.0182	h1SMcG0016730	Orthologs	N
+GM.5.0.Mixed.0104	h1SMcG0009273	Orthologs	N
+GM.5.0.p53.0011	>h1SMcG0016868	Orthologs	N
+GM.5.0.DM.0008	h1SMcG0022046	Orthologs	N
+GM.5.0.Nuclear_receptor.0139	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.bZIP.0097	h1SMcG0008373	Orthologs	N
+GM.5.0.MADS_box.0022	h1SMcG0000971	Orthologs	N
+GM.5.0.Nuclear_receptor.0140	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Ets.0045	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Unknown.0183	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Homeodomain.0196	h1SMcG0019014	Orthologs	N
+GM.5.0.Homeodomain.0197	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.C2H2_ZF.0296	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Unknown.0184	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.C2H2_ZF.0297	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.CUT_Homeodomain.0012	h1SMcG0010220	Orthologs	N
+GM.5.0.CUT_Homeodomain.0012	h1SMcG0019233	Orthologs	N
+GM.5.0.Unknown.0185	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.GATA.0030	h1SMcG0009369	Orthologs	N
+GM.5.0.Unknown.0186	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Unknown.0187	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.T-box.0024	h1SMcG0010860	Orthologs	N
+GM.5.0.Nuclear_receptor.0141	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.GATA.0031	h1SMcG0009369	Orthologs	N
+GM.5.0.Unknown.0188	h1SMcG0010451	Orthologs	N
+GM.5.0.Unknown.0188	h1SMcG0010448	Orthologs	N
+GM.5.0.C2H2_ZF.0298	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Mixed.0105	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.TEA.0009	h1SMcG0015294	Orthologs	N
+GM.5.0.Mixed.0106	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.bHLH.0136	h1SMcG0016003	Orthologs	N
+GM.5.0.bHLH.0136	h1SMnG0025958	Orthologs	N
+GM.5.0.Nuclear_receptor.0142	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Ets.0046	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.C2H2_ZF.0299	h1SMcG0001477	Orthologs	N
+GM.5.0.C2H2_ZF.0299	h1SMcG0005497	Orthologs	N
+GM.5.0.C2H2_ZF.0300	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.C2H2_ZF.0301	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.C2H2_ZF.0302	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.bZIP.0098	h1SMcG0006635	Orthologs	N
+GM.5.0.Unknown.0189	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Unknown.0190	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Unknown.0191	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.bHLH.0137	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Unknown.0192	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Unknown.0193	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Mixed.0107	h1SMcG0013594	Orthologs	N
+GM.5.0.Nuclear_receptor.0143	h1SMcG0019688	Orthologs	N
+GM.5.0.C2H2_ZF.0303	>h1SMcG0005177	Orthologs	N
+GM.5.0.IRF.0021	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.bZIP.0099	h1SMcG0007969	Orthologs	N
+GM.5.0.C2H2_ZF.0304	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.C2H2_ZF.0305	h1SMcG0002845	Orthologs	N
+GM.5.0.C2H2_ZF.0306	h1SMcG0001477	Orthologs	N
+GM.5.0.C2H2_ZF.0306	h1SMcG0005497	Orthologs	N
+GM.5.0.Homeodomain.0198	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.RFX.0017	h1SMcG0015193	Orthologs	N
+GM.5.0.C2H2_ZF.0307	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Unknown.0194	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.MADS_box.0023	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Homeodomain.0199	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Unknown.0195	h1SMcG0006465	Orthologs	N
+GM.5.0.Ets.0047	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.bZIP.0100	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Homeodomain.0200	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Homeodomain.0201	h1SMcG0020740	Orthologs	N
+GM.5.0.Homeodomain.0202	h1SMcG0008090	Orthologs	N
+GM.5.0.Unknown.0196	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.C2H2_ZF.0308	h1SMcG0010990	Orthologs	N
+GM.5.0.STAT.0024	h1SMcG0007329	Orthologs	N
+GM.5.0.STAT.0024	h1SMcG0007325	Orthologs	N
+GM.5.0.C2H2_ZF.0309	>h1SMcG0005177	Orthologs	N
+GM.5.0.Forkhead.0059	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Ets.0048	h1SMcG0014005	Orthologs	N
+GM.5.0.Ets.0048	h1SMnG0022954	Orthologs	N
+GM.5.0.Ets.0048	h1SMcG0021529	Orthologs	N
+GM.5.0.Ets.0048	h1SMcG0000267	Orthologs	N
+GM.5.0.STAT.0025	h1SMcG0007329	Orthologs	N
+GM.5.0.STAT.0025	h1SMcG0007325	Orthologs	N
+GM.5.0.C2H2_ZF.0310	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Forkhead.0060	h1SMcG0009963	Orthologs	N
+GM.5.0.Forkhead.0060	h1SMcG0013875	Orthologs	N
+GM.5.0.Forkhead.0060	h1SMcG0000287	Orthologs	N
+GM.5.0.Forkhead.0060	h1SMcG0012074	Orthologs	N
+GM.5.0.Forkhead.0060	h1SMcG0008308	Orthologs	N
+GM.5.0.Forkhead.0060	h1SMcG0015283	Orthologs	N
+GM.5.0.Forkhead.0060	h1SMcG0007411	Orthologs	N
+GM.5.0.Nuclear_receptor.0144	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Grainyhead.0010	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Forkhead.0061	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Homeodomain_POU.0023	h1SMcG0008833	Orthologs	N
+GM.5.0.EIN3.0002	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Unknown.0197	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Nuclear_receptor.0145	h1SMcG0019688	Orthologs	N
+GM.5.0.DM.0009	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.bZIP.0101	h1SMcG0012645	Orthologs	N
+GM.5.0.Nuclear_receptor.0146	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Nuclear_receptor.0147	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.TEA.0010	h1SMcG0015294	Orthologs	N
+GM.5.0.Mixed.0108	h1SMcG0020760	Orthologs	N
+GM.5.0.Mixed.0108	h1SMcG0010451	Orthologs	N
+GM.5.0.Mixed.0108	h1SMcG0010448	Orthologs	N
+GM.5.0.C2H2_ZF.0311	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Nuclear_receptor.0148	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Unknown.0198	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Unknown.0199	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Nuclear_receptor.0149	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.ARID_BRIGHT.0006	h1SMcG0003882	Orthologs	N
+GM.5.0.Homeodomain_POU.0024	h1SMcG0008833	Orthologs	N
+GM.5.0.Homeodomain_POU.0024	h1SMcG0015751	Orthologs	N
+GM.5.0.C2H2_ZF.0312	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.ARID_BRIGHT.0007	h1SMcG0003882	Orthologs	N
+GM.5.0.Unknown.0200	h1SMcG0006042	Orthologs	N
+GM.5.0.Unknown.0201	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Unknown.0202	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Grainyhead.0011	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.C2H2_ZF.0313	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Unknown.0203	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Unknown.0204	h1SMcG0002697	Orthologs	N
+GM.5.0.Unknown.0204	h1SMcG0000656	Orthologs	N
+GM.5.0.Homeodomain.0203	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Homeodomain_POU.0025	h1SMcG0008833	Orthologs	N
+GM.5.0.Nuclear_receptor.0150	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.T-box.0025	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.C2H2_ZF.0314	h1SMcG0001434	Orthologs	N
+GM.5.0.bZIP.0102	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.bHLH.0138	h1SMcG0015430	Orthologs	N
+GM.5.0.bHLH.0138	h1SMcG0015422	Orthologs	N
+GM.5.0.Unknown.0205	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.T-box.0026	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Rel.0024	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Nuclear_receptor.0151	h1SMcG0001020	Orthologs	N
+GM.5.0.Nuclear_receptor.0151	h1SMcG0019688	Orthologs	N
+GM.5.0.Unknown.0206	h1SMcG0015958	Orthologs	N
+GM.5.0.Unknown.0206	h1SMcG0002678	Orthologs	N
+GM.5.0.Homeodomain.0204	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Mixed.0109	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.RFX.0018	h1SMcG0020741	Orthologs	N
+GM.5.0.RFX.0018	h1SMcG0015193	Orthologs	N
+GM.5.0.bZIP.0103	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.C2H2_ZF.0315	h1SMcG0016472	Orthologs	N
+GM.5.0.C2H2_ZF.0315	h1SMcG0018383	Orthologs	N
+GM.5.0.Unknown.0207	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.C2H2_ZF.0316	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.C2H2_ZF.0317	h1SMcG0013509	Orthologs	N
+GM.5.0.Ets.0049	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Unknown.0208	NO ORTHOLOGS FOUND	Orthologs	N
+GM.5.0.Homeodomain_POU.0026	h1SMcG0008833	Orthologs	N

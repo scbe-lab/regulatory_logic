@@ -1,5 +1,5 @@
 ---
-title: 'Smed CisReg project 07-d: WGCNA graph analysis'
+title: 'Smed CisReg project 13: WGCNA graph analysis'
 author: 'Alberto Perez Posada @apposada'
 date: '02/01/2024'
 output:
@@ -12,7 +12,7 @@ editor_options:
 
 ```{r setup, include=FALSE}
 
-dir <- '/mnt/sda/alberto/projects/smed_cisreg/'
+dir <- '~/storage/projects/smed_cisreg_2025_github_repository/'
 fcha <- function(){ gsub("-","",Sys.Date()) }
 
 knitr::opts_chunk$set(echo = TRUE)
@@ -58,8 +58,8 @@ We prepare by loading the necessary data from our previous markdowns:
 #TOM_2 <- readRDS("outputs/rda/wgcna_TOM_matrix.rds")
 ```
 ```{r}
-load("outputs/rda/smed_counts.rda")
-load("outputs/rda/smed_wgcna_all.rda")
+load("outputs/rda/scrna_counts/smed_counts.rda")
+load("outputs/rda/scrna_wgcna/smed_wgcna_all.rda")
 load("outputs/rda/tf_analysis.rda")
 load("outputs/rda/motif_analysis.rda")
 ```
@@ -101,7 +101,7 @@ smed_tfs_graph_annotation <- merge(
 )[,c(2,1,3)]
 
 # Functional categories (COG)
-smed_cogs <- read.table("./outputs/gene_annotation/smed_COGs.tsv")
+smed_cogs <- read.table("outputs/gene_annotation/smed_COGs.tsv")
 smed_cogs <- as.data.frame(
   separate_rows(smed_cogs, V2, sep = '(?<=.)(?=.)')
 )
@@ -140,7 +140,7 @@ We will use igraph's `graph_from_adjacency_matrix` to generate a graph using the
 
 ```{r generate_graph0}
 smed_graph0 <- graph_from_adjacency_matrix(
-  adjmatrix = TOM_2, # REPLACE WITH TOM_2
+  adjmatrix = TOM_2,
   add.colnames = "name",
   mode = "upper",
   weighted = TRUE,
@@ -210,10 +210,10 @@ for (thresh in thresholds) {
   )
   list_metrics[[graphname]] <- id_comp
 }
-saveRDS(list_metrics,"outputs/rda/list_graph_metrics.RDS")
+saveRDS(list_metrics,"outputs/rda/scrna_wgcna/list_graph_metrics.RDS")
 ```
 ```{r, echo = FALSE}
-list_metrics <- readRDS("outputs/rda/list_graph_metrics.RDS")
+list_metrics <- readRDS("outputs/rda/scrna_wgcna/list_graph_metrics.RDS")
 ```
 
 We see these plots:
@@ -613,7 +613,6 @@ dev.off()
 ## TF connectivity and centrality
 
 ```{r}
-
 # TF CONNECTIVITY
 tfs_kme_intramodular <- smed_id_module[smed_id_module$id %in% smed_tfs$id,]
 tfs_kme_intramodular$kME <- 0
@@ -1051,12 +1050,9 @@ From functional categories:
 
 ```{r}
 colnames(smed_cogs) <- c("id","cog")
-sourceFolder("~/projects/dev/comparABle/code/", recursive = TRUE)
 res <- cog_enrichment_analysis(x_modules = smed_id_module, x_cog = smed_cogs)
 
 m_cog_cor <- cor(t(res$enrichment))
-#Heatmap(m_cog_cor)
-#hist(m_cog_cor,breaks = 200, col = "#4c4c4c", border = NA)
 m_cog_cor[m_cog_cor < 0.5] <- 0
 
 g_m_cog_ppc <- graph_from_adjacency_matrix(
@@ -1319,6 +1315,6 @@ save(
   clp,
   new_cols,
   l,
-  file = "outputs/rda/wgcna_g_merge_aggr_2plus.rda"
+  file = "outputs/rda/scrna_wgcna/wgcna_g_merge_aggr_2plus.rda"
 )
 ```

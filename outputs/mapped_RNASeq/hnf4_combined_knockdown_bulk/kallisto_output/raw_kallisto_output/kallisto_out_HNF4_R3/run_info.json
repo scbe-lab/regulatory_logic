@@ -1,0 +1,14 @@
+{
+	"n_targets": 58739,
+	"n_bootstraps": 0,
+	"n_processed": 23267115,
+	"n_pseudoaligned": 20382689,
+	"n_unique": 18330842,
+	"p_pseudoaligned": 87.6,
+	"p_unique": 78.8,
+	"kallisto_version": "0.51.1",
+	"index_version": 13,
+	"k-mer length": 31,
+	"start_time": "Fri Mar 28 12:11:09 2025",
+	"call": "kallisto quant -t 12 -i /omics-storage/lab-solana/genomes/Smed/Rink/schMedS3/transdecoder_and_annotation/transdecoder/transcripts.fna.kallisto.index -o /omics-storage/lab-solana/alberto/projects/smed_cisreg/outputs/rna/hnf4_combined_knockdown_bulk/kallisto_output/raw_kallisto_output/kallisto_out_HNF4_R3 /omics-storage/lab-solana/alberto/projects/smed_cisreg/data/bulk_rna/hnf4_combined_knockdown_bulk//HNF4_R3/HNF4_R3_MKRN250011217-1A_22MVT7LT4_L4_1.fq.gz /omics-storage/lab-solana/alberto/projects/smed_cisreg/data/bulk_rna/hnf4_combined_knockdown_bulk//HNF4_R3/HNF4_R3_MKRN250011217-1A_22MVT7LT4_L4_2.fq.gz"
+}

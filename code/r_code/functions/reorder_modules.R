@@ -1,6 +1,10 @@
 #wg_module <- smed_wg_module_
 #order_criterion <- smed_ctypes$ctype
-reorder_modules <- function(wg_module, order_criterion , min_kME = NULL, ordering_function = "upper quantile", thresh_sd = 1,...){
+reorder_modules <- function(
+    wg_module, order_criterion , min_kME = NULL,
+    ordering_function = "upper quantile", thresh_sd = 1,
+    acronym = '', ... ){
+  
   module_col <- which(colnames(wg_module) == "module")
   
   if (!(is.null(min_kME))){
@@ -114,18 +118,21 @@ reorder_modules <- function(wg_module, order_criterion , min_kME = NULL, orderin
       do.call(order,as.data.frame(m_order[,ncol(m_order):1])),
     ]
   
+  specific_acronym = paste0("s",acronym)
+  mixed_acronym = paste0("m",acronym)
+  
   res <- data.frame(
     neworder = 1:nmodules,
     module_wgcna = rownames(m_order),
-    type = ifelse(apply(m_order, 1, function(x)length(which(x != 0))) == 1, "s", "m")
+    type = ifelse(apply(m_order, 1, function(x)length(which(x != 0))) == 1, specific_acronym, mixed_acronym)
   )
   
   res$newname <- 
     paste0(
       res$type,
       c(
-        formatC(seq(1:length(which(res$type == "s"))), format = "d", width = 2, flag = "0"),
-        formatC(seq(1:length(which(res$type == "m"))), format = "d", width = 2, flag = "0")
+        formatC(seq(1:length(which(res$type == specific_acronym))), format = "d", width = 2, flag = "0"),
+        formatC(seq(1:length(which(res$type == mixed_acronym))), format = "d", width = 2, flag = "0")
       )
     )
   
