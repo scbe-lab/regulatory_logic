@@ -1,0 +1,1 @@
+awk '$3=="gene"' ~/storage/../standard_references/Smed_Rink/Smed_Rink_MASKED.gtf  | perl -pe "s/ID ([^; ]+)/\1/" | awk 'BEGIN{OFS="\t"} {print $1,$4,$5,$9,".",$7}' | perl -pe "s/[\";]{1}//g" > smed_genes.bed

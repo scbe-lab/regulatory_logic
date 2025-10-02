@@ -1,0 +1,4 @@
+./nucf_trim100bp/atac_vir/atac_vir_nucfree.bed
+./nucf_trim100bp/atac_vir/atac_vir_nucfree_BPM.bw
+./nucf_trim100bp/atac_vir/atac_vir_nucfree_RPKM.bw
+./nucf_trim100bp/atac_vir/atac_vir_nucfree_RPGC.bw

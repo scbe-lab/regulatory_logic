@@ -1,0 +1,14 @@
+{
+	"n_targets": 58739,
+	"n_bootstraps": 0,
+	"n_processed": 34431762,
+	"n_pseudoaligned": 29808804,
+	"n_unique": 23875364,
+	"p_pseudoaligned": 86.6,
+	"p_unique": 69.3,
+	"kallisto_version": "0.51.1",
+	"index_version": 13,
+	"k-mer length": 31,
+	"start_time": "Tue Nov 12 17:51:57 2024",
+	"call": "kallisto quant -t 12 -i /omics-storage/lab-solana/genomes/Smed/Rink/schMedS3/transdecoder_and_annotation/transdecoder/transcripts.fna.kallisto.index --single -l 200 -s 30 -o /omics-storage/lab-solana/alberto/projects/smed_cisreg/outputs/rna/ap_stuckemann/kallisto_output/raw_kallisto_output/kallisto_out_SRR5112817 /omics-storage/lab-solana/alberto/DATA/static/reads/smed_ap_stuckemann/SRR5112817/SRR5112817.fastq.gz"
+}
