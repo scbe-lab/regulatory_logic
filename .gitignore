@@ -1,3 +1,5 @@
+*binding.h5
+*.bam
 ./outputs/ananse/prep/peak_extended_pileup.tsv
 ./outputs/ananse/outs/binding/muscle/binding.h5
 ./outputs/ananse/outs/binding/neuron/binding.h5
