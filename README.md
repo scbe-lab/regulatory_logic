@@ -2,7 +2,13 @@
 Code and data for the manuscript "Multimodal single cell analyses reveal gene networks of planarian stem cell differentiation".
 
 ## About
-This repository hosts the code used to perform the analyses from the manuscript **"Pérez-Posada, A.; García-Castro, H.; Emili, E.; Guixeras-Fontana, A.; Vanni, V.; Salamanca-Diaz, D.; Arias-Baldrich, C.; van Heeringen, SJ.; Cebrià, F.; Kenny, NJ; Solana, J. 2025. Multimodal single cell analyses reveal gene networks of planarian stem cell differentiation. *Nat Comms* (TBA)"** , originally titled "The Regulatory Logic of Planarian Stem Cell Differentiation". 
+This repository hosts the code used to perform the analyses from the manuscript "**Pérez-Posada, A.**; García-Castro, H.; Emili, E.; Guixeras-Fontana, A.; Vanni, V.; Salamanca-Diaz, D.; Arias-Baldrich, C.; van Heeringen, SJ.; Cebrià, F.; Kenny, NJ; Solana, J.. Multimodal single cell analyses reveal gene networks of planarian stem cell differentiation. *Nat Commun*, **16**, 10683 (2025)" , originally titled "The Regulatory Logic of Planarian Stem Cell Differentiation". 
+
+Updated link to Nat Comms: https://www.nature.com/articles/s41467-025-65712-0
+
+DOI: https://doi.org/10.1038/s41467-025-65712-0
+
+Open Access Sharing/Download Link: https://rdcu.be/eR6iZ
 
 Here you can find all the code that was used to generate all the panels from the main and supplementary figures, as well as the majority of supplementary files.
 
