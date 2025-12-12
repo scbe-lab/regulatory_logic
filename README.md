@@ -12,6 +12,15 @@ Open Access Sharing/Download Link: https://rdcu.be/eR6iZ
 
 Here you can find all the code that was used to generate all the panels from the main and supplementary figures, as well as the majority of supplementary files.
 
+## Data availability:
+
+Main GEO page: https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE274286
+
+- **scRNA-Seq atlas: Seurat objects in .RDS format** (whole atlas and hnf4 knockdown atlas): https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE274282
+- **scATAC-Seq: Seurat object in .RDS format** (together with bigwigs of each cell type): https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE274281
+- bulk RNA-Seq for double knockdown experiments: https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE299320
+- bulk ATAC-Seq: bigwig format https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE274280
+
 ## Basic structure of the repository
 The repository is organised in several folders:
 
