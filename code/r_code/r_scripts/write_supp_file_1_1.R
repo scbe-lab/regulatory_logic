@@ -411,7 +411,7 @@ rosetta_ext_for_paper$name_lit[rosetta_ext_for_paper$gene == "h1SMcG0016896"] = 
 rosetta_ext_for_paper =
   merge(
     rosetta_ext_for_paper,
-    smed_id_module,agat_convert_sp_gff2gtf.pl
+    smed_id_module,
     by.x = 1,
     by.y = 1,
     all.x = TRUE
